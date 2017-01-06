@@ -1,0 +1,84 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>TunePadMockup</title>
+    <link href="css/default.css" rel="stylesheet" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="js/fabric.js"></script>
+    <script src="js/main.js"></script>
+
+</head>
+<body>
+    <div>Tune Pad Node Style Mock-up</div>
+    <canvas id="canvas" width="2000" height="500"></canvas>
+    <button id="green">Green</button>
+    <button id="red">Red</button>
+    <button id="purple">Purple</button>
+
+    <br />
+    <table>
+        <tr>
+            <th>Green</th>
+            <th>Red</th>
+            <th>Purple</th>
+        </tr>
+        <tr>
+            <td>
+                <textarea id="greenCode" rows="15" cols="40"></textarea>
+            </td>
+            <td>
+                <textarea id="redCode" rows="15" cols="40"></textarea>
+            </td>
+            <td>
+                <textarea id="purpleCode" rows="15" cols="40"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <button id="updateGreen">Update Green Code</button>
+            </td>
+            <td>
+                <button id="updateRed">Update Red Code</button>
+            </td>
+            <td>
+                <button id="updatePurple">Update Purple Code</button>
+            </td>
+        </tr>
+       </table>
+<div id="instructions">
+    <h1>Coding Key</h1>
+    <h3>Here are some of the things you need to know to code the nodes</h3>
+    <ul>
+        <li>node
+            <ul>
+            <li>Represents the node that you are editing in the block.</li>
+            <li>node is already defined for you</li>
+            </ul>
+        </li>
+        <li>makeSound(note);
+            <ul>
+                <li>plays the note indicated.</li>
+                <li>Note choices are: 'A3', 'B3', 'C4', 'D4', 'E4', 'F4', 'G4'</li>
+                <li>Note must be a string</li>
+            </ul>
+        </li>
+        <li>nodeTups
+            <ul>
+                <li>array of lists, each list represents one node on the canvas</li>
+                <li>first item of an internal list is the fabric node itself, second is its color</li>
+            </ul>
+        </li>
+        <li>emit(node, endNodeTup)
+            <ul>
+                <li> Emits a emission from the node reprsented by the first argument to the node in the Tuple of the second argument</li>
+                <li> first argument is the node itself</li>
+                <li> Second argument is the tuple from nodeTupes </li>
+            </ul>
+            
+        </li>
+    </ul>
+    <
+</div>
+</body>
+</html>
