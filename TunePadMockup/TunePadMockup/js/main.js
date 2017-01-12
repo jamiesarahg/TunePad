@@ -113,10 +113,10 @@ function oneSecond() {
         if (nodeTup[1] == 'black') {
             nodeTups.forEach(function (endNodeTup) {
                 if (endNodeTup[1] != 'black') {
-                    emit(node, endNodeTup);
+                    emit(nodeTup[0], endNodeTup);
                 }
             })
-            black(nodeTup[0]);
+            //black(nodeTup[0]);
         }
     })
 }
