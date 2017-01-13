@@ -16,16 +16,31 @@
     <table style="height:100%; width:100%;">
         <tbody>
             <tr>
-                <td><canvas id="canvas" <!--style="height:100%; width:100%;"-->></canvas></td>
+                <td><canvas id="canvas" height="600" width="2200"> </canvas></td>
+                <td>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td><button id="green">Green</button></td>
+                            </tr>
+                            <tr>
+                                <td><button id="red">Red</button></td>
+                            </tr>
+                            <tr>
+                                <td><button id="purple">Purple</button></td>
+                            </tr>                       
+                        </tbody>
+                    </table>
+                    
+                </td>
             </tr>
             <tr>
                 <td id="blocklyArea" style="height:99%"></td>
+
             </tr>
         </tbody>
     </table>
-    <!--<button id="green">Green</button>
-    <button id="red">Red</button>
-    <button id="purple">Purple</button>-->
+    
     <div id="blocklyDiv" style="position: absolute"></div>
     <xml id="toolbox" style="display: none">
         <block type="controls_if"></block>
@@ -36,94 +51,7 @@
         <block type="text"></block>
         <block type="text_print"></block>
     </xml>
-    <!--<table>
-        <tr>
-            <th>Green</th>
-            <th>Red</th>
-            <th>Purple</th>
-        </tr>
-        <tr>
-            <td>
-                <textarea id="greenCode" rows="15" cols="40"></textarea>
-            </td>
-            <td>
-                <textarea id="redCode" rows="15" cols="40"></textarea>
-            </td>
-            <td>
-                <textarea id="purpleCode" rows="15" cols="40"></textarea>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <button id="updateGreen">Update Green Code</button>
-            </td>
-            <td>
-                <button id="updateRed">Update Red Code</button>
-            </td>
-            <td>
-                <button id="updatePurple">Update Purple Code</button>
-            </td>
-        </tr>
-       </table>
-<div id="instructions">
-    <h1>Coding Key</h1>
-    <h3>Here are some of the things you need to know to code the nodes</h3>
-    <ul>
-        <li>node
-            <ul>
-            <li>Represents the node that you are editing in the block.</li>
-            <li>node is already defined for you</li>
-            </ul>
-        </li>
-        <li>makeSound(note);
-            <ul>
-                <li>plays the note indicated.</li>
-                <li>Note choices are: 'A3', 'B3', 'C4', 'D4', 'E4', 'F4', 'G4'</li>
-                <li>Note must be a string</li>
-            </ul>
-        </li>
-        <li>nodeTups
-            <ul>
-                <li>array of lists, each list represents one node on the canvas</li>
-                <li>first item of an internal list is the fabric node itself, second is its color</li>
-            </ul>
-        </li>
-        <li>emit(node, endNodeTup)
-            <ul>
-                <li> Emits a emission from the node reprsented by the first argument to the node in the Tuple of the second argument</li>
-                <li> first argument is the node itself</li>
-                <li> Second argument is the tuple from nodeTupes </li>
-            </ul>
-            
-        </li>
-    </ul>-->
-    
-<!--</div>-->
+   
 
-    <script>
-  var blocklyArea = document.getElementById('blocklyArea');
-  var blocklyDiv = document.getElementById('blocklyDiv');
-  var workspace = Blockly.inject(blocklyDiv,
-      {toolbox: document.getElementById('toolbox')});
-  var onresize = function(e) {
-    // Compute the absolute coordinates and dimensions of blocklyArea.
-    var element = blocklyArea;
-    var x = 0;
-    var y = 0;
-    do {
-      x += element.offsetLeft;
-      y += element.offsetTop;
-      element = element.offsetParent;
-    } while (element);
-    // Position blocklyDiv over blocklyArea.
-    blocklyDiv.style.left = x + 'px';
-    blocklyDiv.style.top = y + 'px';
-    blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
-    blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
-  };
-  window.addEventListener('resize', onresize, false);
-  onresize();
-  Blockly.svgResize(workspace);
-    </script>
 </body>
 </html>
