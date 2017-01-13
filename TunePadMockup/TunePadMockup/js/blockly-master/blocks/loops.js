@@ -125,7 +125,8 @@ Blockly.Blocks['controls_for'] = {
    * Block for 'for' loop.
    * @this Blockly.Block
    */
-  init: function() {
+    init: function () {
+        console.log('infor');
     this.jsonInit({
       "message0": Blockly.Msg.CONTROLS_FOR_TITLE,
       "args0": [
@@ -161,6 +162,7 @@ Blockly.Blocks['controls_for'] = {
     });
     this.appendStatementInput('DO')
         .appendField(Blockly.Msg.CONTROLS_FOR_INPUT_DO);
+    console.log('for');
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function() {

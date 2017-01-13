@@ -34,40 +34,40 @@ goog.require('Blockly.Blocks');
  */
 Blockly.Blocks.logic.HUE = 210;
 
-Blockly.Blocks['controls_if'] = {
-  /**
-   * Block for if/elseif/else condition.
-   * @this Blockly.Block
-   */
-  init: function() {
-    this.setHelpUrl(Blockly.Msg.CONTROLS_IF_HELPURL);
-    this.setColour(Blockly.Blocks.logic.HUE);
-    this.appendValueInput('IF0')
-        .setCheck('Boolean')
-        .appendField(Blockly.Msg.CONTROLS_IF_MSG_IF);
-    this.appendStatementInput('DO0')
-        .appendField(Blockly.Msg.CONTROLS_IF_MSG_THEN);
-    this.setPreviousStatement(true);
-    this.setNextStatement(true);
-    this.setMutator(new Blockly.Mutator(['controls_if_elseif',
-                                         'controls_if_else']));
-    // Assign 'this' to a variable for use in the tooltip closure below.
-    var thisBlock = this;
-    this.setTooltip(function() {
-      if (!thisBlock.elseifCount_ && !thisBlock.elseCount_) {
-        return Blockly.Msg.CONTROLS_IF_TOOLTIP_1;
-      } else if (!thisBlock.elseifCount_ && thisBlock.elseCount_) {
-        return Blockly.Msg.CONTROLS_IF_TOOLTIP_2;
-      } else if (thisBlock.elseifCount_ && !thisBlock.elseCount_) {
-        return Blockly.Msg.CONTROLS_IF_TOOLTIP_3;
-      } else if (thisBlock.elseifCount_ && thisBlock.elseCount_) {
-        return Blockly.Msg.CONTROLS_IF_TOOLTIP_4;
-      }
-      return '';
-    });
-    this.elseifCount_ = 0;
-    this.elseCount_ = 0;
-  },
+//Blockly.Blocks['controls_if'] = {
+//  /**
+//   * Block for if/elseif/else condition.
+//   * @this Blockly.Block
+//   */
+//  init: function() {
+//    this.setHelpUrl(Blockly.Msg.CONTROLS_IF_HELPURL);
+//    this.setColour(Blockly.Blocks.logic.HUE);
+//    this.appendValueInput('IF0')
+//        .setCheck('Boolean')
+//        .appendField(Blockly.Msg.CONTROLS_IF_MSG_IF);
+//    this.appendStatementInput('DO0')
+//        .appendField(Blockly.Msg.CONTROLS_IF_MSG_THEN);
+//    this.setPreviousStatement(true);
+//    this.setNextStatement(true);
+//    this.setMutator(new Blockly.Mutator(['controls_if_elseif',
+//                                         'controls_if_else']));
+//    // Assign 'this' to a variable for use in the tooltip closure below.
+//    var thisBlock = this;
+//    this.setTooltip(function() {
+//      if (!thisBlock.elseifCount_ && !thisBlock.elseCount_) {
+//        return Blockly.Msg.CONTROLS_IF_TOOLTIP_1;
+//      } else if (!thisBlock.elseifCount_ && thisBlock.elseCount_) {
+//        return Blockly.Msg.CONTROLS_IF_TOOLTIP_2;
+//      } else if (thisBlock.elseifCount_ && !thisBlock.elseCount_) {
+//        return Blockly.Msg.CONTROLS_IF_TOOLTIP_3;
+//      } else if (thisBlock.elseifCount_ && thisBlock.elseCount_) {
+//        return Blockly.Msg.CONTROLS_IF_TOOLTIP_4;
+//      }
+//      return '';
+//    });
+//    this.elseifCount_ = 0;
+//    this.elseCount_ = 0;
+//  },
   /**
    * Create XML to represent the number of else-if and else inputs.
    * @return {Element} XML storage element.
