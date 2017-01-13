@@ -48,19 +48,44 @@ $(document).ready(function () {
 });
 
 window.onload = function () {
-    //puts initial text into code textboxes and assigns the initial code to the reaction functions for each color
-    var redStartText = "console.log('red');\nmakeSound('C4');"
-    document.getElementById('redCode').value = redStartText;
-    red = new Function('node', document.getElementById('redCode').value);
+    ////puts initial text into code textboxes and assigns the initial code to the reaction functions for each color
+    //var redStartText = "console.log('red');\nmakeSound('C4');"
+    //document.getElementById('redCode').value = redStartText;
+    //red = new Function('node', document.getElementById('redCode').value);
     
-    var greenStartText = "nodeTups.forEach(function (endNodeTup) {\n\temit(node, endNodeTup);\n})"
-    document.getElementById('greenCode').value = greenStartText;
-    green = new Function('node', document.getElementById('greenCode').value);
+    //var greenStartText = "nodeTups.forEach(function (endNodeTup) {\n\temit(node, endNodeTup);\n})"
+    //document.getElementById('greenCode').value = greenStartText;
+    //green = new Function('node', document.getElementById('greenCode').value);
 
-    var purpleStartText = "nodeTups.forEach(function (endNodeTup) {\n\tif (endNodeTup[1]=='red')\n\t{\n\t\temit(node, endNodeTup);\n\t}\n})\nmakeSound('E4');"
-    document.getElementById('purpleCode').value = purpleStartText;
-    purple = new Function('node', document.getElementById('purpleCode').value);
-}
+    //var purpleStartText = "nodeTups.forEach(function (endNodeTup) {\n\tif (endNodeTup[1]=='red')\n\t{\n\t\temit(node, endNodeTup);\n\t}\n})\nmakeSound('E4');"
+    //document.getElementById('purpleCode').value = purpleStartText;
+    //purple = new Function('node', document.getElementById('purpleCode').value);
+
+    //var blocklyArea = document.getElementById('blocklyArea');
+    //var blocklyDiv = document.getElementById('blocklyDiv');
+    //var workspace = Blockly.inject(blocklyDiv,
+    //    {toolbox: document.getElementById('toolbox')});
+    //var onresize = function (e) {
+    //    console.log('resize');
+    //    // Compute the absolute coordinates and dimensions of blocklyArea.
+    //    var element = blocklyArea;
+    //    var x = 0;
+    //    var y = 0;
+    //    do {
+    //        x += element.offsetLeft;
+    //        y += element.offsetTop;
+    //        element = element.offsetParent;
+    //    } while (element);
+    //    // Position blocklyDiv over blocklyArea.
+    //    blocklyDiv.style.left = x + 'px';
+    //    blocklyDiv.style.top = y + 'px';
+    //    blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
+    //    blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+    //};
+    //window.addEventListener('resize', onresize, false);
+    //onresize();
+    //Blockly.svgResize(workspace);
+    }
 /*
  moveEmissions
  inputs: none

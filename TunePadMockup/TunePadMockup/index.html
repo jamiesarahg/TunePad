@@ -1,23 +1,42 @@
 ﻿<!DOCTYPE html>
-<html>
+<html style="height:100%;">
 <head>
     <meta charset="utf-8" />
     <title>TunePadMockup</title>
     <link href="css/default.css" rel="stylesheet" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="js/fabric.js"></script>
+    <script src="js/blockly-master/blockly_compressed.js"></script>
+    <script src="js/blockly-master/blocks_compressed.js"></script>
+    <script src="msg/js/en.js"></script>
     <script src="js/main.js"></script>
 
 </head>
-<body>
-    <div>Tune Pad Node Style Mock-up</div>
-    <canvas id="canvas" width="2000" height="500"></canvas>
-    <button id="green">Green</button>
+<body style="height:100%;">
+    <table style="height:100%; width:100%;">
+        <tbody>
+            <tr>
+                <td><canvas id="canvas" <!--style="height:100%; width:100%;"-->></canvas></td>
+            </tr>
+            <tr>
+                <td id="blocklyArea" style="height:99%"></td>
+            </tr>
+        </tbody>
+    </table>
+    <!--<button id="green">Green</button>
     <button id="red">Red</button>
-    <button id="purple">Purple</button>
-
-    <br />
-    <table>
+    <button id="purple">Purple</button>-->
+    <div id="blocklyDiv" style="position: absolute"></div>
+    <xml id="toolbox" style="display: none">
+        <block type="controls_if"></block>
+        <block type="controls_repeat_ext"></block>
+        <block type="logic_compare"></block>
+        <block type="math_number"></block>
+        <block type="math_arithmetic"></block>
+        <block type="text"></block>
+        <block type="text_print"></block>
+    </xml>
+    <!--<table>
         <tr>
             <th>Green</th>
             <th>Red</th>
@@ -77,8 +96,34 @@
             </ul>
             
         </li>
-    </ul>
-    <
-</div>
+    </ul>-->
+    
+<!--</div>-->
+
+    <script>
+  var blocklyArea = document.getElementById('blocklyArea');
+  var blocklyDiv = document.getElementById('blocklyDiv');
+  var workspace = Blockly.inject(blocklyDiv,
+      {toolbox: document.getElementById('toolbox')});
+  var onresize = function(e) {
+    // Compute the absolute coordinates and dimensions of blocklyArea.
+    var element = blocklyArea;
+    var x = 0;
+    var y = 0;
+    do {
+      x += element.offsetLeft;
+      y += element.offsetTop;
+      element = element.offsetParent;
+    } while (element);
+    // Position blocklyDiv over blocklyArea.
+    blocklyDiv.style.left = x + 'px';
+    blocklyDiv.style.top = y + 'px';
+    blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
+    blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+  };
+  window.addEventListener('resize', onresize, false);
+  onresize();
+  Blockly.svgResize(workspace);
+    </script>
 </body>
 </html>
