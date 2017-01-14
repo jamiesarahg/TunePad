@@ -1,6 +1,8 @@
 ﻿/*
 File for JS for Tune Pad Mock-up Node-beat style
 */
+
+//Block factory: https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#9hmdyx
 var canvas; //global variable to represent canvas
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)(); //global variable to represent the audio context
 
