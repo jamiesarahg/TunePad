@@ -8,6 +8,11 @@
     <script src="js/fabric.js"></script>
     <script src="js/blockly-master/blockly_compressed.js"></script>
     <script src="js/blockly-master/blocks_compressed.js"></script>
+    <script src="js/blockly-master/javascript_compressed.js"></script>
+    <script src="js/blockly_blocks_code.js"></script>
+
+    
+
     <script src="msg/js/en.js"></script>
     <script src="js/main.js"></script>
 
@@ -28,7 +33,10 @@
                             </tr>
                             <tr>
                                 <td><button id="purple">Purple</button></td>
-                            </tr>                       
+                            </tr>     
+                            <tr>
+                                <td><button id="updateCode">Update Code</button></td>
+                            </tr>                  
                         </tbody>
                     </table>
                     
@@ -43,18 +51,16 @@
     
     <div id="blocklyDiv" style="position: absolute"></div>
     <xml id="toolbox" style="display: none">
-        <category name="Control">
-            <block type="controls_if"></block>
-            <block type="controls_for"></block>
-            <block type="string_length"></block>
+        <block type="console_log_here"></block>
+        <block type="define_red"></block>
+        <block type="make_sound"></block>
+        <block type="controls_forEach"></block>
+        <block type="emitblock"></block>
+        <block type="node_variable"></block>
+        <block type="for_each"></block>
+        <block type="if_node_color_block"></block>
+        <block type="if_node_distance_block"></block>
 
-        </category>
-        <!--<block type="controls_repeat_ext"></block>
-        <block type="logic_compare"></block>
-        <block type="math_number"></block>
-        <block type="math_arithmetic"></block>
-        <block type="text"></block>
-        <block type="text_print"></block>-->
     </xml>
    
 

@@ -41,6 +41,8 @@ $(document).ready(function () {
     $('#updatePurple').click(function () {
         purple = new Function('node', document.getElementById('purpleCode').value);
     })
+    
+   
 
     //initializs canvas with a black node
     addNode(canvas, 'black');
@@ -59,6 +61,7 @@ Puts blockly div in the blockly area defined in HTML
 function setUpBlockly() {
     var blocklyArea = document.getElementById('blocklyArea');
     var blocklyDiv = document.getElementById('blocklyDiv');
+    blocklyCreateBlocks();
     var workspace = Blockly.inject(blocklyDiv,
         { toolbox: document.getElementById('toolbox') });
     var onresize = function (e) {
@@ -82,6 +85,19 @@ function setUpBlockly() {
     onresize();
     Blockly.svgResize(workspace);
 
+    $('#updateCode').click(function () {
+        Blockly.JavaScript.addReservedWords('code');
+        var code = Blockly.JavaScript.workspaceToCode(workspace);
+        try {
+            eval(code);
+        } catch (e) {
+            alert(e);
+        }
+    })
+
+}
+
+function blocklyCreateBlocks() {
     Blockly.Blocks['string_length'] = {
         init: function () {
             this.appendValueInput('VALUE')
@@ -93,6 +109,240 @@ function setUpBlockly() {
             this.setHelpUrl('http://www.w3schools.com/jsref/jsref_length_string.asp');
         }
     };
+    Blockly.Blocks['console_log_here'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("console log here");
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['define_red'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("if red node hit");
+            this.appendStatementInput("redCode")
+                .setCheck(null)
+                .appendField("do:");
+            this.setInputsInline(false);
+            this.setColour(0);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+
+    Blockly.Blocks['make_sound'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("makeSound(")
+                .appendField(new Blockly.FieldDropdown([["A3", "A3"], ["B3", "B3"], ["C4", "C4"], ["D4", "D4"], ["E4", "E4"], ["F4", "F4"], ["G4", "G4"]]), "note")
+                .appendField(")");
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['emitblock'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("emit");
+            this.appendValueInput("emit_from")
+                .setCheck("node")
+                .appendField("from");
+            this.appendValueInput("emit_to")
+                .setCheck("node")
+                .appendField("to");
+            this.setInputsInline(true);
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(65);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['node_variable'] = {
+        init: function () {
+            this.appendValueInput("node_name")
+                .setCheck(null)
+                .appendField(new Blockly.FieldTextInput("node"), "node_name");
+            this.setOutput(true, "node");
+            this.setColour(65);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['for_each_block'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("for each");
+            this.appendValueInput("foreach_variable")
+                .setCheck("node");
+            this.appendDummyInput()
+                .appendField("of all nodes:");
+            this.appendStatementInput("foreach_statements")
+                .setCheck(null)
+                .appendField("do:");
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['if_node_color_block'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("if ");
+            this.appendValueInput("node")
+                .setCheck("node");
+            this.appendDummyInput()
+                .appendField("color")
+                .appendField(new Blockly.FieldDropdown([["=", "equal"], ["!=", "not_equal"]]), "operator")
+                .appendField(new Blockly.FieldDropdown([["red", "red"], ["green", "green"], ["purple", "purple"], ["black", "black"]]), "colors");
+            this.appendStatementInput("node_if_do")
+                .setCheck(null)
+                .appendField("do:");
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['if_node_distance_block'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("if ");
+            this.appendValueInput("node")
+                .setCheck("node");
+            this.appendDummyInput()
+                .appendField("is")
+                .appendField(new Blockly.FieldDropdown([["=", "equal"], ["!=", "not_equal"], [">", "greater_than"], [">=", "greater_or_equal"], ["<", "less_than"], ["<+", "less_or_equal"]]), "operator")
+                .appendField(new Blockly.FieldNumber(0, 0), "distance")
+                .appendField("pixels from the node hit:");
+            this.appendStatementInput("node_if_do")
+                .setCheck(null)
+                .appendField("do:");
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['list_of_all_nodes'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("list of all nodes");
+            this.setOutput(true, null);
+            this.setColour(230);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['for_each'] = {
+        init: function () {
+            this.appendValueInput("for_each_list")
+                .setCheck(null)
+                .appendField("for each item")
+                .appendField(new Blockly.FieldVariable("node"), "for_each_variable")
+                .appendField("in list");
+            this.appendStatementInput("for_each_do")
+                .setCheck(null)
+                .appendField("do");
+            this.setOutput(true, null);
+            this.setColour(65);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+
+    //Generators
+    Blockly.JavaScript['console_log_here'] = function (block) {
+        var code = 'console.log("here")';
+        return code;
+    };
+    Blockly.JavaScript['define_red'] = function (block) {
+        var statements_redcode = Blockly.JavaScript.statementToCode(block, 'redCode');
+        red = new Function('node', statements_redcode);
+
+    };
+    Blockly.JavaScript['make_sound'] = function (block) {
+        var dropdown_note = block.getFieldValue('note');
+        var code = 'makeSound("' + dropdown_note + '")';
+        return code;
+    };
+    Blockly.JavaScript['emitblock'] = function (block) {
+        var value_emit_from = Blockly.JavaScript.valueToCode(block, 'emit_from', Blockly.JavaScript.ORDER_ATOMIC);
+        var value_emit_to = Blockly.JavaScript.valueToCode(block, 'emit_to', Blockly.JavaScript.ORDER_ATOMIC);
+        var code = 'emit('+value_emit_from+','+value_emit_to + ')';
+        return code;
+    };
+    Blockly.JavaScript['node_variable'] = function (block) {
+        var text_node_name = block.getFieldValue('node_name');
+        var value_node_name = Blockly.JavaScript.valueToCode(block, 'node_name', Blockly.JavaScript.ORDER_ATOMIC);
+        // TODO: Assemble JavaScript into code variable.
+        var code = value_node_name;
+        console.log(code);
+        // TODO: Change ORDER_NONE to the correct strength.
+        return [code, Blockly.JavaScript.ORDER_NONE];
+    };
+    Blockly.JavaScript['for_each_block'] = function (block) {
+        var value_foreach_variable = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('foreach_variable'), Blockly.Variables.NAME_TYPE);
+        var statements_foreach_statements = Blockly.JavaScript.statementToCode(block, 'foreach_statements');
+        var code = 'nodeTups.forEach(function (' + value_foreach_variable + ') {' + statements_foreach_statements + '}})';
+        console.log(code);
+        return code;
+    };
+
+    Blockly.JavaScript['if_node_color_block'] = function(block) {
+        var value_node = Blockly.JavaScript.valueToCode(block, 'node', Blockly.JavaScript.ORDER_ATOMIC);
+        var dropdown_operator = block.getFieldValue('operator');
+        var dropdown_colors = block.getFieldValue('colors');
+        var statements_node_if_do = Blockly.JavaScript.statementToCode(block, 'node_if_do');
+        var code = 'if ' + value_node[1] + dropdown_operator + dropdown_colors + ':' + statements_node_if_do;
+        return code;
+    };
+    Blockly.JavaScript['if_node_distance_block'] = function (block) {
+        var value_node = Blockly.JavaScript.valueToCode(block, 'node', Blockly.JavaScript.ORDER_ATOMIC);
+        var dropdown_operator = block.getFieldValue('operator');
+        var number_distance = block.getFieldValue('distance');
+        var statements_node_if_do = Blockly.JavaScript.statementToCode(block, 'node_if_do');
+        var code = 'if ' + value_node[1] + dropdown_operator + number_distance + ':' + statements_node_if_do;
+        return code;
+    };
+    Blockly.JavaScript['list_of_all_nodes'] = function (block) {
+        // TODO: Assemble JavaScript into code variable.
+        var code = nodeTups;
+        // TODO: Change ORDER_NONE to the correct strength.
+        return [code, Blockly.JavaScript.ORDER_NONE];
+    };
+    Blockly.JavaScript['for_each'] = function (block) {
+        var variable0 = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('for_each_variable'), Blockly.Variables.NAME_TYPE);
+        var argument0 = Blockly.JavaScript.valueToCode(block, 'for_each_list', Blockly.JavaScript.ORDER_ATOMIC);
+        var branch = Blockly.JavaScript.statementToCode(block, 'for_each_do');
+        branch = Blockly.JavaScript.addLoopTrap(branch, block.id);
+        var code = '';
+        var listVar = argument0;
+        if (!argument0.match(/^\w+$/)) {
+            listVar = Blockly.JavaScript.variableDB_.getDistinctName(
+                variable0 + '_list', Blockly.Variables.NAME_TYPE);
+            code += 'var ' + listVar + ' = ' + argument0 + ';\n';
+        }
+        var indexVar = Blockly.JavaScript.variableDB_.getDistinctName(
+            variable0 + '_index', Blockly.Variables.NAME_TYPE);
+        branch = Blockly.JavaScript.INDENT + variable0 + ' = ' +
+            listVar + '[' + indexVar + '];\n' + branch;
+        code += 'for (var ' + indexVar + ' in ' + listVar + ') {\n' + branch + '}\n';
+        return code;
+    };
+
+    
 }
 /*
  moveEmissions
