@@ -8,6 +8,12 @@
     <script src="js/fabric.js"></script>
     <script src="js/main.js"></script>
 
+    <!-- Blockly-related source files -->
+    <script src="blockly/blockly_compressed.js"></script>
+    <script src="blockly/blocks_compressed.js"></script>
+    <script src="blockly/javascript_compressed.js"></script>
+    <script src="blockly/msg/js/en.js"></script>
+
 </head>
 <body>
     <div>Tune Pad Node Style Mock-up</div>
@@ -17,6 +23,20 @@
     <button id="purple">Purple</button>
 
     <br />
+    <div id="blocklyDiv" style="position: absolute; height: 480px; width: 600px; right: 0px; top: 0px"></div>
+    <xml id="toolbox" style="display: none">
+      <block type="controls_if"></block>
+      <block type="controls_repeat_ext"></block>
+      <block type="logic_compare"></block>
+      <block type="math_number"></block>
+      <block type="math_arithmetic"></block>
+      <block type="text"></block>
+      <block type="text_print"></block>
+    </xml>
+    <script>
+      var workspace = Blockly.inject('blocklyDiv',
+          {toolbox: document.getElementById('toolbox')});
+    </script>
     <table>
         <tr>
             <th>Green</th>
