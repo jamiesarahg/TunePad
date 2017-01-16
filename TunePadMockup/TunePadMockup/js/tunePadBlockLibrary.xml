@@ -65,8 +65,8 @@
     </value>
     <value name="COLOUR">
       <block type="colour_hue" id="3vh}8QN1j]$h#,,O64*B">
-        <mutation colour="#9fa55b"></mutation>
-        <field name="HUE">65</field>
+        <mutation colour="#5b67a5"></mutation>
+        <field name="HUE">230</field>
       </block>
     </value>
   </block><block type="factory_base" id="@S%j9qZK~+,n~Mn26lx$" deletable="false" movable="false" x="0" y="0">
@@ -715,6 +715,43 @@
       <block type="colour_hue" id="vH$v*gw:n0.`P}I5zJtn">
         <mutation colour="#5b67a5"></mutation>
         <field name="HUE">230</field>
+      </block>
+    </value>
+  </block><block type="factory_base" id="8c}E~0!^|)GX(i9_e)`o" deletable="false" movable="false" x="0" y="0">
+    <mutation connections="LEFT"></mutation>
+    <field name="NAME">self_node</field>
+    <field name="INLINE">AUTO</field>
+    <field name="CONNECTIONS">LEFT</field>
+    <statement name="INPUTS">
+      <block type="input_dummy" id="UE4,Rz[QmyHYSdfGD`8o">
+        <field name="ALIGN">LEFT</field>
+        <statement name="FIELDS">
+          <block type="field_static" id="8-O4}p@1-@Wfo)Cpph!m">
+            <field name="TEXT">node: 'self'</field>
+          </block>
+        </statement>
+      </block>
+    </statement>
+    <value name="TOOLTIP">
+      <block type="text" id="TMUlAJ.d[^[HFh@,6,gM" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="HELPURL">
+      <block type="text" id="F^9bGhaw.S0pkQ0#EA|?" deletable="false" movable="false">
+        <field name="TEXT"></field>
+      </block>
+    </value>
+    <value name="OUTPUTTYPE">
+      <shadow type="type_null" id="C1t{$3VGezmMqMKJ?/[s"></shadow>
+      <block type="type_other" id=":L#z/nac{n]sRDrd_~$b">
+        <field name="TYPE">node</field>
+      </block>
+    </value>
+    <value name="COLOUR">
+      <block type="colour_hue" id="R]])PFjOHQCj(Y5Tu4Wr">
+        <mutation colour="#9fa55b"></mutation>
+        <field name="HUE">65</field>
       </block>
     </value>
   </block></xml>

@@ -31,19 +31,12 @@ $(document).ready(function () {
         addNode(canvas, 'purple');
     });
 
-    //Click functions for updating the reaction functions for each color
-    $('#updateRed').click(function () {
-         red = new Function ('node', document.getElementById('redCode').value);
-    })
-    $('#updateGreen').click(function () {
-        green = new Function('node', document.getElementById('greenCode').value);
-    })
-    $('#updatePurple').click(function () {
-        purple = new Function('node', document.getElementById('purpleCode').value);
-    })
+    // Initial functions for nodes
+    red = new Function('self', '');
+    green = new Function('self', '');
+    purple = new Function('self', '');
     
    
-
     //initializs canvas with a black node
     addNode(canvas, 'black');
 
@@ -98,17 +91,6 @@ function setUpBlockly() {
 }
 
 function blocklyCreateBlocks() {
-    Blockly.Blocks['string_length'] = {
-        init: function () {
-            this.appendValueInput('VALUE')
-                .setCheck('String')
-                .appendField('length of');
-            this.setOutput(true, 'Number');
-            this.setColour(160);
-            this.setTooltip('Returns number of letters in the provided text.');
-            this.setHelpUrl('http://www.w3schools.com/jsref/jsref_length_string.asp');
-        }
-    };
     Blockly.Blocks['console_log_here'] = {
         init: function () {
             this.appendDummyInput()
@@ -129,6 +111,32 @@ function blocklyCreateBlocks() {
                 .appendField("do:");
             this.setInputsInline(false);
             this.setColour(0);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['define_green'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("if green node hit");
+            this.appendStatementInput("greenCode")
+                .setCheck(null)
+                .appendField("do:");
+            this.setInputsInline(false);
+            this.setColour(120);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['define_purple'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("if purple node hit");
+            this.appendStatementInput("purpleCode")
+                .setCheck(null)
+                .appendField("do:");
+            this.setInputsInline(false);
+            this.setColour(260);
             this.setTooltip('');
             this.setHelpUrl('');
         }
@@ -160,6 +168,16 @@ function blocklyCreateBlocks() {
             this.setInputsInline(true);
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['self_node'] = {
+        init: function() {
+            this.appendDummyInput()
+                .appendField("node: 'self'");
+            this.setOutput(true, "node");
             this.setColour(65);
             this.setTooltip('');
             this.setHelpUrl('');
@@ -235,32 +253,7 @@ function blocklyCreateBlocks() {
             this.setHelpUrl('');
         }
     };
-    Blockly.Blocks['list_of_all_nodes'] = {
-        init: function () {
-            this.appendDummyInput()
-                .appendField("list of all nodes");
-            this.setOutput(true, null);
-            this.setColour(230);
-            this.setTooltip('');
-            this.setHelpUrl('');
-        }
-    };
-    Blockly.Blocks['for_each'] = {
-        init: function () {
-            this.appendValueInput("for_each_list")
-                .setCheck(null)
-                .appendField("for each item")
-                .appendField(new Blockly.FieldVariable("node"), "for_each_variable")
-                .appendField("in list");
-            this.appendStatementInput("for_each_do")
-                .setCheck(null)
-                .appendField("do");
-            this.setOutput(true, null);
-            this.setColour(65);
-            this.setTooltip('');
-            this.setHelpUrl('');
-        }
-    };
+
 
     //Generators
     Blockly.JavaScript['console_log_here'] = function (block) {
@@ -269,7 +262,15 @@ function blocklyCreateBlocks() {
     };
     Blockly.JavaScript['define_red'] = function (block) {
         var statements_redcode = Blockly.JavaScript.statementToCode(block, 'redCode');
-        red = new Function('node', statements_redcode);
+        red = new Function('self', statements_redcode);
+    };
+    Blockly.JavaScript['define_green'] = function (block) {
+        var statements_greencode = Blockly.JavaScript.statementToCode(block, 'greenCode');
+        green = new Function('self', statements_greencode);
+    };
+    Blockly.JavaScript['define_purple'] = function (block) {
+        var statements_purplecode = Blockly.JavaScript.statementToCode(block, 'purpleCode');
+        purple = new Function('self', statements_purplecode);
 
     };
     Blockly.JavaScript['make_sound'] = function (block) {
@@ -286,63 +287,53 @@ function blocklyCreateBlocks() {
     Blockly.JavaScript['node_variable'] = function (block) {
         var text_node_name = block.getFieldValue('node_name');
         var value_node_name = Blockly.JavaScript.valueToCode(block, 'node_name', Blockly.JavaScript.ORDER_ATOMIC);
-        // TODO: Assemble JavaScript into code variable.
-        var code = value_node_name;
-        console.log(code);
-        // TODO: Change ORDER_NONE to the correct strength.
+        var code = text_node_name;
+        return [code, Blockly.JavaScript.ORDER_NONE];
+    };
+    Blockly.JavaScript['self_node'] = function (block) {
+        var code = 'self';
         return [code, Blockly.JavaScript.ORDER_NONE];
     };
     Blockly.JavaScript['for_each_block'] = function (block) {
-        var value_foreach_variable = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('foreach_variable'), Blockly.Variables.NAME_TYPE);
+        console.log('top_foreach');
+        var value_foreach_variable = Blockly.JavaScript.valueToCode(block, 'foreach_variable', Blockly.JavaScript.ORDER_ATOMIC);
+        console.log('mid_foreach');
         var statements_foreach_statements = Blockly.JavaScript.statementToCode(block, 'foreach_statements');
-        var code = 'nodeTups.forEach(function (' + value_foreach_variable + ') {' + statements_foreach_statements + '}})';
+        console.log('here');
+        var code = 'nodeTups.forEach(function ' + value_foreach_variable + ' {' + statements_foreach_statements + '})';
         console.log(code);
         return code;
     };
 
-    Blockly.JavaScript['if_node_color_block'] = function(block) {
-        var value_node = Blockly.JavaScript.valueToCode(block, 'node', Blockly.JavaScript.ORDER_ATOMIC);
-        var dropdown_operator = block.getFieldValue('operator');
+    Blockly.JavaScript['if_node_color_block'] = function (block) {
+        var OPERATORS = {
+            'equal': '==',
+            'not_equal': '!=',
+          };
+        var operator = OPERATORS[block.getFieldValue('operator')];
         var dropdown_colors = block.getFieldValue('colors');
+        var value_node = Blockly.JavaScript.valueToCode(block, 'node', Blockly.JavaScript.ORDER_ATOMIC);
         var statements_node_if_do = Blockly.JavaScript.statementToCode(block, 'node_if_do');
-        var code = 'if ' + value_node[1] + dropdown_operator + dropdown_colors + ':' + statements_node_if_do;
+        var code = 'if ' + '(' + value_node.slice(1, -1) + '[1] '  + operator + ' "' + dropdown_colors + '") {' + statements_node_if_do + '}';
         return code;
     };
     Blockly.JavaScript['if_node_distance_block'] = function (block) {
+        var OPERATORS = {
+            'equal': '==',
+            'not_equal': '!=',
+            'less_than': '<',
+            'less_than_or_equal': '<=',
+            'greater_than': '>',
+            'greater_than_or_equal': '>='
+        };
+        var operator = OPERATORS[block.getFieldValue('operator')];
         var value_node = Blockly.JavaScript.valueToCode(block, 'node', Blockly.JavaScript.ORDER_ATOMIC);
-        var dropdown_operator = block.getFieldValue('operator');
         var number_distance = block.getFieldValue('distance');
         var statements_node_if_do = Blockly.JavaScript.statementToCode(block, 'node_if_do');
-        var code = 'if ' + value_node[1] + dropdown_operator + number_distance + ':' + statements_node_if_do;
+        var code = 'if ( distance(' +  value_node.slice(1, -1) + '[0], self) ' + operator + ' ' + number_distance + ') {' + statements_node_if_do + '}';
+        console.log(code);
         return code;
-    };
-    Blockly.JavaScript['list_of_all_nodes'] = function (block) {
-        // TODO: Assemble JavaScript into code variable.
-        var code = nodeTups;
-        // TODO: Change ORDER_NONE to the correct strength.
-        return [code, Blockly.JavaScript.ORDER_NONE];
-    };
-    Blockly.JavaScript['for_each'] = function (block) {
-        var variable0 = Blockly.JavaScript.variableDB_.getName(block.getFieldValue('for_each_variable'), Blockly.Variables.NAME_TYPE);
-        var argument0 = Blockly.JavaScript.valueToCode(block, 'for_each_list', Blockly.JavaScript.ORDER_ATOMIC);
-        var branch = Blockly.JavaScript.statementToCode(block, 'for_each_do');
-        branch = Blockly.JavaScript.addLoopTrap(branch, block.id);
-        var code = '';
-        var listVar = argument0;
-        if (!argument0.match(/^\w+$/)) {
-            listVar = Blockly.JavaScript.variableDB_.getDistinctName(
-                variable0 + '_list', Blockly.Variables.NAME_TYPE);
-            code += 'var ' + listVar + ' = ' + argument0 + ';\n';
-        }
-        var indexVar = Blockly.JavaScript.variableDB_.getDistinctName(
-            variable0 + '_index', Blockly.Variables.NAME_TYPE);
-        branch = Blockly.JavaScript.INDENT + variable0 + ' = ' +
-            listVar + '[' + indexVar + '];\n' + branch;
-        code += 'for (var ' + indexVar + ' in ' + listVar + ') {\n' + branch + '}\n';
-        return code;
-    };
-
-    
+    };    
 }
 /*
  moveEmissions
@@ -404,6 +395,16 @@ function oneSecond() {
     })
 }
 
+/*
+distance_between_two_nodes
+inputs: nodeA, nodeB
+outputs: distance in pixels
+*/
+function distance(nodeA, nodeB) {
+    var start = { x: parseFloat(nodeA.left) + parseFloat(nodeA.radius), y: parseFloat(nodeA.top) + parseFloat(nodeA.radius) };
+    var end = { x: parseFloat(nodeB.left) + parseFloat(nodeB.radius), y: parseFloat(nodeB.top) + parseFloat(nodeB.radius) };
+    return Math.sqrt(Math.pow((end.x - start.x), 2) + Math.pow((end.y - start.y), 2));
+}
 
 /*
 emit
@@ -416,9 +417,8 @@ function emit(node, endNodeTup) {
     if (node !== endNodeTup[0]) {
         var start = { x: parseFloat(node.left) + parseFloat(node.radius), y: parseFloat(node.top) + parseFloat(node.radius) };
         var end = { x: parseFloat(endNodeTup[0].left) + parseFloat(endNodeTup[0].radius), y: parseFloat(endNodeTup[0].top) + parseFloat(endNodeTup[0].radius) };
-        var d = Math.sqrt(Math.pow((end.x - start.x), 2) + Math.pow((end.y - start.y), 2));
+        var d = distance(node, endNodeTup[0]);
         var perc = 100.0 / d; //looks at distance from start to end position and decides what percentage of the distance the emission should move every 10ms
-
         var emission = new fabric.Circle({ radius: 3, fill: 'grey', top: start.y, left: start.x });
         canvas.add(emission);
         emissions.push([emission, start, end, 0, perc, endNodeTup]);
