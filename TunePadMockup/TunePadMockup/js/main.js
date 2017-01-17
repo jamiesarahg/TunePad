@@ -60,7 +60,6 @@ function setUpBlockly() {
     var workspace = Blockly.inject(blocklyDiv,
         { toolbox: document.getElementById('toolbox') });
     var onresize = function (e) {
-        console.log('resize');
         // Compute the absolute coordinates and dimensions of blocklyArea.
         var element = blocklyArea;
         var x = 0;
@@ -297,13 +296,9 @@ function blocklyCreateBlocks() {
         return [code, Blockly.JavaScript.ORDER_NONE];
     };
     Blockly.JavaScript['for_each_block'] = function (block) {
-        console.log('top_foreach');
         var value_foreach_variable = Blockly.JavaScript.valueToCode(block, 'foreach_variable', Blockly.JavaScript.ORDER_ATOMIC);
-        console.log('mid_foreach');
         var statements_foreach_statements = Blockly.JavaScript.statementToCode(block, 'foreach_statements');
-        console.log('here');
         var code = 'nodeTups.forEach(function ' + value_foreach_variable + ' {' + statements_foreach_statements + '})';
-        console.log(code);
         return code;
     };
 
@@ -333,7 +328,6 @@ function blocklyCreateBlocks() {
         var number_distance = block.getFieldValue('distance');
         var statements_node_if_do = Blockly.JavaScript.statementToCode(block, 'node_if_do');
         var code = 'if ( distance(' +  value_node.slice(1, -1) + '[0], self) ' + operator + ' ' + number_distance + ') {' + statements_node_if_do + '}';
-        console.log(code);
         return code;
     };    
 }
