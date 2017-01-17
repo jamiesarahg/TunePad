@@ -19,7 +19,7 @@ var emissions = []; //array of emissions on the canvas (grey dots going between 
 $(document).ready(function () {
     canvas = new fabric.Canvas('canvas');
 
-    setInterval(oneSecond, 1000); // emits a emission from black node every second
+    setInterval(tenSeconds, 10000); // emits a emission from black node every second
     setInterval(moveEmissions, 10); // moves all emissions every 10ms
 
     //Click functions for adding new nodes to the canvas of each color
@@ -46,6 +46,8 @@ $(document).ready(function () {
 
 window.onload = function () {
     setUpBlockly();
+    document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + 0;
+
 }
 
 /*
@@ -258,7 +260,6 @@ function blocklyCreateBlocks() {
 
     //Generators
     Blockly.JavaScript['console_log_here'] = function (block) {
-        var code = 'console.log("here")';
         return code;
     };
     Blockly.JavaScript['define_red'] = function (block) {
@@ -347,6 +348,7 @@ function moveEmissions() {
             var index = emissions.indexOf(emission);
             emissions.splice(index, 1);
             pingNode(emission[5]);
+            document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + emissions.length;
         }
         //moves remainder of emissions
         else {
@@ -373,12 +375,13 @@ function addNode(canvas, color) {
 }
 
 /*
-oneSecond
+tenSeconds
 inputs: none
 outputs: none
 If black nodes are on the board, emit and emission for every other node
 */
-function oneSecond() {
+function tenSeconds() {
+    console.log('one');
     nodeTups.forEach(function (nodeTup) {
         if (nodeTup[1] == 'black') {
             nodeTups.forEach(function (endNodeTup) {
@@ -418,6 +421,7 @@ function emit(node, endNodeTup) {
         var emission = new fabric.Circle({ radius: 3, fill: 'grey', top: start.y, left: start.x });
         canvas.add(emission);
         emissions.push([emission, start, end, 0, perc, endNodeTup]);
+        document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + emissions.length;
     }  
 }
 /*
