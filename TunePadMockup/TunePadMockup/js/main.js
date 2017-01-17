@@ -348,12 +348,21 @@ function moveEmissions() {
             emissions.splice(index, 1);
             pingNode(emission[5]);
         }
-        //moves remainder of emissions
+            //moves remainder of emissions
         else {
             emission[3] += emission[4];
             var newLocation = getLineXYatPercent(emission[1], emission[2], emission[3])
             emission[0].left = newLocation.x;
             emission[0].top = newLocation.y;
+            var opacity = 1 - (1 / (1000 * emission[4]) * emission[3]);
+            if (opacity < 0) {
+                canvas.remove(emission[0]);
+                var index = emissions.indexOf(emission);
+                emissions.splice(index, 1);
+            }
+            else {
+                emission[0].setOpacity(opacity);
+            }
         }
     })
     canvas.renderAll();
@@ -415,7 +424,7 @@ function emit(node, endNodeTup) {
         var end = { x: parseFloat(endNodeTup[0].left) + parseFloat(endNodeTup[0].radius), y: parseFloat(endNodeTup[0].top) + parseFloat(endNodeTup[0].radius) };
         var d = distance(node, endNodeTup[0]);
         var perc = 100.0 / d; //looks at distance from start to end position and decides what percentage of the distance the emission should move every 10ms
-        var emission = new fabric.Circle({ radius: 3, fill: 'grey', top: start.y, left: start.x });
+        var emission = new fabric.Circle({ radius: 3, fill: 'black', top: start.y, left: start.x });
         canvas.add(emission);
         emissions.push([emission, start, end, 0, perc, endNodeTup]);
     }  
