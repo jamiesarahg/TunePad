@@ -1,6 +1,8 @@
 ﻿/*
 File for JS for Tune Pad Mock-up Node-beat style
 */
+
+//Block factory: https://blockly-demo.appspot.com/static/demos/blockfactory/index.html#9hmdyx
 var canvas; //global variable to represent canvas
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)(); //global variable to represent the audio context
 
@@ -17,7 +19,7 @@ var emissions = []; //array of emissions on the canvas (grey dots going between 
 $(document).ready(function () {
     canvas = new fabric.Canvas('canvas');
 
-    setInterval(oneSecond, 10000); // emits a emission from black node every second
+    setInterval(oneSecond, 1000); // emits a emission from black node every second
     setInterval(moveEmissions, 10); // moves all emissions every 10ms
 
     //Click functions for adding new nodes to the canvas of each color
