@@ -1,11 +1,19 @@
-﻿<!DOCTYPE html>
-<html>
+<!DOCTYPE html>
+<html style="height:100%;">
 <head>
     <meta charset="utf-8" />
     <title>TunePadMockup</title>
     <link href="css/default.css" rel="stylesheet" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="js/fabric.js"></script>
+    <script src="js/blockly-master/blockly_compressed.js"></script>
+    <script src="js/blockly-master/blocks_compressed.js"></script>
+    <script src="js/blockly-master/javascript_compressed.js"></script>
+    <script src="js/blockly_blocks_code.js"></script>
+
+    
+
+    <script src="msg/js/en.js"></script>
     <script src="js/main.js"></script>
 
     <!-- Blockly-related source files -->
@@ -17,107 +25,51 @@
     <!-- <script src="js/code.js"></script> -->
 
 </head>
-<body>
-    <div>Tune Pad Node Style Mock-up</div>
-    <canvas id="canvas" width="2000" height="500"></canvas>
-    <button id="green">Green</button>
-    <button id="red">Red</button>
-    <button id="purple">Purple</button>
-
-    <br />
-    <div id="blocklyDiv" style="position: absolute; height: 480px; width: 600px; right: 0px; top: 0px"></div>
+<body style="height:100%;">
+    <table style="height:100%; width:100%;">
+        <tbody>
+            <tr>
+                <td><canvas id="canvas" height="600" width="2200"> </canvas></td>
+                <td>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td><button id="green">Green</button></td>
+                            </tr>
+                            <tr>
+                                <td><button id="red">Red</button></td>
+                            </tr>
+                            <tr>
+                                <td><button id="purple">Purple</button></td>
+                            </tr>     
+                            <tr>
+                                <td><button id="updateCode">Update Code</button></td>
+                            </tr>                  
+                        </tbody>
+                    </table>
+                    
+                </td>
+            </tr>
+            <tr>
+                <td id="blocklyArea" style="height:99%"></td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <div id="blocklyDiv" style="position: absolute"></div>
     <xml id="toolbox" style="display: none">
-      <category name="Standard">  
-        <block type="controls_if"></block>
-        <block type="controls_repeat_ext"></block>
-        <block type="logic_compare"></block>
-        <block type="math_number"></block>
-        <block type="math_arithmetic"></block>
-        <block type="text"></block>
-        <block type="text_print"></block>
-      </category>
-      <!-- custom tunepad blocks -->
-      <category name="TunePad">
-        <block type="tunepad_emit"></block>
-        <block type="tunepad_makesound"></block>
-      </category>
+        <block type="console_log_here"></block>
+        <block type="define_green"></block>
+        <block type="define_red"></block>
+        <block type="define_purple"></block>
+        <block type="for_each_block"></block>
+        <block type="if_node_color_block"></block>
+        <block type="if_node_distance_block"></block>
+        <block type="make_sound"></block>
+        <block type="emitblock"></block>
+        <block type="node_variable"></block>
+        <block type="self_node"></block>
+        
     </xml>
-    <script>
-      var workspace = Blockly.inject('blocklyDiv',
-          {toolbox: document.getElementById('toolbox')});
-
-      Blockly.JavaScript.addReservedWords('code');
-      var code = Blockly.JavaScript.workspaceToCode(workspace);
-
-      try {
-        eval(code);
-      } catch (e) {
-        alert(e);
-      }
-
-    </script>
-    <table>
-        <tr>
-            <th>Green</th>
-            <th>Red</th>
-            <th>Purple</th>
-        </tr>
-        <tr>
-            <td>
-                <textarea id="greenCode" rows="15" cols="40"></textarea>
-            </td>
-            <td>
-                <textarea id="redCode" rows="15" cols="40"></textarea>
-            </td>
-            <td>
-                <textarea id="purpleCode" rows="15" cols="40"></textarea>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <button id="updateGreen">Update Green Code</button>
-            </td>
-            <td>
-                <button id="updateRed">Update Red Code</button>
-            </td>
-            <td>
-                <button id="updatePurple">Update Purple Code</button>
-            </td>
-        </tr>
-       </table>
-<div id="instructions">
-    <h1>Coding Key</h1>
-    <h3>Here are some of the things you need to know to code the nodes</h3>
-    <ul>
-        <li>node
-            <ul>
-            <li>Represents the node that you are editing in the block.</li>
-            <li>node is already defined for you</li>
-            </ul>
-        </li>
-        <li>makeSound(note);
-            <ul>
-                <li>plays the note indicated.</li>
-                <li>Note choices are: 'A3', 'B3', 'C4', 'D4', 'E4', 'F4', 'G4'</li>
-                <li>Note must be a string</li>
-            </ul>
-        </li>
-        <li>nodeTups
-            <ul>
-                <li>array of lists, each list represents one node on the canvas</li>
-                <li>first item of an internal list is the fabric node itself, second is its color</li>
-            </ul>
-        </li>
-        <li>emit(node, endNodeTup)
-            <ul>
-                <li> Emits a emission from the node reprsented by the first argument to the node in the Tuple of the second argument</li>
-                <li> first argument is the node itself</li>
-                <li> Second argument is the tuple from nodeTupes </li>
-            </ul>
-            
-        </li>
-    </ul>
-    <
-</div>
 </body>
 </html>

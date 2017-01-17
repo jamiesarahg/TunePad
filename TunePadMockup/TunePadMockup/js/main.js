@@ -33,35 +33,309 @@ $(document).ready(function () {
         addNode(canvas, 'purple');
     });
 
-    //Click functions for updating the reaction functions for each color
-    $('#updateRed').click(function () {
-         red = new Function ('node', document.getElementById('redCode').value);
-    })
-    $('#updateGreen').click(function () {
-        green = new Function('node', document.getElementById('greenCode').value);
-    })
-    $('#updatePurple').click(function () {
-        purple = new Function('node', document.getElementById('purpleCode').value);
-    })
-
+    // Initial functions for nodes
+    red = new Function('self', '');
+    green = new Function('self', '');
+    purple = new Function('self', '');
+    
+   
     //initializs canvas with a black node
     addNode(canvas, 'black');
 
 });
 
 window.onload = function () {
-    //puts initial text into code textboxes and assigns the initial code to the reaction functions for each color
-    var redStartText = "console.log('red');\nmakeSound('C4');"
-    document.getElementById('redCode').value = redStartText;
-    red = new Function('node', document.getElementById('redCode').value);
-    
-    var greenStartText = "nodeTups.forEach(function (endNodeTup) {\n\temit(node, endNodeTup);\n})"
-    document.getElementById('greenCode').value = greenStartText;
-    green = new Function('node', document.getElementById('greenCode').value);
+    setUpBlockly();
+}
 
-    var purpleStartText = "nodeTups.forEach(function (endNodeTup) {\n\tif (endNodeTup[1]=='red')\n\t{\n\t\temit(node, endNodeTup);\n\t}\n})\nmakeSound('E4');"
-    document.getElementById('purpleCode').value = purpleStartText;
-    purple = new Function('node', document.getElementById('purpleCode').value);
+/*
+setUpBlockly
+Inputs/Outputs: none
+Puts blockly div in the blockly area defined in HTML
+*/
+function setUpBlockly() {
+    var blocklyArea = document.getElementById('blocklyArea');
+    var blocklyDiv = document.getElementById('blocklyDiv');
+    blocklyCreateBlocks();
+    var workspace = Blockly.inject(blocklyDiv,
+        { toolbox: document.getElementById('toolbox') });
+    var onresize = function (e) {
+        console.log('resize');
+        // Compute the absolute coordinates and dimensions of blocklyArea.
+        var element = blocklyArea;
+        var x = 0;
+        var y = 0;
+        do {
+            x += element.offsetLeft;
+            y += element.offsetTop;
+            element = element.offsetParent;
+        } while (element);
+        // Position blocklyDiv over blocklyArea.
+        blocklyDiv.style.left = x + 'px';
+        blocklyDiv.style.top = y + 'px';
+        blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
+        blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+    };
+    window.addEventListener('resize', onresize, false);
+    onresize();
+    Blockly.svgResize(workspace);
+
+    $('#updateCode').click(function () {
+        Blockly.JavaScript.addReservedWords('code');
+        var code = Blockly.JavaScript.workspaceToCode(workspace);
+        try {
+            eval(code);
+        } catch (e) {
+            alert(e);
+        }
+    })
+
+}
+
+function blocklyCreateBlocks() {
+    Blockly.Blocks['console_log_here'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("console log here");
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['define_red'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("if red node hit");
+            this.appendStatementInput("redCode")
+                .setCheck(null)
+                .appendField("do:");
+            this.setInputsInline(false);
+            this.setColour(0);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['define_green'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("if green node hit");
+            this.appendStatementInput("greenCode")
+                .setCheck(null)
+                .appendField("do:");
+            this.setInputsInline(false);
+            this.setColour(120);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['define_purple'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("if purple node hit");
+            this.appendStatementInput("purpleCode")
+                .setCheck(null)
+                .appendField("do:");
+            this.setInputsInline(false);
+            this.setColour(260);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+
+    Blockly.Blocks['make_sound'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("makeSound(")
+                .appendField(new Blockly.FieldDropdown([["A3", "A3"], ["B3", "B3"], ["C4", "C4"], ["D4", "D4"], ["E4", "E4"], ["F4", "F4"], ["G4", "G4"]]), "note")
+                .appendField(")");
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['emitblock'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("emit");
+            this.appendValueInput("emit_from")
+                .setCheck("node")
+                .appendField("from");
+            this.appendValueInput("emit_to")
+                .setCheck("node")
+                .appendField("to");
+            this.setInputsInline(true);
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['self_node'] = {
+        init: function() {
+            this.appendDummyInput()
+                .appendField("node: 'self'");
+            this.setOutput(true, "node");
+            this.setColour(65);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['node_variable'] = {
+        init: function () {
+            this.appendValueInput("node_name")
+                .setCheck(null)
+                .appendField(new Blockly.FieldTextInput("node"), "node_name");
+            this.setOutput(true, "node");
+            this.setColour(65);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['for_each_block'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("for each");
+            this.appendValueInput("foreach_variable")
+                .setCheck("node");
+            this.appendDummyInput()
+                .appendField("of all nodes:");
+            this.appendStatementInput("foreach_statements")
+                .setCheck(null)
+                .appendField("do:");
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['if_node_color_block'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("if ");
+            this.appendValueInput("node")
+                .setCheck("node");
+            this.appendDummyInput()
+                .appendField("color")
+                .appendField(new Blockly.FieldDropdown([["=", "equal"], ["!=", "not_equal"]]), "operator")
+                .appendField(new Blockly.FieldDropdown([["red", "red"], ["green", "green"], ["purple", "purple"], ["black", "black"]]), "colors");
+            this.appendStatementInput("node_if_do")
+                .setCheck(null)
+                .appendField("do:");
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+    Blockly.Blocks['if_node_distance_block'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("if ");
+            this.appendValueInput("node")
+                .setCheck("node");
+            this.appendDummyInput()
+                .appendField("is")
+                .appendField(new Blockly.FieldDropdown([["=", "equal"], ["!=", "not_equal"], [">", "greater_than"], [">=", "greater_or_equal"], ["<", "less_than"], ["<+", "less_or_equal"]]), "operator")
+                .appendField(new Blockly.FieldNumber(0, 0), "distance")
+                .appendField("pixels from the node hit:");
+            this.appendStatementInput("node_if_do")
+                .setCheck(null)
+                .appendField("do:");
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+
+
+    //Generators
+    Blockly.JavaScript['console_log_here'] = function (block) {
+        var code = 'console.log("here")';
+        return code;
+    };
+    Blockly.JavaScript['define_red'] = function (block) {
+        var statements_redcode = Blockly.JavaScript.statementToCode(block, 'redCode');
+        red = new Function('self', statements_redcode);
+    };
+    Blockly.JavaScript['define_green'] = function (block) {
+        var statements_greencode = Blockly.JavaScript.statementToCode(block, 'greenCode');
+        green = new Function('self', statements_greencode);
+    };
+    Blockly.JavaScript['define_purple'] = function (block) {
+        var statements_purplecode = Blockly.JavaScript.statementToCode(block, 'purpleCode');
+        purple = new Function('self', statements_purplecode);
+
+    };
+    Blockly.JavaScript['make_sound'] = function (block) {
+        var dropdown_note = block.getFieldValue('note');
+        var code = 'makeSound("' + dropdown_note + '")';
+        return code;
+    };
+    Blockly.JavaScript['emitblock'] = function (block) {
+        var value_emit_from = Blockly.JavaScript.valueToCode(block, 'emit_from', Blockly.JavaScript.ORDER_ATOMIC);
+        var value_emit_to = Blockly.JavaScript.valueToCode(block, 'emit_to', Blockly.JavaScript.ORDER_ATOMIC);
+        var code = 'emit('+value_emit_from+','+value_emit_to + ')';
+        return code;
+    };
+    Blockly.JavaScript['node_variable'] = function (block) {
+        var text_node_name = block.getFieldValue('node_name');
+        var value_node_name = Blockly.JavaScript.valueToCode(block, 'node_name', Blockly.JavaScript.ORDER_ATOMIC);
+        var code = text_node_name;
+        return [code, Blockly.JavaScript.ORDER_NONE];
+    };
+    Blockly.JavaScript['self_node'] = function (block) {
+        var code = 'self';
+        return [code, Blockly.JavaScript.ORDER_NONE];
+    };
+    Blockly.JavaScript['for_each_block'] = function (block) {
+        console.log('top_foreach');
+        var value_foreach_variable = Blockly.JavaScript.valueToCode(block, 'foreach_variable', Blockly.JavaScript.ORDER_ATOMIC);
+        console.log('mid_foreach');
+        var statements_foreach_statements = Blockly.JavaScript.statementToCode(block, 'foreach_statements');
+        console.log('here');
+        var code = 'nodeTups.forEach(function ' + value_foreach_variable + ' {' + statements_foreach_statements + '})';
+        console.log(code);
+        return code;
+    };
+
+    Blockly.JavaScript['if_node_color_block'] = function (block) {
+        var OPERATORS = {
+            'equal': '==',
+            'not_equal': '!=',
+          };
+        var operator = OPERATORS[block.getFieldValue('operator')];
+        var dropdown_colors = block.getFieldValue('colors');
+        var value_node = Blockly.JavaScript.valueToCode(block, 'node', Blockly.JavaScript.ORDER_ATOMIC);
+        var statements_node_if_do = Blockly.JavaScript.statementToCode(block, 'node_if_do');
+        var code = 'if ' + '(' + value_node.slice(1, -1) + '[1] '  + operator + ' "' + dropdown_colors + '") {' + statements_node_if_do + '}';
+        return code;
+    };
+    Blockly.JavaScript['if_node_distance_block'] = function (block) {
+        var OPERATORS = {
+            'equal': '==',
+            'not_equal': '!=',
+            'less_than': '<',
+            'less_than_or_equal': '<=',
+            'greater_than': '>',
+            'greater_than_or_equal': '>='
+        };
+        var operator = OPERATORS[block.getFieldValue('operator')];
+        var value_node = Blockly.JavaScript.valueToCode(block, 'node', Blockly.JavaScript.ORDER_ATOMIC);
+        var number_distance = block.getFieldValue('distance');
+        var statements_node_if_do = Blockly.JavaScript.statementToCode(block, 'node_if_do');
+        var code = 'if ( distance(' +  value_node.slice(1, -1) + '[0], self) ' + operator + ' ' + number_distance + ') {' + statements_node_if_do + '}';
+        console.log(code);
+        return code;
+    };    
 }
 /*
  moveEmissions
@@ -123,6 +397,16 @@ function oneSecond() {
     })
 }
 
+/*
+distance_between_two_nodes
+inputs: nodeA, nodeB
+outputs: distance in pixels
+*/
+function distance(nodeA, nodeB) {
+    var start = { x: parseFloat(nodeA.left) + parseFloat(nodeA.radius), y: parseFloat(nodeA.top) + parseFloat(nodeA.radius) };
+    var end = { x: parseFloat(nodeB.left) + parseFloat(nodeB.radius), y: parseFloat(nodeB.top) + parseFloat(nodeB.radius) };
+    return Math.sqrt(Math.pow((end.x - start.x), 2) + Math.pow((end.y - start.y), 2));
+}
 
 /*
 emit
@@ -135,9 +419,8 @@ function emit(node, endNodeTup) {
     if (node !== endNodeTup[0]) {
         var start = { x: parseFloat(node.left) + parseFloat(node.radius), y: parseFloat(node.top) + parseFloat(node.radius) };
         var end = { x: parseFloat(endNodeTup[0].left) + parseFloat(endNodeTup[0].radius), y: parseFloat(endNodeTup[0].top) + parseFloat(endNodeTup[0].radius) };
-        var d = Math.sqrt(Math.pow((end.x - start.x), 2) + Math.pow((end.y - start.y), 2));
+        var d = distance(node, endNodeTup[0]);
         var perc = 100.0 / d; //looks at distance from start to end position and decides what percentage of the distance the emission should move every 10ms
-
         var emission = new fabric.Circle({ radius: 3, fill: 'grey', top: start.y, left: start.x });
         canvas.add(emission);
         emissions.push([emission, start, end, 0, perc, endNodeTup]);
