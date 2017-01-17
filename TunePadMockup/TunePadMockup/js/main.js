@@ -277,7 +277,7 @@ function blocklyCreateBlocks() {
     };
     Blockly.JavaScript['make_sound'] = function (block) {
         var dropdown_note = block.getFieldValue('note');
-        var code = 'makeSound("' + dropdown_note + '")';
+        var code = 'makeSound("' + dropdown_note + '");';
         return code;
     };
     Blockly.JavaScript['emitblock'] = function (block) {
