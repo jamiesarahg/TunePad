@@ -35,9 +35,9 @@ $(document).ready(function () {
     });
 
     // Initial functions for nodes
-    red = new Function('self', '');
-    green = new Function('self', '');
-    purple = new Function('self', '');
+    red = new Function(['self', 'distance'], '');
+    green = new Function(['self', 'distance'], '');
+    purple = new Function(['self', 'distance'], '');
     
    
     //initializs canvas with a black node
@@ -266,22 +266,21 @@ function blocklyCreateBlocks() {
     };
     Blockly.JavaScript['define_red'] = function (block) {
         var statements_redcode = Blockly.JavaScript.statementToCode(block, 'redCode');
-        red = new Function('self', statements_redcode);
+        red = new Function(['self', 'distance'], statements_redcode);
     };
     Blockly.JavaScript['define_green'] = function (block) {
         var statements_greencode = Blockly.JavaScript.statementToCode(block, 'greenCode');
-        green = new Function('self', statements_greencode);
+        green = new Function(['self', 'distance'], statements_greencode);
     };
     Blockly.JavaScript['define_purple'] = function (block) {
         var statements_purplecode = Blockly.JavaScript.statementToCode(block, 'purpleCode');
-        purple = new Function('self', statements_purplecode);
+        purple = new Function(['self', 'distance'], statements_purplecode);
 
     };
     Blockly.JavaScript['make_sound'] = function (block) {
         var dropdown_note = block.getFieldValue('note');
-        var code = 'makeSound("' + dropdown_note + '", 1);';
-        console.log(code);
-        console.log(self);
+        var code = 'makeSound("' + dropdown_note + '", distance);';
+
         return code;
     };
     Blockly.JavaScript['emitblock'] = function (block) {
@@ -346,13 +345,13 @@ function blocklyCreateBlocks() {
 */
 function moveEmissions() {
     emissions.forEach(function (emission) {
+        var opacity = 1 - (1 / (1000 * emission[4]) * emission[3]);
         //checks to see if emission reached end
         if (emission[3] >= 100) {
             canvas.remove(emission[0]);
             var index = emissions.indexOf(emission);
             emissions.splice(index, 1);
-            console.log(emission);
-            pingNode(emission[5]);
+            pingNode(emission[5], opacity);
             document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + emissions.length;
         }
             //moves remainder of emissions
@@ -361,7 +360,6 @@ function moveEmissions() {
             var newLocation = getLineXYatPercent(emission[1], emission[2], emission[3])
             emission[0].left = newLocation.x;
             emission[0].top = newLocation.y;
-            var opacity = 1 - (1 / (1000 * emission[4]) * emission[3]);
             if (opacity < 0) {
                 canvas.remove(emission[0]);
                 var index = emissions.indexOf(emission);
@@ -456,19 +454,19 @@ inputs: nodeTup: array of fabric node and color of node
 outputs: none
 Calls reaction function for given node
 */
-function pingNode(nodeTup){
+function pingNode(nodeTup, distance){
     var color = nodeTup[1];
     if (color == 'black') {
-        black(nodeTup[0]);
+        black(nodeTup[0], distance);
     }
     if (color == 'red') {
-        red(nodeTup[0]);
+        red(nodeTup[0], distance);
     }
     if (color == 'green') {
-        green(nodeTup[0])
+        green(nodeTup[0], distance)
     }
     if (color == 'purple') {
-        purple(nodeTup[0])
+        purple(nodeTup[0], distance)
     }
 }
 /*
@@ -493,7 +491,6 @@ function setUpSound() {
         }
         getSound.send(); // Send the Request and Load the File
     })
-
 }
 /*
 makeSound(note)
@@ -502,13 +499,13 @@ outputs: none
 plays the sound of given note string
 */
 function makeSound(note, volume) {
-
     sound = sounds[note];
     var playSound = audioCtx.createBufferSource(); // Declare a New Sound
     playSound.buffer = sound; // Attatch our Audio Data as it's Buffer
     var gainNode = audioCtx.createGain();
     playSound.connect(gainNode);
     gainNode.connect(audioCtx.destination);
+    if (isNaN(volume)) { volume = 1;}
     gainNode.gain.value = volume;
     playSound.start(0); // Play the Sound Immediately
 }
@@ -518,6 +515,5 @@ black
 inputs:node
 function of what a black node should do if it gets hit. Currently nothing
 */
-function black(node) {
-
+function black(node, distance) {
 }
