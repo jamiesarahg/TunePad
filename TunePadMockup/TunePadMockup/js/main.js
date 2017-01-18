@@ -15,6 +15,7 @@ var purple;
 var nodeTups = []; //array of nodes on the canvas. this array should be populated with arrays of format: [fabric canvas circle element of node, string of color of node]
 var emissions = []; //array of emissions on the canvas (grey dots going between nodes). This array shoudl be populated with arrays of format: ([fabric canvas circle element of specific emission, dictionary with x&y element of start position, dictionary with x&y element of end position, current percentage from start to end, percentage to be moved each 10ms, array representing the node emission is aming to]);
 
+var sounds = {};
 
 $(document).ready(function () {
     canvas = new fabric.Canvas('canvas');
@@ -34,9 +35,9 @@ $(document).ready(function () {
     });
 
     // Initial functions for nodes
-    red = new Function('self', '');
-    green = new Function('self', '');
-    purple = new Function('self', '');
+    red = new Function(['self', 'distance'], '');
+    green = new Function(['self', 'distance'], '');
+    purple = new Function(['self', 'distance'], '');
     
    
     //initializs canvas with a black node
@@ -47,6 +48,7 @@ $(document).ready(function () {
 window.onload = function () {
     setUpBlockly();
     document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + 0;
+    setUpSound();
 
 }
 
@@ -264,20 +266,21 @@ function blocklyCreateBlocks() {
     };
     Blockly.JavaScript['define_red'] = function (block) {
         var statements_redcode = Blockly.JavaScript.statementToCode(block, 'redCode');
-        red = new Function('self', statements_redcode);
+        red = new Function(['self', 'distance'], statements_redcode);
     };
     Blockly.JavaScript['define_green'] = function (block) {
         var statements_greencode = Blockly.JavaScript.statementToCode(block, 'greenCode');
-        green = new Function('self', statements_greencode);
+        green = new Function(['self', 'distance'], statements_greencode);
     };
     Blockly.JavaScript['define_purple'] = function (block) {
         var statements_purplecode = Blockly.JavaScript.statementToCode(block, 'purpleCode');
-        purple = new Function('self', statements_purplecode);
+        purple = new Function(['self', 'distance'], statements_purplecode);
 
     };
     Blockly.JavaScript['make_sound'] = function (block) {
         var dropdown_note = block.getFieldValue('note');
-        var code = 'makeSound("' + dropdown_note + '");';
+        var code = 'makeSound("' + dropdown_note + '", distance);';
+
         return code;
     };
     Blockly.JavaScript['emitblock'] = function (block) {
@@ -342,12 +345,13 @@ function blocklyCreateBlocks() {
 */
 function moveEmissions() {
     emissions.forEach(function (emission) {
+        var opacity = 1 - (1 / (1000 * emission[4]) * emission[3]);
         //checks to see if emission reached end
         if (emission[3] >= 100) {
             canvas.remove(emission[0]);
             var index = emissions.indexOf(emission);
             emissions.splice(index, 1);
-            pingNode(emission[5]);
+            pingNode(emission[5], opacity);
             document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + emissions.length;
         }
             //moves remainder of emissions
@@ -356,7 +360,6 @@ function moveEmissions() {
             var newLocation = getLineXYatPercent(emission[1], emission[2], emission[3])
             emission[0].left = newLocation.x;
             emission[0].top = newLocation.y;
-            var opacity = 1 - (1 / (1000 * emission[4]) * emission[3]);
             if (opacity < 0) {
                 canvas.remove(emission[0]);
                 var index = emissions.indexOf(emission);
@@ -390,7 +393,6 @@ outputs: none
 If black nodes are on the board, emit and emission for every other node
 */
 function tenSeconds() {
-    console.log('one');
     nodeTups.forEach(function (nodeTup) {
         if (nodeTup[1] == 'black') {
             nodeTups.forEach(function (endNodeTup) {
@@ -398,7 +400,6 @@ function tenSeconds() {
                     emit(nodeTup[0], endNodeTup);
                 }
             })
-            //black(nodeTup[0]);
         }
     })
 }
@@ -453,42 +454,60 @@ inputs: nodeTup: array of fabric node and color of node
 outputs: none
 Calls reaction function for given node
 */
-function pingNode(nodeTup){
+function pingNode(nodeTup, distance){
     var color = nodeTup[1];
     if (color == 'black') {
-        black(nodeTup[0]);
+        black(nodeTup[0], distance);
     }
     if (color == 'red') {
-        red(nodeTup[0]);
+        red(nodeTup[0], distance);
     }
     if (color == 'green') {
-        green(nodeTup[0])
+        green(nodeTup[0], distance)
     }
     if (color == 'purple') {
-        purple(nodeTup[0])
+        purple(nodeTup[0], distance)
     }
 }
+/*
+setUpSound
+inputs: none
+outputs: none
+loads sound directory.
+*/
+function setUpSound() {
+    notes = ['A3', 'B3', 'C4', 'D4', 'E4', 'F4', 'G4']
 
+    notes.forEach(function (note) {
+        var sound;
+        var getSound = new XMLHttpRequest(); // Load the Sound with XMLHttpRequest
+        getSound.open("GET", "Marimba_Sounds/"+ note + "_Marimba.wav", true); // Path to Audio File
+        getSound.responseType = "arraybuffer"; // Read as Binary Data
+        getSound.onload = function () {
+            audioCtx.decodeAudioData(getSound.response, function (buffer) {
+                sound = buffer; // Decode the Audio Data and Store it in a Variable
+                sounds[note] = sound;
+            });
+        }
+        getSound.send(); // Send the Request and Load the File
+    })
+}
 /*
 makeSound(note)
 inputs: note: string of a note
 outputs: none
 plays the sound of given note string
 */
-function makeSound(note) {
-    var oscillator = audioCtx.createOscillator();
+function makeSound(note, volume) {
+    sound = sounds[note];
+    var playSound = audioCtx.createBufferSource(); // Declare a New Sound
+    playSound.buffer = sound; // Attatch our Audio Data as it's Buffer
     var gainNode = audioCtx.createGain();
-    lettersToFrequency = {'A3': 220.00, 'B3': 246.94, 'C4': 261.63, 'D4': 293.66, 'E4':329.63, 'F4': 349.23, 'G4':392.00}
-
-    oscillator.connect(gainNode);
+    playSound.connect(gainNode);
     gainNode.connect(audioCtx.destination);
-
-
-    var initialFreq = lettersToFrequency[note];
-    oscillator.type = 'sine'; // sine wave — other values are 'square', 'sawtooth', 'triangle' and 'custom'
-    oscillator.frequency.value = initialFreq; // value in hertz
-    oscillator.start();
-    oscillator.stop(audioCtx.currentTime + .2);
+    if (isNaN(volume)) { volume = 1;}
+    gainNode.gain.value = volume;
+    playSound.start(0); // Play the Sound Immediately
 }
 
 /*
@@ -496,6 +515,5 @@ black
 inputs:node
 function of what a black node should do if it gets hit. Currently nothing
 */
-function black(node) {
-
+function black(node, distance) {
 }
