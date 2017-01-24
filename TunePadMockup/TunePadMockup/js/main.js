@@ -96,17 +96,6 @@ function setUpBlockly() {
 }
 
 function blocklyCreateBlocks() {
-    Blockly.Blocks['console_log_here'] = {
-        init: function () {
-            this.appendDummyInput()
-                .appendField("console log here");
-            this.setPreviousStatement(true, null);
-            this.setNextStatement(true, null);
-            this.setColour(230);
-            this.setTooltip('');
-            this.setHelpUrl('');
-        }
-    };
     Blockly.Blocks['define_red'] = {
         init: function () {
             this.appendDummyInput()
@@ -261,9 +250,6 @@ function blocklyCreateBlocks() {
 
 
     //Generators
-    Blockly.JavaScript['console_log_here'] = function (block) {
-        return code;
-    };
     Blockly.JavaScript['define_red'] = function (block) {
         var statements_redcode = Blockly.JavaScript.statementToCode(block, 'redCode');
         red = new Function(['self', 'distance'], statements_redcode);
@@ -352,7 +338,7 @@ function moveEmissions() {
             var index = emissions.indexOf(emission);
             emissions.splice(index, 1);
             pingNode(emission[5], opacity);
-            document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + emissions.length;
+            document.getElementById('emissionsCount').innerHTML = 'Number of Emissions: \n' + emissions.length;
         }
             //moves remainder of emissions
         else {
