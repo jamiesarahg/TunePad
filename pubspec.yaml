@@ -1,0 +1,4 @@
+name: TunePad
+
+dependencies:
+  browser: any
