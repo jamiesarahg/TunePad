@@ -93,21 +93,25 @@ class TuneLink extends TuneBlock {
         //----------------------------------------------
         // socket caps
         //----------------------------------------------
-        ctx.fillStyle = "white";
-        ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
-        ctx.shadowBlur = 5;
-        ctx.beginPath();
-        ctx.arc(socket.cx, socket.cy, socket.radius, 0, PI * 2, false);
-        ctx.fill();
-        ctx.shadowOffsetX = -1;
-        ctx.shadowOffsetY = -1;
-        ctx.shadowBlur = 2;
-        ctx.fillStyle = "#d2d7dd";
-        ctx.beginPath();
-        ctx.arc(socket.cx + 1, socket.cy + 1, PUCK_WIDTH / 2, 0, PI * 2, false);
-        ctx.fill();
+        for (Joint j in joints) {
+          if (j is Socket) {
+            ctx.fillStyle = "white";
+            ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+            ctx.shadowOffsetX = 2;
+            ctx.shadowOffsetY = 2;
+            ctx.shadowBlur = 5;
+            ctx.beginPath();
+            ctx.arc(j.cx, j.cy, j.radius, 0, PI * 2, false);
+            ctx.fill();
+            ctx.shadowOffsetX = -1;
+            ctx.shadowOffsetY = -1;
+            ctx.shadowBlur = 2;
+            ctx.fillStyle = "#d2d7dd";
+            ctx.beginPath();
+            ctx.arc(j.cx + 1, j.cy + 1, PUCK_WIDTH / 2, 0, PI * 2, false);
+            ctx.fill();
+          }
+        }
         break;
 
 
@@ -243,6 +247,9 @@ class TuneLink extends TuneBlock {
 }
 
 
+/**
+ * A link with one socket and two plugs
+ */
 class SplitLink extends TuneLink {
 
   Joint get lplug => joints[2];
@@ -294,7 +301,70 @@ class SplitLink extends TuneLink {
     }
     ctx.restore();
   }
-
 }
+
+
+/**
+ * A link with two sockets and one plug
+ */
+class JoinLink extends TuneLink {
+
+  Joint get lsocket => joints[0];
+  Joint get rsocket => joints[3];
+  num get rotation => plug.angle(center);
+
+
+  JoinLink(num cx, num cy) : super(cx, cy) {
+    num l = _width * 1.5;
+    num h = l * tan(PI / 6);
+
+    joints.clear();
+
+    // left socket
+    joints.add(new Socket(this, cx, cy, _width * -0.75, -h));
+
+    // center drag handle
+    joints.add(new Joint(this, cx, cy, 0, 0));
+
+    // plug
+    joints.add(new Plug(this, cx, cy, _width * 0.75, 0));
+
+    // right socket
+    joints.add(new Socket(this, cx, cy, _width * -0.75, h));
+  }
+
+
+  TuneBlock clone(num cx, num cy) {
+    return new JoinLink(cx, cy);
+  }
+
+  void _outlineBlock(CanvasRenderingContext2D ctx) {
+    ctx.save();
+    {
+      ctx.translate(centerX, centerY);
+      ctx.rotate(-rotation);
+      ctx.beginPath();
+      ctx.arc(lsocket.offX, lsocket.offY, lsocket.radius, PI * 0.66, PI * 0, false);
+      ctx.quadraticCurveTo(
+        -15, 0, 
+        plug.offX + plug.radius * cos(PI * 1.33),
+        plug.offY + plug.radius * sin(PI * 1.33));
+      ctx.arc(plug.offX, plug.offY, plug.radius, PI * 1.33, PI * 0.66, false);
+      ctx.quadraticCurveTo(
+        -15, 0, 
+        rsocket.offX + rsocket.radius * cos(PI * 0),
+        rsocket.offY + rsocket.radius * sin(PI * 0));
+      ctx.arc(rsocket.offX, rsocket.offY, rsocket.radius, PI * 0, PI * 1.33, false);
+      ctx.quadraticCurveTo(
+        0, 0, 
+        lsocket.offX + lsocket.radius * cos(PI * 0.66), 
+        lsocket.offY + lsocket.radius * sin(PI * 0.66));
+      ctx.closePath();
+      ctx.arc(plug.offX, plug.offY, plug.radius * 0.5, 0, PI * 2, true);
+    }
+    ctx.restore();
+  }
+}
+
 
 
