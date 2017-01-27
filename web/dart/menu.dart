@@ -36,8 +36,22 @@ class BlockMenu extends Touchable {
     workspace.addTouchable(this);
   }
 
+  num colToX(num col) {
+    switch(col) {
+      case 0: return width * -0.3;
+      case 1: return 0;
+      case 2: return width * 0.3;
+      default: return 0;
+    }
+  }
 
-  void initBlocks() {
+
+  num rowToY(num row) {
+    return 80 * row;
+  }
+
+
+  void initBlocks(var json) {
     num w = width;
     num cx = 0;
     num cy = 85;
@@ -47,6 +61,7 @@ class BlockMenu extends Touchable {
     cy += 170;
     addBlock(new JoinLink(cx, cy));
     cy += 170;
+    /*
     addBlock(new TunePuck(cx + w * 0.3, cy));
     addBlock(new TunePuck(cx, cy));
     addBlock(new TunePuck(cx - w * 0.3, cy));
@@ -54,6 +69,18 @@ class BlockMenu extends Touchable {
     addBlock(new TunePuck(cx - w * 0.3, cy));
     addBlock(new TunePuck(cx, cy));
     addBlock(new TunePuck(cx + w * 0.3, cy));
+    */
+    for (var b in json) {
+      switch (b['type']) {
+        case 'beat':
+          TunePuck puck = new TunePuck(colToX(b['col']), rowToY(b['row']));
+          puck.color = b['color'];
+          puck.sound = b['sound'];
+          Sounds.loadSound(puck.sound, puck.sound);
+          addBlock(puck);
+          break;
+      }
+    }
   }
 
 
