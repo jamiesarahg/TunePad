@@ -22,6 +22,11 @@ class Sounds {
   }
 
 
+  static bool hasSound(String name) {
+    return (sounds[name] != null);
+  }
+
+
   static void playSound(String name) {
     if (sounds[name] != null && !mute) {
       AudioBufferSourceNode source = audio.createBufferSource();
