@@ -18,11 +18,19 @@ const BLOCK_WIDTH = 75;
 
 abstract class TuneBlock extends Touchable {
 
+  static int BLOCK_ID = 100;
+
   bool inMenu = false;
 
-  TuneBlock();
+  int block_id;
+
+  TuneBlock() { block_id = BLOCK_ID++; }
 
   TuneBlock clone(num cx, num cy);
+
+  num get centerX;
+
+  num get centerY;
 
   void draw(CanvasRenderingContext2D ctx, [layer = 0]);
 
