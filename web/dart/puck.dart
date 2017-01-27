@@ -14,7 +14,40 @@
 part of TunePad;
 
 
-class TunePuck extends TuneBlock {
+class AudioPuck extends TunePuck {
+
+  // sound file for this puck
+  String sound;
+
+  AudioPuck(num cx, num cy, String color, this.sound) : super(cx, cy, color) {
+    if (!Sounds.hasSound(sound)) {
+      Sounds.loadSound(sound, sound);
+    }
+  }
+
+
+  TuneBlock clone(num cx, num cy) {
+    AudioPuck puck = new AudioPuck(cx, cy, color, sound);
+    return puck;
+  }
+
+
+  void _drawIcon(CanvasRenderingContext2D ctx) {
+
+  }
+
+
+  bool touchDown(Contact c) {
+    Sounds.playSound(sound);
+    return super.touchDown(c);
+  }
+}
+
+
+
+
+
+abstract class TunePuck extends TuneBlock {
 
   // size and position of the puck
   num centerX, centerY, radius;
@@ -32,21 +65,13 @@ class TunePuck extends TuneBlock {
   // color of the block
   String color = "rgb(0, 160, 227)";
 
-  // puck sound
-  String sound;
 
-
-  TunePuck(this.centerX, this.centerY) {
+  TunePuck(this.centerX, this.centerY, this.color) {
     this.radius = PUCK_WIDTH / 2;
   }
 
 
-  TuneBlock clone(num cx, num cy) {
-    return new TunePuck(cx, cy) 
-      .. color = color
-      .. sound = sound;
-  }
-
+  TuneBlock clone(num cx, num cy);
 
   bool get isDragging => _dragging;
 
@@ -67,6 +92,9 @@ class TunePuck extends TuneBlock {
   }
 
 
+  void _drawIcon(CanvasRenderingContext2D ctx);
+
+
   void draw(CanvasRenderingContext2D ctx, [layer = 0]) {
     ctx.save();
     {
@@ -74,7 +102,7 @@ class TunePuck extends TuneBlock {
 
         case 2:
   
-          // highlight puck
+          // highlight socket
           if (highlight != null) {
             ctx.fillStyle = "rgba(255, 255, 240, 0.9)";
             ctx.beginPath();
@@ -95,7 +123,9 @@ class TunePuck extends TuneBlock {
           ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
           ctx.fill();
           ctx.stroke();
-        break;
+
+          _drawIcon(ctx);
+          break;
       }
     }
     ctx.restore();
@@ -129,7 +159,6 @@ class TunePuck extends TuneBlock {
 
   bool touchDown(Contact c) {
     _dragging = true;
-    Sounds.playSound(sound);
     disconnect();
     workspace.moveToTop(this);
     _touchX = c.touchX;
