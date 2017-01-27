@@ -73,11 +73,11 @@ class BlockMenu extends Touchable {
     for (var b in json) {
       switch (b['type']) {
         case 'beat':
-          TunePuck puck = new TunePuck(colToX(b['col']), rowToY(b['row']));
-          puck.color = b['color'];
-          puck.sound = b['sound'];
-          Sounds.loadSound(puck.sound, puck.sound);
-          addBlock(puck);
+          addBlock(new AudioPuck(
+            colToX(b['col']), 
+            rowToY(b['row']), 
+            b['color'],
+            b['sound']));
           break;
       }
     }
