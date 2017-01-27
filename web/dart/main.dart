@@ -31,8 +31,6 @@ part "puck.dart";
 //part "sample.dart";
 //part "scanner.dart";
 part "sounds.dart";
-//part "start.dart";
-//part "topcode.dart";
 part "touch.dart";
 
 
@@ -65,7 +63,6 @@ TunePad workspace;
 void main() {
   workspace = new TunePad("video-canvas");
   workspace.loadBlocks("json/blocks.json");
-  Sounds.loadSound("click", "sounds/click.wav");
 }
 
 
@@ -137,13 +134,13 @@ class TunePad extends TouchLayer {
 /** 
  * Match a puck to socket
  */
-  Socket findMatchingSocket(Plug plug) {
+  Socket findMatchingSocket(TunePuck puck) {
     for (TuneLink link in links) {
       for (Joint j in link.joints) {
         if (j is Socket) {
-          num dx = j.cx - plug.centerX;
-          num dy = j.cy - plug.centerY;
-          if (sqrt(dx * dx + dy * dy) <= (j.radius + plug.radius)) {
+          num dx = j.cx - puck.centerX;
+          num dy = j.cy - puck.centerY;
+          if (sqrt(dx * dx + dy * dy) <= (j.radius + puck.radius)) {
             return j;
           }
         }
@@ -310,42 +307,10 @@ class TunePad extends TouchLayer {
  * Load blocks from a JSON definition file
  */
   void loadBlocks(String url) {
-    menu.initBlocks();
-    /*
-    var bx = 40;
-    var by = 40;
     var request = HttpRequest.getString(url).then((responseText) {
       var json = JSON.decode(responseText);
-      int count = 0;
-      for (var b in json) {
-
-        switch (b['type']) {
-          case 'sound':
-            //blocks.add(new SoundBlock(b, this)..cx = bx ..cy = by);
-            if (count > 2) {
-              links.add(new TuneLink(bx, by));
-            } else {
-              links.add(new SplitLink(bx, by));
-            }
-            count++;
-            break;
-
-//          case 'start':
-//            blocks.add(new StartBlock(b, this)..cx = bx * 3 + width * 0.25 ..cy = height - 50);
-//            break;
-
-//          case 'beat':
-//            blocks.add(new BeatBlock(b, this)..cx = 30 ..cy = 100);
-//            break;
-        }
-        bx += 60;
-        by += 20;
-      }
-
-      pucks.add(new TunePuck(100, 100));
-      draw();
-    });  
-    */
+      menu.initBlocks(json);
+    });
   }
 
 }
