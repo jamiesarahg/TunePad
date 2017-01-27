@@ -132,16 +132,19 @@ class TunePad extends TouchLayer {
 
 
 /** 
- * Match a puck to socket
+ * Match a puck to a socket
  */
   Socket findMatchingSocket(TunePuck puck) {
     for (TuneLink link in links) {
       for (Joint j in link.joints) {
         if (j is Socket) {
-          num dx = j.cx - puck.centerX;
-          num dy = j.cy - puck.centerY;
-          if (sqrt(dx * dx + dy * dy) <= (j.radius + puck.radius)) {
-            return j;
+          Socket s = j as Socket;
+          if (s.puck == null) {
+            num dx = j.cx - puck.centerX;
+            num dy = j.cy - puck.centerY;
+            if (sqrt(dx * dx + dy * dy) <= (j.radius + puck.radius)) {
+              return j;
+            }
           }
         }
       }
