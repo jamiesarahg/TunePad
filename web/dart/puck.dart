@@ -32,6 +32,9 @@ class TunePuck extends TuneBlock {
   // color of the block
   String color = "rgb(0, 160, 227)";
 
+  // puck sound
+  String sound;
+
 
   TunePuck(this.centerX, this.centerY) {
     this.radius = PUCK_WIDTH / 2;
@@ -39,7 +42,9 @@ class TunePuck extends TuneBlock {
 
 
   TuneBlock clone(num cx, num cy) {
-    return new TunePuck(cx, cy);
+    return new TunePuck(cx, cy) 
+      .. color = color
+      .. sound = sound;
   }
 
 
@@ -79,7 +84,7 @@ class TunePuck extends TuneBlock {
           break;
 
         case 3: 
-          ctx.fillStyle = "#CD87DE";
+          ctx.fillStyle = color; 
           ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
           ctx.lineWidth = 2;
           ctx.beginPath();
@@ -124,6 +129,7 @@ class TunePuck extends TuneBlock {
 
   bool touchDown(Contact c) {
     _dragging = true;
+    Sounds.playSound(sound);
     disconnect();
     workspace.moveToTop(this);
     _touchX = c.touchX;
