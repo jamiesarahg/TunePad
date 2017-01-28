@@ -234,9 +234,9 @@ function blocklyCreateBlocks() {
                 .setCheck("node");
             this.appendDummyInput()
                 .appendField("is")
-                .appendField(new Blockly.FieldDropdown([["=", "equal"], ["!=", "not_equal"], [">", "greater_than"], [">=", "greater_or_equal"], ["<", "less_than"], ["<+", "less_or_equal"]]), "operator")
+                .appendField(new Blockly.FieldDropdown([ [">", "greater_than"], [">=", "greater_or_equal"], ["<", "less_than"], ["<+", "less_or_equal"], ["=", "equal"], ["!=", "not_equal"]]), "operator")
                 .appendField(new Blockly.FieldNumber(0, 0), "distance")
-                .appendField("pixels from the node hit:");
+                .appendField("pixels from self:");
             this.appendStatementInput("node_if_do")
                 .setCheck(null)
                 .appendField("do:");
