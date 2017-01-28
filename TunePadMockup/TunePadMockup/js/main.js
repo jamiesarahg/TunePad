@@ -17,6 +17,8 @@ var emissions = []; //array of emissions on the canvas (grey dots going between 
 
 var sounds = {};
 
+var mousedown = false;
+
 $(document).ready(function () {
     canvas = new fabric.Canvas('canvas');
 
@@ -43,6 +45,12 @@ $(document).ready(function () {
     //initializs canvas with a black node
     addNode(canvas, 'black');
 
+    canvas.on('mouse:down', function (options) {
+        mousedown = true;
+    });
+    canvas.on('mouse:up', function (options) {
+        mousedown = false;
+    });
 });
 
 window.onload = function () {
@@ -330,33 +338,35 @@ function blocklyCreateBlocks() {
  updates emissions array
 */
 function moveEmissions() {
-    emissions.forEach(function (emission) {
-        var opacity = 1 - (1 / (1000 * emission[4]) * emission[3]);
-        //checks to see if emission reached end
-        if (emission[3] >= 100) {
-            canvas.remove(emission[0]);
-            var index = emissions.indexOf(emission);
-            emissions.splice(index, 1);
-            pingNode(emission[5], opacity);
-            document.getElementById('emissionsCount').innerHTML = 'Number of Emissions: \n' + emissions.length;
-        }
-            //moves remainder of emissions
-        else {
-            emission[3] += emission[4];
-            var newLocation = getLineXYatPercent(emission[1], emission[2], emission[3])
-            emission[0].left = newLocation.x;
-            emission[0].top = newLocation.y;
-            if (opacity < 0) {
+    if (!mousedown) {
+        emissions.forEach(function (emission) {
+            var opacity = 1 - (1 / (1000 * emission[4]) * emission[3]);
+            //checks to see if emission reached end
+            if (emission[3] >= 100) {
                 canvas.remove(emission[0]);
                 var index = emissions.indexOf(emission);
                 emissions.splice(index, 1);
+                pingNode(emission[5], opacity);
+                document.getElementById('emissionsCount').innerHTML = 'Number of Emissions: \n' + emissions.length;
             }
+                //moves remainder of emissions
             else {
-                emission[0].setOpacity(opacity);
+                emission[3] += emission[4];
+                var newLocation = getLineXYatPercent(emission[1], emission[2], emission[3])
+                emission[0].left = newLocation.x;
+                emission[0].top = newLocation.y;
+                if (opacity < 0) {
+                    canvas.remove(emission[0]);
+                    var index = emissions.indexOf(emission);
+                    emissions.splice(index, 1);
+                }
+                else {
+                    emission[0].setOpacity(opacity);
+                }
             }
-        }
-    })
-    canvas.renderAll();
+        })
+        canvas.renderAll();
+    }
 }
 /*
 addNode
