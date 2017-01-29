@@ -59,7 +59,9 @@ class BlockMenu extends Touchable {
     cy += 140;
     addBlock(new SplitLink(cx, cy));
     cy += 170;
-    addBlock(new JoinLink(cx, cy));
+//    addBlock(new JoinLink(cx, cy));
+//    cy += 170;
+    addBlock(new PlayLink(cx, cy));
     cy += 170;
     /*
     addBlock(new TunePuck(cx + w * 0.3, cy));
