@@ -224,7 +224,7 @@ class Socket extends Joint {
 
   Socket(TuneLink parent, num cx, num cy, num offX, num offY) : 
     super(parent, cx, cy, offX, offY) {
-    maxConnections = 1;
+    maxConnections = 2;
     cw = SOCKET_WIDTH;
   }
 
