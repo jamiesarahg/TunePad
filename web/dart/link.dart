@@ -62,7 +62,6 @@ class TuneLink extends TuneBlock {
 
     ctx.save();
     {
-
       switch (layer) {
       case 0:
 
@@ -71,12 +70,15 @@ class TuneLink extends TuneBlock {
         //----------------------------------------------
         _outlineBlock(ctx);
         ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
-        ctx.shadowOffsetX = 2;
-        ctx.shadowOffsetY = 2;
-        ctx.shadowBlur = 5;
+        ctx.shadowOffsetX = 2 * workspace.zoom;
+        ctx.shadowOffsetY = 2 * workspace.zoom;
+        ctx.shadowBlur = 5 * workspace.zoom;
         ctx.fillStyle = "#e2e7ed";
         ctx.fill();
 
+        //----------------------------------------------
+        // slightly darker shadow on joints
+        //----------------------------------------------
         ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
         for (Joint j in joints) {
           if (j is Plug) {
@@ -85,6 +87,8 @@ class TuneLink extends TuneBlock {
             ctx.fill();
           }
         }
+
+        _drawIcon(ctx);
 
         break;
 
@@ -133,6 +137,22 @@ class TuneLink extends TuneBlock {
         }
         break;
       }
+    }
+    ctx.restore();
+  }
+
+
+  void _drawIcon(CanvasRenderingContext2D ctx) {
+    ctx.save();
+    {
+      ctx.translate(centerX, centerY);
+      ctx.rotate(-rotation);
+      ctx.shadowColor = "transparent";
+      ctx.font = "32px FontAwesome";
+      ctx.fillStyle = "white";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText("\uf178", 4, 0);
     }
     ctx.restore();
   }
