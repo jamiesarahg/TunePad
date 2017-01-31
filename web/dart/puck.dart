@@ -14,6 +14,10 @@
 part of TunePad;
 
 
+
+/**
+ * Puck that represents an audio sample
+ */
 class AudioPuck extends TunePuck {
 
   // sound file for this puck
@@ -27,13 +31,30 @@ class AudioPuck extends TunePuck {
 
 
   TuneBlock clone(num cx, num cy) {
-    AudioPuck puck = new AudioPuck(cx, cy, color, sound);
-    return puck;
+    return new AudioPuck(cx, cy, color, sound);
   }
 
 
-  void _drawIcon(CanvasRenderingContext2D ctx) {
+  void _drawIcon(CanvasRenderingContext2D ctx) { 
+    ctx.save();
+    {
+      ctx.translate(centerX, centerY);
+      if (socket != null) {
+        ctx.rotate(socket.parent.rotation * -1);
+      }
+      ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+      ctx.font = "30px FontAwesome";
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
+    //ctx.fillText("\uf001", centerX, centerY); // music
+      ctx.fillText("\uf0e7", 0, 0); // lightning
 
+    //ctx.fillText("\uf04b \uf04e \uf04c \uf0e7 \uf074 \uf00d", centerX, centerY);
+    //ctx.fillText("\uf026 \uf027 \uf028 \uf0e7 \uf074 \uf00d", centerX, centerY + 100);
+    //ctx.font = "30px sans-serif";
+    //ctx.fillText("\u221e", centerX + 30, centerY + 30);
+    }
+    ctx.restore();
   }
 
 
@@ -75,6 +96,7 @@ abstract class TunePuck extends TuneBlock {
 
   bool get isDragging => _dragging;
 
+  bool get isConnected => socket != null;
 
   void connect(Socket s) {
     socket = s;
@@ -112,18 +134,21 @@ abstract class TunePuck extends TuneBlock {
           break;
 
         case 3: 
-          ctx.fillStyle = color; 
-          ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
-          ctx.lineWidth = 2;
-          ctx.beginPath();
-          ctx.arc(centerX, centerY, radius, 0, PI * 2, true);
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
-          ctx.shadowBlur = 3;
-          ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
-          ctx.fill();
-          ctx.stroke();
-
+          ctx.save();
+          {
+            ctx.fillStyle = color; 
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, PI * 2, true);
+            ctx.stroke();
+            ctx.shadowOffsetX = 2; // * workspace.zoom;
+            ctx.shadowOffsetY = 2; // * workspace.zoom;
+            ctx.shadowBlur = 4; // * workspace.zoom;
+            ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+            ctx.fill();
+          }
+          ctx.restore();
           _drawIcon(ctx);
           break;
       }
@@ -149,11 +174,15 @@ abstract class TunePuck extends TuneBlock {
   }
 
 
+  num distance(num tx, num ty) {
+    num a2 = (tx - centerX) * (tx - centerX);
+    num b2 = (ty - centerY) * (ty - centerY);
+    return sqrt(a2 + b2);
+  }
+
+
   bool containsTouch(Contact c) {
-    num a2 = (c.touchX - centerX) * (c.touchX - centerX);
-    num b2 = (c.touchY - centerY) * (c.touchY - centerY);
-    num c2 = radius * radius;
-    return a2 + b2 <= c2;
+    return distance(c.touchX, c.touchY) <= radius;
   }
 
 
@@ -174,6 +203,7 @@ abstract class TunePuck extends TuneBlock {
     if (highlight != null) {
       connect(highlight);
     }
+    highlight = null;
     workspace.draw();
   }
 
