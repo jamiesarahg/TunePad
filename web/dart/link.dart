@@ -56,6 +56,19 @@ class TuneLink extends TuneBlock {
   bool get isDragging => _target != null;
 
 
+
+  Socket advance(PlayHead player) {
+    for (Joint j in joints) {
+      if (j is Plug && j.isConnected) {
+        if (j.connections[0] is Socket) {
+          return j.connections[0];
+        }
+      }
+    }
+    return null;
+  }
+
+
   void draw(CanvasRenderingContext2D ctx, [layer = 0]) {
     num theta = rotation;
     num cx = centerX;
@@ -372,13 +385,22 @@ class PlayLink extends TuneLink {
     joints.clear();
 
     // play button
-    joints.add(new ButtonJoint(this, cx, cy, _width * -0.75, 0));
+    joints.add(
+      new ButtonJoint(this, cx, cy, _width * -0.75, 0)
+      .. action = onClick);
 
     // center drag handle
     joints.add(new Joint(this, cx, cy, 0, 0));
 
     // plug
     joints.add(new Plug(this, cx, cy, _width * 0.75, 0));
+  }
+
+
+  void onClick(ButtonJoint button) {
+    if (button.playing) {
+      workspace.players.add(new PlayHead(button));
+    }
   }
 
 
