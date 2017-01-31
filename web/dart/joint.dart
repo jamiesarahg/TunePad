@@ -80,6 +80,9 @@ class Joint extends Touchable {
   }
 
 
+  void drawCap(CanvasRenderingContext2D ctx) { }
+
+
   void disconnect() {
     for (Joint c in connections) {
       c.connections.remove(this);
@@ -234,6 +237,30 @@ class Socket extends Joint {
   }
 
 
+  void drawCap(CanvasRenderingContext2D ctx) {
+    ctx.save();
+    {
+      ctx.fillStyle = "white";
+      ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+      ctx.shadowOffsetX = 2 * workspace.zoom;
+      ctx.shadowOffsetY = 2 * workspace.zoom;
+      ctx.shadowBlur = 5 * workspace.zoom;
+      ctx.beginPath();
+      ctx.arc(cx, cy, radius, 0, PI * 2, false);
+      ctx.fill();
+
+      ctx.shadowOffsetX = -1 * workspace.zoom;
+      ctx.shadowOffsetY = -1 * workspace.zoom;
+      ctx.shadowBlur = 2 * workspace.zoom;
+      ctx.fillStyle = "#e2e7ed";//"#d2d7dd";
+      ctx.beginPath();
+      ctx.arc(cx + 1, cy + 1, PUCK_WIDTH / 2, 0, PI * 2, false);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+
   void flash(CanvasRenderingContext2D ctx) {
     ctx.save();
     {
@@ -262,6 +289,81 @@ class Plug extends Joint {
   }
 
   bool isConnection(Joint o) => (o is Socket && isOpen && o.isOpen && isNear(o));
+}
+
+
+class ButtonJoint extends Joint {
+
+  bool _down = false;
+
+  bool playing = false;
+
+  num _startX, _startY;
+
+  ButtonJoint(TuneLink parent, num cx, num cy, num offX, num offY) : 
+    super(parent, cx, cy, offX, offY) {
+    maxConnections = 0;
+    cw = SOCKET_WIDTH;
+  }
+
+
+  void drawCap(CanvasRenderingContext2D ctx) {
+    ctx.save();
+    {
+      ctx.translate(cx, cy);
+      ctx.rotate(-parent.rotation);
+      ctx.fillStyle = _down ? "#aaeeff" : "white";
+      ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+      ctx.shadowOffsetX = 2 * workspace.zoom;
+      ctx.shadowOffsetY = 2 * workspace.zoom;
+      ctx.shadowBlur = 5 * workspace.zoom;
+      ctx.beginPath();
+      ctx.arc(0, 0, radius, 0, PI * 2, false);
+      ctx.fill();
+
+      ctx.font = "64px FontAwesome";
+      ctx.fillStyle = "#5f6972";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+      ctx.shadowOffsetX = 2 * workspace.zoom;
+      ctx.shadowOffsetY = 2 * workspace.zoom;
+      ctx.shadowBlur = 3 * workspace.zoom;
+      // pause \uf04c
+      // stop \uf04d
+      // fforward \uf04e
+      // play \uf04b
+      num delta = _down ? 2 * workspace.zoom : 0;
+      ctx.fillText(playing ? "\uf28b" : "\uf144", delta, delta); // f28b pause-circle
+    }
+    ctx.restore();
+  }
+
+
+  bool isConnection(Joint o) => false;
+
+
+  bool touchDown(Contact c) {
+    _down = !parent.inMenu;
+    return super.touchDown(c);
+  }
+
+
+  void touchUp(Contact c) { 
+    if (_down) {
+      playing = !playing;
+    }
+    _down = false;
+    super.touchUp(c);
+  }
+ 
+
+  void touchDrag(Contact c) {
+    if (!_down || !containsTouch(c)) {
+      _down = false;
+      super.touchDrag(c);
+    }
+  }
 }
 
 
