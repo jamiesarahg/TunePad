@@ -420,12 +420,27 @@ adds a node to the canvas at (100,100) of input color
 appends to nodeTups array
 */
 function addNode(canvas, color) {
-    var circle = new fabric.Circle({ radius: 10, fill: color, top: 100, left: 100 })
+    canvasArea = document.getElementById('canvas');
+    var left = getRandomInt(canvasArea.style.left.substring(0, canvasArea.style.left.length - 2) + 20, canvasArea.style.left.substring(0, canvasArea.style.left.length - 2) + canvasArea.style.width.substring(0, canvasArea.style.width.length - 2) - 20);
+    var top = getRandomInt(canvasArea.style.top.substring(0, canvasArea.style.top.length - 2) + 20, canvasArea.style.top.substring(0, canvasArea.style.top.length - 2) + canvasArea.style.height.substring(0, canvasArea.style.height.length - 2) - 50);
+
+    console.log(Math.floor(canvasArea.style.left.substring(0, canvasArea.style.left.length - 2)));
+    var circle = new fabric.Circle({ radius: 10, fill: color, top: top, left: left });
     circle.hasControls = false;
     circle.lockScalingX = true;
     circle.lockScalingY = true;
     nodeTups.push([circle, color]);
     canvas.add(circle);
+}
+/*
+getRandomInt
+inputs: two integers, one the minimum and one the maximum
+output: random integer between the minimum and maximum.
+*/
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
 }
 
 /*
