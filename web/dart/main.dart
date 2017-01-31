@@ -27,6 +27,7 @@ part "link.dart";
 part "menu.dart";
 //part "button.dart";
 part "matrix.dart";
+part "playhead.dart";
 part "puck.dart";
 //part "sample.dart";
 //part "scanner.dart";
@@ -48,8 +49,8 @@ const PUCK_WIDTH = 60;
 
 // 1000 ms == quarter note
 // 500 ms == 8th note
-const millisPerBeat = 250;      // 250 ms == 16th note
-const beatsPerMeasure = 16;     // 16th notes as our smallest division (4 / 4 time)
+const millisPerBeat = 125;      // 250 ms == 32nd note
+const beatsPerMeasure = 32;     // 32nd notes as our smallest division (4 / 4 time)
 const millisPerMeasure = 4000;  // measures are 4,000 ms long
 
 Stopwatch clock = new Stopwatch(); // used to synchronize animation and vocalization timing
@@ -84,6 +85,9 @@ class TunePad extends TouchLayer {
   List<TuneLink> links = new List<TuneLink>();
   List<TunePuck> pucks = new List<TunePuck>();
 
+  // Current play heads
+  List<PlayHead> players = new List<PlayHead>();
+
 
   // block menu
   BlockMenu menu;
@@ -107,28 +111,22 @@ class TunePad extends TouchLayer {
 
     zoomIn(0.5);
     // start audio timer
-    //new Timer.periodic(const Duration(milliseconds : millisPerBeat), (timer) => vocalize());
+    new Timer.periodic(const Duration(milliseconds : millisPerBeat), (timer) => vocalize());
     new Timer(const Duration(milliseconds : 100), () => draw());
   }
 
 
 /**
- * Main audio loop. Set on a periodic timer at 250ms (16th note metronome)
+ * Main audio loop. Set on a periodic timer at 125ms (32nd note metronome)
  */
-  int _millis = 0; 
-/*  
   void vocalize() {
     int millis = clock.elapsedMilliseconds;
-    for (TuneBlock block in blocks) {
-      if (block is StartBlock) {
-        block.stepProgram(millis);
-      }
-      else if (block is BeatBlock) {
-        block.eval(millis);
-      }
+    int beat = (millis / millisPerBeat).round();
+
+    for (PlayHead ph in players) {
+      ph.stepProgram(beat * millisPerBeat);
     }
   }
-*/
 
 
 /** 
