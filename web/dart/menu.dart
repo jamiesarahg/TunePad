@@ -81,6 +81,12 @@ class BlockMenu extends Touchable {
             b['color'],
             b['sound']));
           break;
+        case 'tempo-up':
+          addBlock(new TempoPuck(colToX(b['col']), rowToY(b['row']), true));
+          break;
+        case 'tempo-down':
+          addBlock(new TempoPuck(colToX(b['col']), rowToY(b['row']), false));
+          break;
       }
     }
   }
