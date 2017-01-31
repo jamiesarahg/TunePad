@@ -74,13 +74,14 @@ class TuneLink extends TuneBlock {
         ctx.shadowOffsetX = 2 * workspace.zoom;
         ctx.shadowOffsetY = 2 * workspace.zoom;
         ctx.shadowBlur = 5 * workspace.zoom;
-        ctx.fillStyle = "#e2e7ed";
+        ctx.fillStyle = "#d2d7dd"; //"#e2e7ed";
         ctx.fill();
 
         //----------------------------------------------
         // slightly darker shadow on joints
         //----------------------------------------------
-        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        /*
+        ctx.fillStyle = "rgba(255, 255, 255, 0.15)"; //rgba(0, 0, 0, 0.05)";
         for (Joint j in joints) {
           if (j is Plug) {
             ctx.beginPath();
@@ -88,6 +89,7 @@ class TuneLink extends TuneBlock {
             ctx.fill();
           }
         }
+        */
 
         _drawIcon(ctx);
 
@@ -95,9 +97,9 @@ class TuneLink extends TuneBlock {
 
       case 1:
         //----------------------------------------------
-        // socket caps
+        // joint caps
         //----------------------------------------------
-        _drawSocketCaps(ctx);
+        for (Joint j in joints) j.drawCap(ctx);
         break;
 
 
@@ -130,38 +132,11 @@ class TuneLink extends TuneBlock {
       ctx.translate(centerX, centerY);
       ctx.rotate(-rotation);
       ctx.shadowColor = "transparent";
-      ctx.font = "32px FontAwesome";
+      ctx.font = "28px FontAwesome";
       ctx.fillStyle = "white";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText("\uf178", 2, 0);
-    }
-    ctx.restore();
-  }
-
-
-  void _drawSocketCaps(CanvasRenderingContext2D ctx) {
-    ctx.save();
-    {
-      for (Joint j in joints) {
-        if (j is Socket) {
-          ctx.fillStyle = "white";
-          ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
-          ctx.shadowOffsetX = 2;
-          ctx.shadowOffsetY = 2;
-          ctx.shadowBlur = 5;
-          ctx.beginPath();
-          ctx.arc(j.cx, j.cy, j.radius, 0, PI * 2, false);
-          ctx.fill();
-          ctx.shadowOffsetX = -1;
-          ctx.shadowOffsetY = -1;
-          ctx.shadowBlur = 2;
-          ctx.fillStyle = "#d2d7dd";
-          ctx.beginPath();
-          ctx.arc(j.cx + 1, j.cy + 1, PUCK_WIDTH / 2, 0, PI * 2, false);
-          ctx.fill();
-        }
-      }
     }
     ctx.restore();
   }
@@ -317,16 +292,6 @@ class SplitLink extends TuneLink {
                            socket.offY + socket.radius * sin(PI * 0.33));
       ctx.closePath();
       ctx.arc(lplug.offX, lplug.offY, lplug.radius * 0.5, 0, PI * 2, true);
-
-      /*      
-      for (Joint j in joints) {
-        if (j != center) {
-          ctx.beginPath();
-          ctx.arc(j.offX, j.offY, j.radius, 0, PI * 2, false);
-          ctx.fill();
-        }
-      }
-      */
     }
     ctx.restore();
   }
@@ -406,8 +371,8 @@ class PlayLink extends TuneLink {
   PlayLink(num cx, num cy) : super(cx, cy) {
     joints.clear();
 
-    // no socket on the back
-    joints.add(new Joint(this, cx, cy, _width * -0.75, 0) .. cw = SOCKET_WIDTH);
+    // play button
+    joints.add(new ButtonJoint(this, cx, cy, _width * -0.75, 0));
 
     // center drag handle
     joints.add(new Joint(this, cx, cy, 0, 0));
@@ -419,55 +384,5 @@ class PlayLink extends TuneLink {
 
   TuneBlock clone(num cx, num cy) {
     return new PlayLink(cx, cy);
-  }
-
-
-  void _drawIcon(CanvasRenderingContext2D ctx) {
-    ctx.save();
-    {
-      ctx.translate(centerX, centerY);
-      ctx.rotate(-rotation);
-      ctx.shadowColor = "transparent";
-      ctx.font = "32px FontAwesome";
-      ctx.fillStyle = "white";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText("\uf04b", 2, 0);
-    }
-    ctx.restore();
-  }
-
-
-  void _outlineBlock(CanvasRenderingContext2D ctx) {
-    ctx.save();
-    {
-      ctx.translate(centerX, centerY);
-      ctx.rotate(-rotation);
-      ctx.beginPath();
-      num r = 20;
-      num sx = socket.offX - socket.radius;
-      num sy = socket.offY - socket.radius;
-      num sh = socket.radius * 2;
-      ctx.moveTo(sx, sy + r);
-      ctx.quadraticCurveTo(sx, sy, sx + r, sy);
-      ctx.lineTo(center.offX - r, sy);
-      ctx.bezierCurveTo(
-        center.offX, sy,
-        0, 0, 
-        plug.offX + plug.radius * cos(PI * 1.33), 
-        plug.offY + plug.radius * sin(PI * 1.33));
-
-      ctx.arc(plug.offX, plug.offY, plug.radius, PI * 1.33, PI * 0.66, false);
-
-      ctx.bezierCurveTo(
-        0, 0,
-        center.offX, sy + sh,
-        center.offX - r, sy + sh);
-      ctx.lineTo(sx + r, sy + sh);
-      ctx.quadraticCurveTo(sx, sy + sh, sx, sy + sh - r);
-      ctx.closePath();
-      ctx.arc(plug.offX, plug.offY, plug.radius * 0.5, 0, PI * 2, true);
-    }
-    ctx.restore();
   }
 }
