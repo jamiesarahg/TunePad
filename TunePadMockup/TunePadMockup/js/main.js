@@ -280,7 +280,7 @@ function blocklyCreateBlocks() {
     Blockly.JavaScript['emitblock'] = function (block) {
         var value_emit_from = Blockly.JavaScript.valueToCode(block, 'emit_from', Blockly.JavaScript.ORDER_ATOMIC);
         var value_emit_to = Blockly.JavaScript.valueToCode(block, 'emit_to', Blockly.JavaScript.ORDER_ATOMIC);
-        var code = 'emit('+value_emit_from+','+value_emit_to + ')';
+        var code = 'emit('+value_emit_from+','+value_emit_to + ');';
         return code;
     };
     Blockly.JavaScript['node_variable'] = function (block) {
@@ -296,7 +296,7 @@ function blocklyCreateBlocks() {
     Blockly.JavaScript['for_each_block'] = function (block) {
         var value_foreach_variable = Blockly.JavaScript.valueToCode(block, 'foreach_variable', Blockly.JavaScript.ORDER_ATOMIC);
         var statements_foreach_statements = Blockly.JavaScript.statementToCode(block, 'foreach_statements');
-        var code = 'nodeTups.forEach(function ' + value_foreach_variable + ' {' + statements_foreach_statements + '})';
+        var code = 'nodeTups.forEach(function ' + value_foreach_variable + ' {' + statements_foreach_statements + '});';
         return code;
     };
 
@@ -393,7 +393,7 @@ function tenSeconds() {
         if (nodeTup[1] == 'black') {
             nodeTups.forEach(function (endNodeTup) {
                 if (endNodeTup[1] != 'black') {
-                    emit(nodeTup[0], endNodeTup);
+                    emit(nodeTup, endNodeTup);
                 }
             })
         }
@@ -418,11 +418,11 @@ outputs: none
 starts an emission from node to node of endNodeTup
 updates emissions array
 */
-function emit(node, endNodeTup) {
-    if (node !== endNodeTup[0]) {
-        var start = { x: parseFloat(node.left) + parseFloat(node.radius), y: parseFloat(node.top) + parseFloat(node.radius) };
+function emit(nodeTup, endNodeTup) {
+    if (nodeTup[0] !== endNodeTup[0]) {
+        var start = { x: parseFloat(nodeTup[0].left) + parseFloat(nodeTup[0].radius), y: parseFloat(nodeTup[0].top) + parseFloat(nodeTup[0].radius) };
         var end = { x: parseFloat(endNodeTup[0].left) + parseFloat(endNodeTup[0].radius), y: parseFloat(endNodeTup[0].top) + parseFloat(endNodeTup[0].radius) };
-        var d = distance(node, endNodeTup[0]);
+        var d = distance(nodeTup[0], endNodeTup[0]);
         var perc = 100.0 / d; //looks at distance from start to end position and decides what percentage of the distance the emission should move every 10ms
         var emission = new fabric.Circle({ radius: 3, fill: 'black', top: start.y, left: start.x });
         canvas.add(emission);
@@ -453,16 +453,16 @@ Calls reaction function for given node
 function pingNode(nodeTup, distance){
     var color = nodeTup[1];
     if (color == 'black') {
-        black(nodeTup[0], distance);
+        black(nodeTup, distance);
     }
     if (color == 'red') {
-        red(nodeTup[0], distance);
+        red(nodeTup, distance);
     }
     if (color == 'green') {
-        green(nodeTup[0], distance)
+        green(nodeTup, distance)
     }
     if (color == 'purple') {
-        purple(nodeTup[0], distance)
+        purple(nodeTup, distance)
     }
 }
 /*
