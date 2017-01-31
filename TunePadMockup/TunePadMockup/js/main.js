@@ -54,6 +54,17 @@ $(document).ready(function () {
             onChange(options);
         }
     });
+    canvas.on('object:modified', function (options) {
+        console.log('mod')
+        emissions.forEach(function (emission) {
+            console.log(options.target)
+            console.log(emission[5])
+            if (options.target == emission[5][0]) {
+                emission[5] = 'fade';
+                console.log('here')
+            }
+        })
+    })
 
     var trashCan = new Image();
     trashCan.src = 'images/trash.png';
@@ -71,7 +82,6 @@ $(document).ready(function () {
 
 window.onload = function () {
     setUpBlockly();
-    //document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + 0;
     setUpSound();
 
 }
@@ -374,9 +384,9 @@ function blocklyCreateBlocks() {
 function moveEmissions() {
     if (!mousedown) {
         emissions.forEach(function (emission) {
-            var opacity = 1 - (1 / (1000 * emission[4]) * emission[3]);
+            var opacity = 1 - (1 / (500 * emission[4]) * emission[3]);
             //checks to see if emission reached end
-            if (emission[3] >= 100) {
+            if (emission[3] >= 100 & emission[5] != 'fade') {
                 canvas.remove(emission[0]);
                 var index = emissions.indexOf(emission);
                 emissions.splice(index, 1);
@@ -425,15 +435,18 @@ outputs: none
 If black nodes are on the board, emit and emission for every other node
 */
 function tenSeconds() {
-    nodeTups.forEach(function (nodeTup) {
-        if (nodeTup[1] == 'black') {
-            nodeTups.forEach(function (endNodeTup) {
-                if (endNodeTup[1] != 'black') {
-                    emit(nodeTup[0], endNodeTup);
-                }
-            })
-        }
-    })
+    if (!mousedown) {
+        nodeTups.forEach(function (nodeTup) {
+            if (nodeTup[1] == 'black') {
+                nodeTups.forEach(function (endNodeTup) {
+                    if (endNodeTup[1] != 'black') {
+                        emit(nodeTup[0], endNodeTup);
+                    }
+                })
+            }
+        })
+    }
+    
 }
 
 /*
