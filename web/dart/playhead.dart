@@ -17,15 +17,29 @@ part of TunePad;
 
 class PlayHead {
   
-  TuneBlock block;
+  Socket current = null;
+
+  // 1, 2, 4, 8, 16, or 32 (higher means faster)
+  // pause time == millisPerMeasure / temp;
+  int tempo = 8; // millisPerMeasure  // millisPerBeat
 
 
-  PlayHead() {
+  PlayHead(this.current);
+
+  void stepProgram(int millis) {
+    if (current != null) {
+      if (millis % (millisPerMeasure ~/ tempo) == 0) {
+        current = current.parent.advance(this);
+        if (current != null) {
+          current.eval(this);
+        }
+      }
+    }
   }
 
 
-  bool animate() {
-    
+  bool animate(int millis) {
+
   }
 
 }
