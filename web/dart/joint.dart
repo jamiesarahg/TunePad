@@ -231,9 +231,17 @@ class Socket extends Joint {
     cw = SOCKET_WIDTH;
   }
 
+
   bool animate() {
     _flasher += 5;
     return super.animate();
+  }
+
+
+  void eval(PlayHead player) {
+    if (puck != null) {
+      puck.eval(player);
+    }
   }
 
 
@@ -292,13 +300,15 @@ class Plug extends Joint {
 }
 
 
-class ButtonJoint extends Joint {
+class ButtonJoint extends Socket {
 
   bool _down = false;
 
   bool playing = false;
 
   num _startX, _startY;
+
+  Function action = null;
 
   ButtonJoint(TuneLink parent, num cx, num cy, num offX, num offY) : 
     super(parent, cx, cy, offX, offY) {
@@ -339,6 +349,7 @@ class ButtonJoint extends Joint {
     ctx.restore();
   }
 
+  void flash(CanvasRenderingContext2D ctx) { }
 
   bool isConnection(Joint o) => false;
 
@@ -352,6 +363,9 @@ class ButtonJoint extends Joint {
   void touchUp(Contact c) { 
     if (_down) {
       playing = !playing;
+      if (action != null) {
+        Function.apply(action, [ this ]);
+      }
     }
     _down = false;
     super.touchUp(c);
