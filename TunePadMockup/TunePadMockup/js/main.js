@@ -19,9 +19,9 @@ var sounds = {};
 
 var mousedown = false;
 
+
 $(document).ready(function () {
     canvas = new fabric.Canvas('canvas');
-
     setInterval(tenSeconds, 10000); // emits a emission from black node every second
     setInterval(moveEmissions, 10); // moves all emissions every 10ms
 
@@ -50,14 +50,47 @@ $(document).ready(function () {
     });
     canvas.on('mouse:up', function (options) {
         mousedown = false;
+        if (options.target) {
+            onChange(options);
+        }
     });
+
+    var trashCan = new Image();
+    trashCan.src = 'images/trash.png';
+    trashCan.onload = function () {
+        var image = new fabric.Image(trashCan);
+        image.left = 10;
+        image.top = 430;
+        image.hasControls = false;
+        image.lockMovementX = true;
+        image.lockMovementY = true;
+        image.selectable = false;
+        canvas.add(image);
+    }
 });
 
 window.onload = function () {
     setUpBlockly();
-    document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + 0;
+    //document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + 0;
     setUpSound();
 
+}
+
+function onChange(options) {
+    options.target.setCoords();
+    //TODO
+    //must find better way to identify trashcan
+    trashCan = canvas.getObjects()[1];
+    var intersects = options.target.intersectsWithObject(trashCan);
+    if (intersects) {
+        options.target.remove();
+        nodeTups.forEach(function (nodeTup) {
+            if (nodeTup[0] == options.target) {
+                var index = nodeTups.indexOf(nodeTup);
+                nodeTups.splice(index, 1);
+            }
+        });
+    }
 }
 
 /*
@@ -347,7 +380,7 @@ function moveEmissions() {
                 var index = emissions.indexOf(emission);
                 emissions.splice(index, 1);
                 pingNode(emission[5], opacity);
-                document.getElementById('emissionsCount').innerHTML = 'Number of Emissions: \n' + emissions.length;
+                //document.getElementById('emissionsCount').innerHTML = 'Number of Emissions: \n' + emissions.length;
             }
                 //moves remainder of emissions
             else {
@@ -378,6 +411,8 @@ appends to nodeTups array
 function addNode(canvas, color) {
     var circle = new fabric.Circle({ radius: 10, fill: color, top: 100, left: 100 })
     circle.hasControls = false;
+    circle.lockScalingX = true;
+    circle.lockScalingY = true;
     nodeTups.push([circle, color]);
     canvas.add(circle);
 }
@@ -427,7 +462,7 @@ function emit(node, endNodeTup) {
         var emission = new fabric.Circle({ radius: 3, fill: 'black', top: start.y, left: start.x });
         canvas.add(emission);
         emissions.push([emission, start, end, 0, perc, endNodeTup]);
-        document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + emissions.length;
+        //document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + emissions.length;
     }  
 }
 /*

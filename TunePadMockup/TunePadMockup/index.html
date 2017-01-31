@@ -22,43 +22,24 @@
     <script src="blockly/javascript_compressed.js"></script>
     <script src="blockly/msg/js/en.js"></script>
     <script src="js/tunepad_blocks.js"></script>
-    <!-- <script src="js/code.js"></script> -->
 
 </head>
 <body style="height:100%;">
     <table style="height:100%; width:100%;">
         <tbody>
-            <tr>
-                <td><canvas id="canvas" height="450" width="1000"> </canvas></td>
-                <td>
-                    <table>
-                        <tbody>
-                            <tr>
-                                <td><button id="green">Green</button></td>
-                            </tr>
-                            <tr>
-                                <td><button id="red">Red</button></td>
-                            </tr>
-                            <tr>
-                                <td><button id="purple">Purple</button></td>
-                            </tr>     
-                            <tr>
-                                <td><button id="updateCode">Update Code</button></td>
-                            </tr>       
-                            <tr>
-                                <td><p style="font-size:16px; word-wrap: break-word;" id="emissionsCount"></p></td>
-                            </tr>           
-                        </tbody>
-                    </table>
-                    
-                </td>
+            <tr style="height:auto">
+                <td><div id="canvasDiv"></div></td>
             </tr>
             <tr>
                 <td id="blocklyArea" style="height:99%"></td>
             </tr>
         </tbody>
     </table>
-    
+    <img src="images/blackPlus.jpg" style="position:absolute; TOP:10px; LEFT:10px;" id="green" />
+    <img src="images/blackPlus.jpg" style="position:absolute; TOP:10px; LEFT:110px;" id="red" />
+    <img src="images/blackPlus.jpg" style="position:absolute; TOP:10px; LEFT:210px;" id="purple" />
+
+    <canvas id="canvas" style="position: absolute"> </canvas>
     <div id="blocklyDiv" style="position: absolute"></div>
     <xml id="toolbox" style="display: none">
         <block type="define_green"></block>
@@ -73,5 +54,6 @@
         <block type="self_node"></block>
         
     </xml>
+    <img src="images/updateButton.png" style="position:absolute; TOP:520px; LEFT:1020px;" id="updateCode" />
 </body>
 </html>
