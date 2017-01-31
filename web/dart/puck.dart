@@ -16,6 +16,53 @@ part of TunePad;
 
 
 /**
+ * Increases the tempo of a play head
+ */
+class TempoPuck extends TunePuck {
+
+  bool up = true;
+
+  TempoPuck(num cx, num cy, this.up) : super(cx, cy, "#e2e7ed");
+
+
+  TuneBlock clone(num cx, num cy) {
+    return new TempoPuck(cx, cy, up);
+  }
+
+
+  void eval(PlayHead player) {
+    if (up) {
+      player.tempo = min(32, player.tempo * 2);
+    } else {
+      player.tempo = max(1, player.tempo ~/ 2);
+    }
+  }
+
+
+  void _drawIcon(CanvasRenderingContext2D ctx) { 
+    ctx.save();
+    {
+      ctx.translate(centerX, centerY);
+      if (socket != null) {
+        ctx.rotate(socket.parent.rotation * -1);
+      }
+      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+      ctx.font = "40px FontAwesome";
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
+    //ctx.fillText("\uf001", centerX, centerY); // music
+      ctx.fillText(up ? "\uf04e" : "\uf04a", 0, 0); // lightning
+
+    //ctx.fillText("\uf04b \uf04e \uf04c \uf0e7 \uf074 \uf00d", centerX, centerY);
+    //ctx.fillText("\uf026 \uf027 \uf028 \uf0e7 \uf074 \uf00d", centerX, centerY + 100);
+    //ctx.font = "30px sans-serif";
+    //ctx.fillText("\u221e", centerX + 30, centerY + 30);
+    }
+    ctx.restore();
+  }
+}
+
+/**
  * Puck that represents an audio sample
  */
 class AudioPuck extends TunePuck {
@@ -32,6 +79,11 @@ class AudioPuck extends TunePuck {
 
   TuneBlock clone(num cx, num cy) {
     return new AudioPuck(cx, cy, color, sound);
+  }
+
+
+  void eval(PlayHead player) {
+    Sounds.playSound(sound);
   }
 
 
@@ -97,6 +149,10 @@ abstract class TunePuck extends TuneBlock {
   bool get isDragging => _dragging;
 
   bool get isConnected => socket != null;
+
+
+  void eval(PlayHead) { }
+
 
   void connect(Socket s) {
     socket = s;
