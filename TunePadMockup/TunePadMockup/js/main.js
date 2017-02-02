@@ -91,17 +91,19 @@ function onChange(options) {
     //TODO
     //must find better way to identify trashcan
     trashCan = canvas.getObjects()[1];
-    var intersects = options.target.intersectsWithObject(trashCan);
-    if (intersects) {
-        options.target.remove();
-        nodeTups.forEach(function (nodeTup) {
-            if (nodeTup[0] == options.target) {
-                var index = nodeTups.indexOf(nodeTup);
-                nodeTups.splice(index, 1);
-            }
-        });
+    if (options.target != trashCan) {
+        var intersects = options.target.intersectsWithObject(trashCan);
+        if (intersects) {
+            options.target.remove();
+            nodeTups.forEach(function (nodeTup) {
+                if (nodeTup[0] == options.target) {
+                    var index = nodeTups.indexOf(nodeTup);
+                    nodeTups.splice(index, 1);
+                }
+            });
+        }
     }
-}
+ }
 
 /*
 setUpBlockly
