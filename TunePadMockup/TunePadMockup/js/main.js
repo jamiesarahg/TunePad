@@ -19,9 +19,9 @@ var sounds = {};
 
 var mousedown = false;
 
+
 $(document).ready(function () {
     canvas = new fabric.Canvas('canvas');
-
     setInterval(tenSeconds, 10000); // emits a emission from black node every second
     setInterval(moveEmissions, 10); // moves all emissions every 10ms
 
@@ -50,14 +50,57 @@ $(document).ready(function () {
     });
     canvas.on('mouse:up', function (options) {
         mousedown = false;
+        if (options.target) {
+            onChange(options);
+        }
     });
+    canvas.on('object:modified', function (options) {
+        console.log('mod')
+        emissions.forEach(function (emission) {
+            console.log(options.target)
+            console.log(emission[5])
+            if (options.target == emission[5][0]) {
+                emission[5] = 'fade';
+                console.log('here')
+            }
+        })
+    })
+
+    var trashCan = new Image();
+    trashCan.src = 'images/trash.png';
+    trashCan.onload = function () {
+        var image = new fabric.Image(trashCan);
+        image.left = 10;
+        image.top = 430;
+        image.hasControls = false;
+        image.lockMovementX = true;
+        image.lockMovementY = true;
+        image.selectable = false;
+        canvas.add(image);
+    }
 });
 
 window.onload = function () {
     setUpBlockly();
-    document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + 0;
     setUpSound();
 
+}
+
+function onChange(options) {
+    options.target.setCoords();
+    //TODO
+    //must find better way to identify trashcan
+    trashCan = canvas.getObjects()[1];
+    var intersects = options.target.intersectsWithObject(trashCan);
+    if (intersects) {
+        options.target.remove();
+        nodeTups.forEach(function (nodeTup) {
+            if (nodeTup[0] == options.target) {
+                var index = nodeTups.indexOf(nodeTup);
+                nodeTups.splice(index, 1);
+            }
+        });
+    }
 }
 
 /*
@@ -68,6 +111,7 @@ Puts blockly div in the blockly area defined in HTML
 function setUpBlockly() {
     var blocklyArea = document.getElementById('blocklyArea');
     var blocklyDiv = document.getElementById('blocklyDiv');
+
     blocklyCreateBlocks();
     var workspace = Blockly.inject(blocklyDiv,
         { toolbox: document.getElementById('toolbox') });
@@ -280,7 +324,7 @@ function blocklyCreateBlocks() {
     Blockly.JavaScript['emitblock'] = function (block) {
         var value_emit_from = Blockly.JavaScript.valueToCode(block, 'emit_from', Blockly.JavaScript.ORDER_ATOMIC);
         var value_emit_to = Blockly.JavaScript.valueToCode(block, 'emit_to', Blockly.JavaScript.ORDER_ATOMIC);
-        var code = 'emit('+value_emit_from+','+value_emit_to + ');';
+        var code = 'emit('+value_emit_from+','+value_emit_to + ')';
         return code;
     };
     Blockly.JavaScript['node_variable'] = function (block) {
@@ -296,7 +340,7 @@ function blocklyCreateBlocks() {
     Blockly.JavaScript['for_each_block'] = function (block) {
         var value_foreach_variable = Blockly.JavaScript.valueToCode(block, 'foreach_variable', Blockly.JavaScript.ORDER_ATOMIC);
         var statements_foreach_statements = Blockly.JavaScript.statementToCode(block, 'foreach_statements');
-        var code = 'nodeTups.forEach(function ' + value_foreach_variable + ' {' + statements_foreach_statements + '});';
+        var code = 'nodeTups.forEach(function ' + value_foreach_variable + ' {' + statements_foreach_statements + '})';
         return code;
     };
 
@@ -340,14 +384,14 @@ function blocklyCreateBlocks() {
 function moveEmissions() {
     if (!mousedown) {
         emissions.forEach(function (emission) {
-            var opacity = 1 - (1 / (1000 * emission[4]) * emission[3]);
+            var opacity = 1 - (1 / (500 * emission[4]) * emission[3]);
             //checks to see if emission reached end
-            if (emission[3] >= 100) {
+            if (emission[3] >= 100 & emission[5] != 'fade') {
                 canvas.remove(emission[0]);
                 var index = emissions.indexOf(emission);
                 emissions.splice(index, 1);
                 pingNode(emission[5], opacity);
-                document.getElementById('emissionsCount').innerHTML = 'Number of Emissions: \n' + emissions.length;
+                //document.getElementById('emissionsCount').innerHTML = 'Number of Emissions: \n' + emissions.length;
             }
                 //moves remainder of emissions
             else {
@@ -376,10 +420,27 @@ adds a node to the canvas at (100,100) of input color
 appends to nodeTups array
 */
 function addNode(canvas, color) {
-    var circle = new fabric.Circle({ radius: 10, fill: color, top: 100, left: 100 })
+    canvasArea = document.getElementById('canvas');
+    var left = getRandomInt(canvasArea.style.left.substring(0, canvasArea.style.left.length - 2) + 20, canvasArea.style.left.substring(0, canvasArea.style.left.length - 2) + canvasArea.style.width.substring(0, canvasArea.style.width.length - 2) - 20);
+    var top = getRandomInt(canvasArea.style.top.substring(0, canvasArea.style.top.length - 2) + 20, canvasArea.style.top.substring(0, canvasArea.style.top.length - 2) + canvasArea.style.height.substring(0, canvasArea.style.height.length - 2) - 50);
+
+    console.log(Math.floor(canvasArea.style.left.substring(0, canvasArea.style.left.length - 2)));
+    var circle = new fabric.Circle({ radius: 10, fill: color, top: top, left: left });
     circle.hasControls = false;
+    circle.lockScalingX = true;
+    circle.lockScalingY = true;
     nodeTups.push([circle, color]);
     canvas.add(circle);
+}
+/*
+getRandomInt
+inputs: two integers, one the minimum and one the maximum
+output: random integer between the minimum and maximum.
+*/
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
 }
 
 /*
@@ -389,15 +450,18 @@ outputs: none
 If black nodes are on the board, emit and emission for every other node
 */
 function tenSeconds() {
-    nodeTups.forEach(function (nodeTup) {
-        if (nodeTup[1] == 'black') {
-            nodeTups.forEach(function (endNodeTup) {
-                if (endNodeTup[1] != 'black') {
-                    emit(nodeTup, endNodeTup);
-                }
-            })
-        }
-    })
+    if (!mousedown) {
+        nodeTups.forEach(function (nodeTup) {
+            if (nodeTup[1] == 'black') {
+                nodeTups.forEach(function (endNodeTup) {
+                    if (endNodeTup[1] != 'black') {
+                        emit(nodeTup[0], endNodeTup);
+                    }
+                })
+            }
+        })
+    }
+    
 }
 
 /*
@@ -418,16 +482,16 @@ outputs: none
 starts an emission from node to node of endNodeTup
 updates emissions array
 */
-function emit(nodeTup, endNodeTup) {
-    if (nodeTup[0] !== endNodeTup[0]) {
-        var start = { x: parseFloat(nodeTup[0].left) + parseFloat(nodeTup[0].radius), y: parseFloat(nodeTup[0].top) + parseFloat(nodeTup[0].radius) };
+function emit(node, endNodeTup) {
+    if (node !== endNodeTup[0]) {
+        var start = { x: parseFloat(node.left) + parseFloat(node.radius), y: parseFloat(node.top) + parseFloat(node.radius) };
         var end = { x: parseFloat(endNodeTup[0].left) + parseFloat(endNodeTup[0].radius), y: parseFloat(endNodeTup[0].top) + parseFloat(endNodeTup[0].radius) };
-        var d = distance(nodeTup[0], endNodeTup[0]);
+        var d = distance(node, endNodeTup[0]);
         var perc = 100.0 / d; //looks at distance from start to end position and decides what percentage of the distance the emission should move every 10ms
         var emission = new fabric.Circle({ radius: 3, fill: 'black', top: start.y, left: start.x });
         canvas.add(emission);
         emissions.push([emission, start, end, 0, perc, endNodeTup]);
-        document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + emissions.length;
+        //document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + emissions.length;
     }  
 }
 /*
@@ -453,16 +517,16 @@ Calls reaction function for given node
 function pingNode(nodeTup, distance){
     var color = nodeTup[1];
     if (color == 'black') {
-        black(nodeTup, distance);
+        black(nodeTup[0], distance);
     }
     if (color == 'red') {
-        red(nodeTup, distance);
+        red(nodeTup[0], distance);
     }
     if (color == 'green') {
-        green(nodeTup, distance)
+        green(nodeTup[0], distance)
     }
     if (color == 'purple') {
-        purple(nodeTup, distance)
+        purple(nodeTup[0], distance)
     }
 }
 /*
