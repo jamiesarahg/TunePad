@@ -249,7 +249,7 @@ function blocklyCreateBlocks() {
             this.appendValueInput("foreach_variable")
                 .setCheck("node");
             this.appendDummyInput()
-                .appendField("of all nodes:");
+                .appendField("on the board");
             this.appendStatementInput("foreach_statements")
                 .setCheck(null)
                 .appendField("do:");
