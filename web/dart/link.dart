@@ -4,7 +4,7 @@
  * Michael S. Horn
  * Northwestern University
  * michael-horn@northwestern.edu
- * Copyright 2016, Michael S. Horn
+ * Copyright 2017, Michael S. Horn
  *
  * This project was funded by the National Science Foundation (grant DRL-1612619).
  * Any opinions, findings and conclusions or recommendations expressed in this
@@ -182,8 +182,14 @@ class TuneLink extends TuneBlock {
       if (j.animate()) refresh = true;
       if (j._dragging) j.dragChain();
     }
-
     return refresh;
+  }
+
+
+  void relax() {
+    for (Joint j in joints) {
+      j.relax();
+    }
   }
 
 
