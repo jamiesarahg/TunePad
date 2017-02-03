@@ -80,6 +80,25 @@ class Joint extends Touchable {
   }
 
 
+  void flash(CanvasRenderingContext2D ctx) {
+    if (parent.inMenu) return;
+    int flasher = clock.elapsedMilliseconds ~/ 3;
+    ctx.save();
+    {
+      num alpha = sin(PI * flasher / 180) * 0.5 + 0.5;
+      ctx.fillStyle = "rgba(255, 255, 240, $alpha)";
+      ctx.beginPath();
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.shadowBlur = 20 * workspace.zoom;
+      ctx.shadowColor = "rgba(255, 255, 240, $alpha)";
+      ctx.arc(cx, cy, radius * 0.65, 0, PI * 2, true);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+
   void drawCap(CanvasRenderingContext2D ctx) { }
 
 
@@ -219,8 +238,6 @@ class Joint extends Touchable {
 
 class Socket extends Joint {
 
-  int _flasher = 0;
-
   TunePuck puck = null;
 
   Socket(TuneLink parent, num cx, num cy, num offX, num offY) : 
@@ -231,12 +248,11 @@ class Socket extends Joint {
 
 
   bool canAcceptPuck(TunePuck p) {
-    return puck != null;
+    return puck == null;
   }
 
 
   bool animate() {
-    _flasher += 5;
     return super.animate();
   }
 
@@ -271,22 +287,6 @@ class Socket extends Joint {
     ctx.restore();
   }
 
-
-  void flash(CanvasRenderingContext2D ctx) {
-    ctx.save();
-    {
-      num alpha = sin(PI * _flasher / 180) * 0.5 + 0.5;
-      ctx.fillStyle = "rgba(255, 255, 240, $alpha)";
-      ctx.beginPath();
-      ctx.shadowOffsetX = 0;
-      ctx.shadowOffsetY = 0;
-      ctx.shadowBlur = 20;
-      ctx.shadowColor = "rgba(255, 255, 240, $alpha)";
-      ctx.arc(cx, cy, PUCK_WIDTH / 2 - 10, 0, PI * 2, true);
-      ctx.fill();
-    }
-    ctx.restore();
-  }
 
   bool isConnection(Joint o) => (o is Plug && isOpen && o.isOpen && isNear(o));
 }

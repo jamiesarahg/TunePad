@@ -93,6 +93,13 @@ class TunePad extends TouchLayer {
   BlockMenu menu;
 
 
+  bool _puckdrag = false;
+  bool _sockdrag = false;
+  bool _plugdrag = false;
+
+
+
+
   TunePad(String canvasId) {
     CanvasElement canvas = querySelector("#$canvasId");
     ctx = canvas.getContext('2d');
@@ -160,17 +167,21 @@ class TunePad extends TouchLayer {
     bool refresh = false;
 
     // animate and then relax to relieve spring forces
+    _sockdrag = false;
+    _plugdrag = false;
     for (TuneLink link in links) {
       if (link.animate(millis)) refresh = true;
+      if (link.isSocketDragging) _sockdrag = true;
+      if (link.isPlugDragging) _plugdrag = true;
     }
     for (TuneLink link in links) {
       link.relax();
     }
-    if (_pdragging) refresh = true;
-    _pdragging = false;
+    if (_puckdrag) refresh = true;
+    _puckdrag = false;
     for (TunePuck puck in pucks) {
       if (puck.animate(millis)) refresh = true;
-      if (puck.isDragging) _pdragging = true;
+      if (puck.isDragging) _puckdrag = true;
     }
     if (menu.animate(millis)) refresh = true;
     if (refresh) draw();
@@ -259,8 +270,9 @@ class TunePad extends TouchLayer {
 /**
  * This flag is used by sockets to do flash highlighting
  */
-  bool get isPuckDragging => _pdragging;
-  bool _pdragging = false;
+  bool get isPuckDragging => _puckdrag;
+  bool get isSocketDragging => _sockdrag;
+  bool get isPlugDragging => _plugdrag;
 
 
 /** 

@@ -54,6 +54,8 @@ class TuneLink extends TuneBlock {
   Joint get center => joints[1];
   Joint get plug => joints[2];
   bool get isDragging => _target != null;
+  bool get isSocketDragging => _target is Socket;
+  bool get isPlugDragging => _target is Plug;
 
 
 
@@ -129,7 +131,7 @@ class TuneLink extends TuneBlock {
             ctx.fill();
           }
           if (j is Socket && workspace.isPuckDragging) {
-            (j as Socket).flash(ctx);
+            j.flash(ctx);
           }
         }
         break;
