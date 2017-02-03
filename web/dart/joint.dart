@@ -157,32 +157,30 @@ class Joint extends Touchable {
       highlight = parent.findOpenConnector(this);
       return true;
     } 
-
-    else if (!parent.isDragging && isConnected) {
+    else if (parent.isDragging) {
+      highlight = parent.findOpenConnector(this);
+      return true;
+    }
+    else {
       forceX = 0;
       forceY = 0;
       for (Joint c in connections) {
         forceX += (c.cx - cx);
         forceY += (c.cy - cy);
       }
-
-      // TODO -- make this a two step process to compute all forces before moving
-
-      if (forceX.abs() > 0.1 || forceY.abs() > 0.1) {
-        cx += forceX * 0.3;
-        cy += forceY * 0.3;
-        dragChain();
-        forceX = 0;
-        forceY = 0;
-        return true;
-      }
+      return (forceX.abs() > 0.1 || forceY.abs() > 0.1);
     }
+  }
 
-    else if (parent.isDragging) {
-      highlight = parent.findOpenConnector(this);
-      return true;
+
+  void relax() {
+    if (forceX.abs() > 0.1 || forceY.abs() > 0.1) {
+      cx += forceX * 0.3;
+      cy += forceY * 0.3;
+      dragChain();
     }
-    return false;
+    forceX = 0;
+    forceY = 0;
   }
 
 
