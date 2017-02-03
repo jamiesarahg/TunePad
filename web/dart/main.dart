@@ -158,8 +158,13 @@ class TunePad extends TouchLayer {
   void animate(num t) {
     int millis = clock.elapsedMilliseconds;
     bool refresh = false;
+
+    // animate and then relax to relieve spring forces
     for (TuneLink link in links) {
       if (link.animate(millis)) refresh = true;
+    }
+    for (TuneLink link in links) {
+      link.relax();
     }
     if (_pdragging) refresh = true;
     _pdragging = false;
