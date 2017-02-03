@@ -230,6 +230,11 @@ class Socket extends Joint {
   }
 
 
+  bool canAcceptPuck(TunePuck p) {
+    return puck != null;
+  }
+
+
   bool animate() {
     _flasher += 5;
     return super.animate();
@@ -312,6 +317,11 @@ class ButtonJoint extends Socket {
     super(parent, cx, cy, offX, offY) {
     maxConnections = 0;
     cw = SOCKET_WIDTH;
+  }
+
+
+  bool canAcceptPuck(TunePuck p) {
+    return false;
   }
 
 

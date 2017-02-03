@@ -137,7 +137,7 @@ class TunePad extends TouchLayer {
       for (Joint j in link.joints) {
         if (j is Socket) {
           Socket s = j as Socket;
-          if (s.puck == null) {
+          if (s.puck == null && s.canAcceptPuck(puck)) {
             num dx = j.cx - puck.centerX;
             num dy = j.cy - puck.centerY;
             if (sqrt(dx * dx + dy * dy) <= (j.radius + puck.radius)) {
