@@ -41,6 +41,9 @@ class Joint extends Touchable {
   // simulates magnetic force connections
   num forceX = 0, forceY = 0;
 
+  // invisible joints just act as non-touchable counterweights
+  bool invisible = false;
+
   // used for touch interaction
   bool _dragging = false;
   num _lastX, _lastY;
@@ -110,6 +113,14 @@ class Joint extends Touchable {
   }
 
 
+  void translateBlock(num dx, num dy) {
+    for (Joint j in parent.joints) {
+      j.cx += dx;
+      j.cy += dy;
+    }
+  }
+
+
   void dragChain() {
     _dragCenter();
     _dragLink();
@@ -118,7 +129,7 @@ class Joint extends Touchable {
 
   void _dragCenter() {
     // drag opposite joint    
-    Joint c = _getOppositeJoint(); //parent.center;
+    Joint c = parent.getOppositeJoint(this); //parent.center;
     num dist = distance(c) - separation(c);
     num theta = angle(c);
     c.cx += dist * cos(theta);
@@ -149,28 +160,16 @@ class Joint extends Touchable {
   }
 
 
-  Joint _getOppositeJoint() {
-    if (parent.joints.length > 3) {
-      return parent.center;
-    }
-    else if (this is Plug) {
-      return parent.socket;
-    }
-    else if (this is Socket) {
-      return parent.plug;
-    }
-    else {
-      return parent.center;
-    }
-  }
-
-
   bool animate() {
     highlight = null;
 
     if (_dragging) {
-      cx += (_touchX - _lastX);
-      cy += (_touchY - _lastY);
+      //if (this == parent.center) {
+      //  translateBlock(_touchX - _lastX, _touchY - _lastY);
+      //} else {
+        cx += (_touchX - _lastX);
+        cy += (_touchY - _lastY);
+      //}
       _lastX = _touchX;
       _lastY = _touchY;
       highlight = parent.findOpenConnector(this);
@@ -204,6 +203,7 @@ class Joint extends Touchable {
 
 
   bool containsTouch(Contact c) {
+    if (invisible) return false;
     num a2 = (c.touchX - cx) * (c.touchX - cx);
     num b2 = (c.touchY - cy) * (c.touchY - cy);
     num c2 = radius * radius;

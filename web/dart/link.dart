@@ -79,6 +79,19 @@ class TuneLink extends TuneBlock {
   }
 
 
+  Joint getOppositeJoint(Joint j) {
+    if (j is Plug) {
+      return socket;
+    }
+    else if (j is Socket) {
+      return plug;
+    }
+    else {
+      return center;
+    }
+  }
+
+
   void draw(CanvasRenderingContext2D ctx, [layer = 0]) {
     num theta = rotation;
     num cx = centerX;
@@ -287,6 +300,7 @@ class SplitLink extends TuneLink {
 
   Joint get lplug => joints[2];
   Joint get rplug => joints[3];
+  Joint get anchor => joints[4];
 
 
   SplitLink(num cx, num cy) : super(cx, cy) {
@@ -295,6 +309,7 @@ class SplitLink extends TuneLink {
     num h = l * tan(PI / 6);
     joints.add(new Plug(this, cx, cy, _width * 0.75, -h));
     joints.add(new Plug(this, cx, cy, _width * 0.75, h));
+    joints.add(new Joint(this, cx, cy, _width, 0) .. invisible = true);
   }
 
 
@@ -316,6 +331,19 @@ class SplitLink extends TuneLink {
     }
     else {
       return lplug.isConnected ? lplug.connections[0] : null;
+    }
+  }
+
+
+  Joint getOppositeJoint(Joint j) {
+    if (j is Plug) {
+      return socket;
+    }
+    else if (j is Socket) {
+      return anchor;
+    }
+    else {
+      return center;
     }
   }
 
