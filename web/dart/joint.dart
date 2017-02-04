@@ -134,10 +134,10 @@ class Joint extends Touchable {
     num theta = angle(c);
     c.cx += dist * cos(theta);
     c.cy -= dist * sin(theta);
-    num alpha = atan2(offY - c.offY, c.offX - offX);
     theta = c.angle(this);
 
     // move center point to the correct location
+    num alpha = atan2(offY, -offX);
     c = parent.center;
     dist = separation(c);
     c.cx = cx + dist * cos(theta);

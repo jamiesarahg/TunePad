@@ -337,7 +337,7 @@ class SplitLink extends TuneLink {
 
   Joint getOppositeJoint(Joint j) {
     if (j is Plug) {
-      return socket;
+      return center;
     }
     else if (j is Socket) {
       return anchor;
