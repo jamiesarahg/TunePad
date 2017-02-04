@@ -57,10 +57,12 @@ class TuneLink extends TuneBlock {
   bool get isSocketDragging => _target is Socket;
   bool get isPlugDragging => _target is Plug;
 
+
   bool get isConnected {
     for (Joint j in joints) if (j.isConnected) return true;
     return false;
   }
+
 
   bool get isOverMenu {
     for (Joint j in joints) if (workspace.isOverMenu(j.cx, j.cy)) return true;
