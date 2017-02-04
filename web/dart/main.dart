@@ -85,9 +85,6 @@ class TunePad extends TouchLayer {
   List<TuneLink> links = new List<TuneLink>();
   List<TunePuck> pucks = new List<TunePuck>();
 
-  // Current play heads
-  List<PlayHead> players = new List<PlayHead>();
-
 
   // block menu
   BlockMenu menu;
@@ -133,13 +130,10 @@ class TunePad extends TouchLayer {
     if (millis >= _lastbeat + millisPerBeat) {
       _lastbeat = (millis ~/ millisPerBeat) * millisPerBeat;
 
-      // clean out dead heads
-      for (int i=players.length-1; i>=0; i--) {
-        if (players[i].isDead) players.removeAt(i);
-      }
-
-      for (PlayHead ph in players) {
-        ph.stepProgram(_lastbeat);
+      for (TuneLink link in links) {
+        if (link is PlayLink) {
+          (link as PlayLink).stepProgram(_lastbeat);
+        }
       }
     }
   }

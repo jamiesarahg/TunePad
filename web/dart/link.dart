@@ -388,6 +388,10 @@ class JoinLink extends TuneLink {
  */
 class PlayLink extends TuneLink {
 
+  PlayHead player = null;
+
+  ButtonJoint get button => joints[0];
+
 
   PlayLink(num cx, num cy) : super(cx, cy) {
     joints.clear();
@@ -402,12 +406,27 @@ class PlayLink extends TuneLink {
 
     // plug
     joints.add(new Plug(this, cx, cy, _width * 0.75, 0));
+
+    player = new PlayHead(joints[0]);
+  }
+
+
+  void stepProgram(int millis) {
+    player.stepProgram(millis);
+    if (player.isDone) {
+      button.playing = false;
+      player.restart();
+      player.pause();
+      workspace.draw();
+    }
   }
 
 
   void onClick(ButtonJoint button) {
     if (button.playing) {
-      workspace.players.add(new PlayHead(button));
+      player.resume();
+    } else {
+      player.pause();
     }
   }
 
