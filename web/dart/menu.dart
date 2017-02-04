@@ -37,10 +37,12 @@ class BlockMenu extends Touchable {
   }
 
   num colToX(num col) {
+    num startX = width * -0.5;
     switch(col) {
-      case 0: return width * -0.3;
-      case 1: return 0;
-      case 2: return width * 0.3;
+      case 0: return startX + width * 0.17;
+      case 1: return startX + width * 0.39;
+      case 2: return startX + width * 0.61;
+      case 3: return startX + width * 0.83;
       default: return 0;
     }
   }
@@ -123,6 +125,19 @@ class BlockMenu extends Touchable {
         _target.draw(ctx, i);
       }
     }
+    ctx.save();
+    {
+      ctx.fillStyle = workspace.highlightTrash ? "white" : "rgba(255, 255, 255, 0.5)";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.font = "120px FontAwesome";
+      ctx.shadowOffsetX = 5 * workspace.zoom;
+      ctx.shadowOffsetY = 5 * workspace.zoom;
+      ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      ctx.shadowBlur = 5 * workspace.zoom;
+      ctx.fillText("\uf1f8", menuX + width * 0.5, menuY + menuH - 100);
+    }
+    ctx.restore();
   }
 
 
