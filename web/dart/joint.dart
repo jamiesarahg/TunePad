@@ -260,7 +260,12 @@ class Socket extends Joint {
   void eval(PlayHead player) {
     if (puck != null) {
       puck.eval(player);
-    }
+    } 
+  }
+
+
+  bool skipAhead(PlayHead player) {
+    return (puck != null && puck.skipAhead(player));
   }
 
 
