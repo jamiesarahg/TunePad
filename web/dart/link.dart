@@ -59,13 +59,21 @@ class TuneLink extends TuneBlock {
 
 
 
+/**
+ * When the playhead arrives at a new socket, it starts by calling 
+ * eval to do things like make sounds or add effects. Mostly this 
+ * gets handled by the socket and the puck, but for things like 
+ * split links, some logic needs to happen here.
+ */
+  void eval(PlayHead player) { }
+
+
+/**
+ * Advance the playhead to the next link in the chain.
+ */
   Socket advance(PlayHead player) {
-    for (Joint j in joints) {
-      if (j is Plug && j.isConnected) {
-        if (j.connections[0] is Socket) {
-          return j.connections[0];
-        }
-      }
+    if (plug.isConnected) {
+      return plug.connections[0];
     }
     return null;
   }
@@ -294,6 +302,24 @@ class SplitLink extends TuneLink {
     return new SplitLink(cx, cy);
   }
 
+
+  void eval(PlayHead player) { 
+    _clone = player.parent.split(player);
+  }
+  PlayHead _clone = null;
+
+
+  Socket advance(PlayHead player) {
+    if (player == _clone) {
+      _clone = null;
+      return rplug.isConnected ? rplug.connections[0] : null;
+    }
+    else {
+      return lplug.isConnected ? lplug.connections[0] : null;
+    }
+  }
+
+
   void _outlineBlock(CanvasRenderingContext2D ctx) {
     ctx.save();
     {
@@ -388,7 +414,7 @@ class JoinLink extends TuneLink {
  */
 class PlayLink extends TuneLink {
 
-  PlayHead player = null;
+  List<PlayHead> players = new List<PlayHead>();
 
   ButtonJoint get button => joints[0];
 
@@ -407,26 +433,58 @@ class PlayLink extends TuneLink {
     // plug
     joints.add(new Plug(this, cx, cy, _width * 0.75, 0));
 
-    player = new PlayHead(joints[0]);
   }
 
 
   void stepProgram(int millis) {
-    player.stepProgram(millis);
+    bool running = false;
+    for (int i=players.length - 1; i >= 0; i--) {
+      players[i].stepProgram(millis);
+      if (players[i].isDone) {
+        players.removeAt(i);
+      } else {
+        running = true;
+      }
+    }
+
+    if (!running && button.playing) {
+      button.playing = false;
+      workspace.draw();
+    }
+/*
     if (player.isDone) {
       button.playing = false;
       player.restart();
       player.pause();
       workspace.draw();
     }
+*/
+  }
+
+
+  void resume() {
+    if (players.isEmpty) players.add(new PlayHead(button, this));
+    for (PlayHead player in players) player.resume();
+  }
+
+
+  void pause() {
+    for (PlayHead player in players) player.pause();
+  }
+
+
+  PlayHead split(PlayHead player) {
+    PlayHead clone = new PlayHead.copy(player);
+    players.add(clone);
+    return clone;
   }
 
 
   void onClick(ButtonJoint button) {
     if (button.playing) {
-      player.resume();
+      resume();
     } else {
-      player.pause();
+      pause();
     }
   }
 
