@@ -92,6 +92,7 @@ class TunePad extends TouchLayer {
   // block menu
   BlockMenu menu;
 
+  int _lastbeat = 0;
 
   bool _puckdrag = false;
   bool _sockdrag = false;
@@ -118,7 +119,7 @@ class TunePad extends TouchLayer {
 
     zoomIn(0.5);
     // start audio timer
-    new Timer.periodic(const Duration(milliseconds : millisPerBeat), (timer) => vocalize());
+    new Timer.periodic(const Duration(milliseconds : 25), (timer) => vocalize());
     new Timer(const Duration(milliseconds : 100), () => draw());
   }
 
@@ -128,10 +129,18 @@ class TunePad extends TouchLayer {
  */
   void vocalize() {
     int millis = clock.elapsedMilliseconds;
-    int beat = (millis / millisPerBeat).round();
 
-    for (PlayHead ph in players) {
-      ph.stepProgram(beat * millisPerBeat);
+    if (millis >= _lastbeat + millisPerBeat) {
+      _lastbeat = (millis ~/ millisPerBeat) * millisPerBeat;
+
+      // clean out dead heads
+      for (int i=players.length-1; i>=0; i--) {
+        if (players[i].isDead) players.removeAt(i);
+      }
+
+      for (PlayHead ph in players) {
+        ph.stepProgram(_lastbeat);
+      }
     }
   }
 
