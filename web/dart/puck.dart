@@ -39,6 +39,11 @@ class TempoPuck extends TunePuck {
   }
 
 
+  bool skipAhead(PlayHead player) {
+    return true;
+  }
+
+
   void _drawIcon(CanvasRenderingContext2D ctx) { 
     ctx.save();
     {
@@ -70,6 +75,10 @@ class AudioPuck extends TunePuck {
   // sound file for this puck
   String sound;
 
+  // animates sounds playing
+  num _pop = 0.0;
+
+
   AudioPuck(num cx, num cy, String color, this.sound) : super(cx, cy, color) {
     if (!Sounds.hasSound(sound)) {
       Sounds.loadSound(sound, sound);
@@ -81,9 +90,21 @@ class AudioPuck extends TunePuck {
     return new AudioPuck(cx, cy, color, sound);
   }
 
+  bool animate(int millis) { 
+    bool refresh = super.animate(millis);
+    if (_pop > 0.05) {
+      _pop *= 0.9;
+      refresh = true;
+    } else {
+      _pop = 0.0;
+    }
+    return refresh;
+  }
+
 
   void eval(PlayHead player) {
     Sounds.playSound(sound);
+    _pop = 1.0;
   }
 
 
@@ -95,7 +116,9 @@ class AudioPuck extends TunePuck {
         ctx.rotate(socket.parent.rotation * -1);
       }
       ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
-      ctx.font = "30px FontAwesome";
+      int size = 30 + (_pop * 60).toInt();
+      if (_pop > 0) ctx.rotate(0.2);
+      ctx.font = "${size}px FontAwesome";
       ctx.textBaseline = "middle";
       ctx.textAlign = "center";
     //ctx.fillText("\uf001", centerX, centerY); // music
@@ -153,6 +176,10 @@ abstract class TunePuck extends TuneBlock {
 
   void eval(PlayHead) { }
 
+  bool skipAhead(PlayHead player) {
+    return false;
+  }
+
 
   void connect(Socket s) {
     socket = s;
@@ -182,7 +209,7 @@ abstract class TunePuck extends TuneBlock {
   
           // highlight socket
           if (highlight != null) {
-            ctx.fillStyle = "rgba(255, 255, 240, 0.9)";
+            ctx.fillStyle = "#aaeeff";
             ctx.beginPath();
             ctx.arc(highlight.cx, highlight.cy, highlight.radius, 0, PI * 2, false);
             ctx.fill();
