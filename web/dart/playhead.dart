@@ -73,7 +73,8 @@ class PlayHead {
       Socket source = null;
       while (current != null && current != source) {
         if (source == null) source = current;
-        current = current.parent.advance(this);
+        current = current.advance(this);
+        if (current == source) print("looped");
         if (current != null) {
           current.eval(this);
           if (!current.skipAhead(this)) break;
