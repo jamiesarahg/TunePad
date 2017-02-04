@@ -118,7 +118,7 @@ class BlockMenu extends Touchable {
     ctx.restore();
     ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
     ctx.fillRect(menuX, menuY, width, menuH);
-    if (_target != null) {
+    if (_target != null && _target.inMenu) {
       for (int i=0; i<4; i++) {
         _target.draw(ctx, i);
       }
@@ -162,8 +162,8 @@ class BlockMenu extends Touchable {
   }
 
   void touchUp(Contact event) { 
-    _target.touchUp(event);
     _target.inMenu = false;
+    _target.touchUp(event);
     _target = null;
   }
    
