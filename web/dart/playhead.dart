@@ -26,9 +26,20 @@ class PlayHead {
 
   bool paused = false;
 
+  PlayLink parent;
 
-  PlayHead(this.start) {
+
+  PlayHead(this.start, this.parent) {
     current = start;
+  }
+
+
+  PlayHead.copy(PlayHead other) {
+    start = other.start;
+    current = other.current;
+    tempo = other.tempo;
+    paused = false;
+    parent = other.parent;
   }
 
 
