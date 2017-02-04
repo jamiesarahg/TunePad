@@ -117,7 +117,6 @@ class AudioPuck extends TunePuck {
       }
       ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
       int size = 30 + (_pop * 60).toInt();
-      if (_pop > 0) ctx.rotate(0.2);
       ctx.font = "${size}px FontAwesome";
       ctx.textBaseline = "middle";
       ctx.textAlign = "center";
@@ -134,7 +133,10 @@ class AudioPuck extends TunePuck {
 
 
   bool touchDown(Contact c) {
-    Sounds.playSound(sound);
+    if (!isConnected) {
+      Sounds.playSound(sound);
+      _pop = 1.0;
+    }
     return super.touchDown(c);
   }
 }
@@ -265,7 +267,11 @@ abstract class TunePuck extends TuneBlock {
 
 
   bool containsTouch(Contact c) {
-    return distance(c.touchX, c.touchY) <= radius;
+    if (isConnected) {
+      return false;
+    } else {
+      return distance(c.touchX, c.touchY) <= radius;
+    }
   }
 
 

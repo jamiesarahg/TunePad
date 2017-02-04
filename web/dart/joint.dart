@@ -292,7 +292,6 @@ class Socket extends Joint {
     ctx.restore();
   }
 
-
   bool isConnection(Joint o) => (o is Plug && isOpen && o.isOpen && isNear(o));
 }
 
@@ -303,6 +302,16 @@ class Plug extends Joint {
     maxConnections = 1;
     cw = PLUG_WIDTH;
   }
+
+
+  bool containsTouch(Contact c) {
+    if (isConnected) {
+      return false;
+    } else {
+      return super.containsTouch(c);
+    }
+  }
+
 
   bool isConnection(Joint o) => (o is Socket && isOpen && o.isOpen && isNear(o));
 }
