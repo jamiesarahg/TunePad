@@ -22,6 +22,8 @@ abstract class TuneBlock extends Touchable {
 
   bool inMenu = false;
 
+  bool trash = false; // used to delete blocks
+
   int block_id;
 
   TuneBlock() { block_id = BLOCK_ID++; }
@@ -35,6 +37,8 @@ abstract class TuneBlock extends Touchable {
   void draw(CanvasRenderingContext2D ctx, [layer = 0]);
 
   bool animate(int millis);
+
+  bool get isOverMenu => workspace.isOverMenu(centerX, centerY);
 
   bool containsTouch(Contact c) { return false; }
 

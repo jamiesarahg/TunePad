@@ -57,6 +57,15 @@ class TuneLink extends TuneBlock {
   bool get isSocketDragging => _target is Socket;
   bool get isPlugDragging => _target is Plug;
 
+  bool get isConnected {
+    for (Joint j in joints) if (j.isConnected) return true;
+    return false;
+  }
+
+  bool get isOverMenu {
+    for (Joint j in joints) if (workspace.isOverMenu(j.cx, j.cy)) return true;
+    return false;
+  }
 
 
 /**
@@ -225,6 +234,7 @@ class TuneLink extends TuneBlock {
         j.cy = j.highlight.cy;
         j.dragChain();
         j.highlight = null;
+        Sounds.playSound("click");
       }
     }
   }
@@ -279,6 +289,7 @@ class TuneLink extends TuneBlock {
       connect();
     }
     _target = null;
+    if (isOverMenu && !isConnected) trash = true;
     workspace.draw();
   }
 
@@ -498,6 +509,7 @@ class PlayLink extends TuneLink {
 
   void pause() {
     for (PlayHead player in players) player.pause();
+    players.clear();
   }
 
 

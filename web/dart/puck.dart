@@ -188,6 +188,7 @@ abstract class TunePuck extends TuneBlock {
     socket.puck = this;
     centerX = socket.cx;
     centerY = socket.cy;
+    Sounds.playSound("click");
   }
 
 
@@ -293,6 +294,9 @@ abstract class TunePuck extends TuneBlock {
       connect(highlight);
     }
     highlight = null;
+    if (isOverMenu) {
+      trash = true;
+    }
     workspace.draw();
   }
 

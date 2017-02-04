@@ -65,6 +65,7 @@ TunePad workspace;
 void main() {
   workspace = new TunePad("video-canvas");
   workspace.loadBlocks("json/blocks.json");
+  Sounds.loadSound("click", "sounds/drumkit/click.wav");
 }
 
 
@@ -140,6 +141,11 @@ class TunePad extends TouchLayer {
   }
 
 
+  bool isOverMenu(num px, num py) {
+    return menu.isOverMenu(px, py);
+  }
+
+
 /** 
  * Match a puck to a socket
  */
@@ -204,6 +210,8 @@ class TunePad extends TouchLayer {
 
 
   void draw() {
+    removeTrash();
+
     ctx.fillStyle = "#abc";
     ctx.fillRect(0, 0, width, height);
     ctx.strokeStyle = "black";
@@ -213,10 +221,11 @@ class TunePad extends TouchLayer {
       //setScale(scale, scale);
       transformContext(ctx);
       //ctx.scale(scale,scale);
+      menu.draw(ctx);
+
       for (int i=0; i<4; i++) {
         drawLayer(i);
       }
-      menu.draw(ctx);
     }
     ctx.restore();
       
@@ -248,6 +257,24 @@ class TunePad extends TouchLayer {
       ctx.restore();
     }
 */    
+  }
+
+
+  void removeTrash() {
+    for (int i=links.length - 1; i >= 0; i--) {
+      TuneLink link = links[i];
+      if (link.trash) {
+        links.removeAt(i);
+        removeTouchable(link);
+      }
+    }
+    for (int i=pucks.length - 1; i >= 0; i--) {
+      TunePuck puck = pucks[i];
+      if (puck.trash) {
+        pucks.removeAt(i);
+        removeTouchable(puck);
+      }
+    }
   }
 
 

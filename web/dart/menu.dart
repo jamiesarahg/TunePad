@@ -126,6 +126,11 @@ class BlockMenu extends Touchable {
   }
 
 
+  bool isOverMenu(num px, num py) {
+    return (px >= menuX);
+  }
+
+
   num get menuX => workspace.worldToObjectX(workspace.width, 0) - width;
   num get menuY => workspace.worldToObjectY(workspace.width, 0);
   num get menuH => workspace.worldToObjectY(workspace.width, workspace.height) - menuY;
