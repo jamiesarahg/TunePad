@@ -94,9 +94,7 @@ class TunePad extends TouchLayer {
   int _lastbeat = 0;
 
   bool _puckdrag = false;
-  bool _sockdrag = false;
-  bool _plugdrag = false;
-
+  bool _highlightTrash = false;
 
 
 
@@ -105,7 +103,7 @@ class TunePad extends TouchLayer {
     ctx = canvas.getContext('2d');
     width = canvas.width;
     height = canvas.height;
-    menu = new BlockMenu(250, this);
+    menu = new BlockMenu(350, this);
 
     // register touch events
     tmanager.registerEvents(canvas);
@@ -116,11 +114,18 @@ class TunePad extends TouchLayer {
     // start animation timer
     window.animationFrame.then(animate);
 
-    zoomIn(0.5);
+    zoomIn(0.75);
     // start audio timer
     new Timer.periodic(const Duration(milliseconds : 25), (timer) => vocalize());
     new Timer(const Duration(milliseconds : 100), () => draw());
   }
+
+
+/**
+ * This flag is used by sockets to do flash highlighting
+ */
+  bool get isPuckDragging => _puckdrag;
+  bool get highlightTrash => _highlightTrash;
 
 
 /**
@@ -176,13 +181,12 @@ class TunePad extends TouchLayer {
     int millis = clock.elapsedMilliseconds;
     bool refresh = false;
 
+    if (_highlightTrash) refresh = true;
+    _highlightTrash = false;
     // animate and then relax to relieve spring forces
-    _sockdrag = false;
-    _plugdrag = false;
     for (TuneLink link in links) {
       if (link.animate(millis)) refresh = true;
-      if (link.isSocketDragging) _sockdrag = true;
-      if (link.isPlugDragging) _plugdrag = true;
+      if (link.isDragging && link.isOverMenu && !link.inMenu) _highlightTrash = true;
     }
     for (TuneLink link in links) {
       link.relax();
@@ -192,6 +196,7 @@ class TunePad extends TouchLayer {
     for (TunePuck puck in pucks) {
       if (puck.animate(millis)) refresh = true;
       if (puck.isDragging) _puckdrag = true;
+      if (puck.isDragging && puck.isOverMenu && !puck.inMenu) _highlightTrash = true;
     }
     if (menu.animate(millis)) refresh = true;
     if (refresh) draw();
@@ -296,14 +301,6 @@ class TunePad extends TouchLayer {
       pucks.add(block);
     }
   }
-
-
-/**
- * This flag is used by sockets to do flash highlighting
- */
-  bool get isPuckDragging => _puckdrag;
-  bool get isSocketDragging => _sockdrag;
-  bool get isPlugDragging => _plugdrag;
 
 
 /** 
