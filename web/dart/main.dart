@@ -31,6 +31,7 @@ part "playhead.dart";
 part "puck.dart";
 //part "sample.dart";
 //part "scanner.dart";
+part "socket.dart";
 part "sounds.dart";
 part "touch.dart";
 
