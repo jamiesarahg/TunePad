@@ -23,23 +23,41 @@ class PlayHead {
   // pause time == millisPerMeasure / temp;
   int tempo = 8; // millisPerMeasure  // millisPerBeat
 
+  bool _dead = false;
+
 
   PlayHead(this.current);
 
+
+  bool get isDead => _dead;
+
+
+  void die() {
+    _dead = true;
+  }
+
   void stepProgram(int millis) {
-    if (current != null) {
-      if (millis % (millisPerMeasure ~/ tempo) == 0) {
+
+    if (current == null) {
+      die();
+    }
+
+    // advance on the next matching beat
+    else if (millis % (millisPerMeasure ~/ tempo) == 0) {
+
+      Socket source = null;
+      while (current != null && current != source) {
+        if (source == null) source = current;
         current = current.parent.advance(this);
         if (current != null) {
           current.eval(this);
+          if (!current.skipAhead(this)) break;
         }
       }
     }
   }
 
 
-  bool animate(int millis) {
-
-  }
+  bool animate(int millis) { }
 
 }
