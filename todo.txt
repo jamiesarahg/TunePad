@@ -1,14 +1,8 @@
-Orphaned pucks on trash
 Reload button
 double loops into a split causes explosion!
+don't allow links to form a two-link loop
 
-pucks should be replacable when you drag a new puck over
-
-
-orphan pucks in trash
 releasing in menu should fly out to the screen maybe?
-can only do single drag from menu. creates weird pucks appearing all over. 
-play link should be bigger!
 
 Count loops
 Subroutines
@@ -18,8 +12,6 @@ Logic splits
 
 background drag to pan
 pinch to zoom
-
-weird drag out of menu bug
 
 repulsion
 
