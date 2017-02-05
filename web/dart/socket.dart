@@ -28,7 +28,7 @@ class Socket extends Joint {
 
 
   bool canAcceptPuck(TunePuck p) {
-    return puck == null;
+    return true;
   }
 
 

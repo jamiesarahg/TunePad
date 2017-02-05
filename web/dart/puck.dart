@@ -184,6 +184,10 @@ abstract class TunePuck extends TuneBlock {
 
 
   void connect(Socket s) {
+    if (s.puck != null) {
+      s.puck.trash = true;
+      s.puck.socket = null;
+    }
     socket = s;
     socket.puck = this;
     centerX = socket.cx;
