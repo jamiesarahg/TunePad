@@ -369,7 +369,8 @@ class TouchBinding {
   
   bool touchDown(Contact c) {
     layer.transformContact(c);
-    return touchable.touchDown(c);
+    touchable = touchable.touchDown(c);
+    return (touchable != null);
   }
   
   void touchUp(Contact c) {
@@ -397,9 +398,9 @@ abstract class Touchable {
   bool containsTouch(Contact event);
    
   // This gets fired if a touch down lands on the touchable object. 
-  // Return true to 'own' the touch event for the duration 
-  // Return false to ignore the event (e.g. if disabled or if you want slide events)
-  bool touchDown(Contact event);
+  // Return the touchable object that will 'own' the touch event for the duration 
+  // Return null to ignore the event (e.g. if disabled or if you want slide events)
+  Touchable touchDown(Contact event);
    
   void touchUp(Contact event);
    
