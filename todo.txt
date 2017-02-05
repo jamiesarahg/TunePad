@@ -1,14 +1,24 @@
+\uf140 bullseye
+\uf0d0 magic wand
+\uf06d flame
+\uf001 music
+\uf062 arrow-up
+
+
 Reload button
 double loops into a split causes explosion!
 don't allow links to form a two-link loop
 
 releasing in menu should fly out to the screen maybe?
 
+bongos
 Count loops
 Subroutines
 Random splits
 Logic splits
 
+distortion pucks
+pitch pucks
 
 background drag to pan
 pinch to zoom
