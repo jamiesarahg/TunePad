@@ -20,17 +20,13 @@ import 'dart:convert';
 import 'dart:web_audio';
 import 'dart:typed_data';
 
-//part "beat.dart";
 part "block.dart";
 part "joint.dart";
 part "link.dart";
 part "menu.dart";
-//part "button.dart";
 part "matrix.dart";
 part "playhead.dart";
 part "puck.dart";
-//part "sample.dart";
-//part "scanner.dart";
 part "socket.dart";
 part "sounds.dart";
 part "touch.dart";
@@ -206,10 +202,10 @@ class TunePad extends TouchLayer {
 
   void drawLayer(int layer) {
     for (TuneLink link in links) {
-      if (!link.inMenu) link.draw(ctx, layer);
+      link.draw(ctx, layer);
     }
     for (TunePuck puck in pucks) {
-      if (!puck.inMenu) puck.draw(ctx, layer);
+      puck.draw(ctx, layer);
     }
   }
 
