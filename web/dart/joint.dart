@@ -213,13 +213,13 @@ class Joint extends Touchable {
   }
  
 
-  bool touchDown(Contact c) {
+  Touchable touchDown(Contact c) {
     _dragging = true;
     _touchX = c.touchX;
     _touchY = c.touchY;
     _lastX = c.touchX;
     _lastY = c.touchY;
-    return true;
+    return this;
   }
 
 
