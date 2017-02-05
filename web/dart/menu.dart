@@ -101,7 +101,7 @@ class BlockMenu extends Touchable {
 
 
   bool animate(int millis) {
-    return _target != null;
+    return false;
   }
 
 
@@ -118,13 +118,18 @@ class BlockMenu extends Touchable {
       }
     }
     ctx.restore();
+
     ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
     ctx.fillRect(menuX, menuY, width, menuH);
+
+    /*
     if (_target != null && _target.inMenu) {
       for (int i=0; i<4; i++) {
         _target.draw(ctx, i);
       }
     }
+    */
+
     ctx.save();
     {
       ctx.fillStyle = workspace.highlightTrash ? "white" : "rgba(255, 255, 255, 0.5)";
@@ -151,8 +156,6 @@ class BlockMenu extends Touchable {
   num get menuH => workspace.worldToObjectY(workspace.width, workspace.height) - menuY;
 
 
-  TuneBlock _target;
-
   bool containsTouch(Contact event) {
     Contact c = _translateContact(event);
     for (TuneBlock block in blocks) {
@@ -164,34 +167,26 @@ class BlockMenu extends Touchable {
   }
 
 
-  bool touchDown(Contact event) {
-    _target = null;
+  Touchable touchDown(Contact event) {
     Contact c = _translateContact(event);
     for (TuneBlock block in blocks) {
       if (block.containsTouch(c)) {
-        _target = block.clone(
+        TuneBlock target = block.clone(
           block.centerX - 6 + menuX + width/2, 
           block.centerY + 6 + menuY);
-        _target.inMenu = true;
-        _target.touchDown(event);
-        workspace.addBlock(_target);
-        return true;
+        target.inMenu = true;
+        target.touchDown(event);
+        workspace.addBlock(target);
+        return target;
       }
     }
-    return false;
+    return null;
   }
 
-  void touchUp(Contact event) { 
-    _target.inMenu = false;
-    _target.touchUp(event);
-    _target = null;
-  }
+
+  void touchUp(Contact event) { }
    
-  void touchDrag(Contact event) { 
-    if (_target != null) {
-      _target.touchDrag(event);
-    }
-  }
+  void touchDrag(Contact event) { }
    
   void touchSlide(Contact event) { }
 
