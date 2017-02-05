@@ -42,7 +42,7 @@ abstract class TuneBlock extends Touchable {
 
   bool containsTouch(Contact c) { return false; }
 
-  bool touchDown(Contact c) { return false; }
+  Touchable touchDown(Contact c) { return this; }
 
   void touchUp(Contact c) { }
 
