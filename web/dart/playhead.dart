@@ -24,6 +24,8 @@ class PlayHead {
   // pause time == millisPerMeasure / temp;
   int tempo = 8; // millisPerMeasure  // millisPerBeat
 
+  num gain = 0.6;
+
   bool paused = false;
 
   PlayLink parent;
