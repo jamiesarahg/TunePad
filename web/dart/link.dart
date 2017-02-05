@@ -267,7 +267,7 @@ class TuneLink extends TuneBlock {
   }
 
 
-  bool touchDown(Contact c) {
+  Touchable touchDown(Contact c) {
     _target = null;
     for (Joint j in joints) {
       if (j.containsTouch(c)) {
@@ -278,10 +278,10 @@ class TuneLink extends TuneBlock {
           _target.cx -= 20;
           _target.cy += 20;
         }
-        return true;
+        return this;
       }
     }
-    return false;
+    return null;
   }
 
 
@@ -291,7 +291,16 @@ class TuneLink extends TuneBlock {
       connect();
     }
     _target = null;
-    if (isOverMenu && !isConnected) trash = true;
+    if (isOverMenu && !isConnected) {
+      trash = true;
+      for (Joint j in joints) {
+        if (j is Socket) {
+          Socket s = j;
+          if (s.puck != null) s.puck.trash = true;
+        }
+      }
+    }
+    inMenu = false;
     workspace.draw();
   }
 
