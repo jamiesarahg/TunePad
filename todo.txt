@@ -1,10 +1,10 @@
 Orphaned pucks on trash
 Reload button
-Trashcan icon in menu
 double loops into a split causes explosion!
 
-pucks are below links
 pucks should be replacable when you drag a new puck over
+
+
 orphan pucks in trash
 releasing in menu should fly out to the screen maybe?
 can only do single drag from menu. creates weird pucks appearing all over. 
