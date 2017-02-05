@@ -132,7 +132,7 @@ class AudioPuck extends TunePuck {
   }
 
 
-  bool touchDown(Contact c) {
+  Touchable touchDown(Contact c) {
     if (!isConnected) {
       Sounds.playSound(sound);
       _pop = 1.0;
@@ -276,7 +276,7 @@ abstract class TunePuck extends TuneBlock {
   }
 
 
-  bool touchDown(Contact c) {
+  Touchable touchDown(Contact c) {
     _dragging = true;
     disconnect();
     workspace.moveToTop(this);
@@ -284,7 +284,7 @@ abstract class TunePuck extends TuneBlock {
     _touchY = c.touchY;
     _lastX = c.touchX;
     _lastY = c.touchY;
-    return true;
+    return this;
   }    
 
 
@@ -294,9 +294,8 @@ abstract class TunePuck extends TuneBlock {
       connect(highlight);
     }
     highlight = null;
-    if (isOverMenu) {
-      trash = true;
-    }
+    if (isOverMenu) trash = true;
+    inMenu = false;
     workspace.draw();
   }
 
