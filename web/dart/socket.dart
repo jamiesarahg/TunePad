@@ -151,7 +151,7 @@ class ButtonJoint extends Socket {
   bool isConnection(Joint o) => false;
 
 
-  bool touchDown(Contact c) {
+  Touchable touchDown(Contact c) {
     _down = !parent.inMenu;
     return super.touchDown(c);
   }
