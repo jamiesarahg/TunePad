@@ -55,13 +55,9 @@ $(document).ready(function () {
         }
     });
     canvas.on('object:modified', function (options) {
-        console.log('mod')
         emissions.forEach(function (emission) {
-            console.log(options.target)
-            console.log(emission[5])
             if (options.target == emission[5][0]) {
                 emission[5] = 'fade';
-                console.log('here')
             }
         })
     })
@@ -323,7 +319,6 @@ function blocklyCreateBlocks() {
     Blockly.JavaScript['define_purple'] = function (block) {
         var statements_purplecode = Blockly.JavaScript.statementToCode(block, 'purpleCode');
         purple = new Function(['self', 'distance'], statements_purplecode);
-
     };
     Blockly.JavaScript['make_sound'] = function (block) {
         var dropdown_note = block.getFieldValue('note');
@@ -433,8 +428,6 @@ function addNode(canvas, color) {
     canvasArea = document.getElementById('canvas');
     var left = getRandomInt(canvasArea.style.left.substring(0, canvasArea.style.left.length - 2) + 20, canvasArea.style.left.substring(0, canvasArea.style.left.length - 2) + canvasArea.style.width.substring(0, canvasArea.style.width.length - 2) - 20);
     var top = getRandomInt(canvasArea.style.top.substring(0, canvasArea.style.top.length - 2) + 20, canvasArea.style.top.substring(0, canvasArea.style.top.length - 2) + canvasArea.style.height.substring(0, canvasArea.style.height.length - 2) - 50);
-
-    console.log(Math.floor(canvasArea.style.left.substring(0, canvasArea.style.left.length - 2)));
     var circle = new fabric.Circle({ radius: 10, fill: color, top: top, left: left });
     circle.hasControls = false;
     circle.lockScalingX = true;
@@ -499,6 +492,10 @@ function emit(nodeTup, endNodeTup) {
         var d = distance(nodeTup[0], endNodeTup[0]);
         var perc = 100.0 / d; //looks at distance from start to end position and decides what percentage of the distance the emission should move every 10ms
         var emission = new fabric.Circle({ radius: 3, fill: 'black', top: start.y, left: start.x });
+        emission.hasControls = false;
+        emission.lockMovementX = true;
+        emission.lockMovementY = true;
+        emission.selectable = false;
         canvas.add(emission);
         emissions.push([emission, start, end, 0, perc, endNodeTup]);
         //document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + emissions.length;
