@@ -117,6 +117,7 @@ function setUpBlockly() {
     blocklyCreateBlocks();
     var workspace = Blockly.inject(blocklyDiv,
         { toolbox: document.getElementById('toolbox') });
+    workspace.addChangeListener(onBlocklyChange);
     var onresize = function (e) {
         // Compute the absolute coordinates and dimensions of blocklyArea.
         var element = blocklyArea;
@@ -139,6 +140,8 @@ function setUpBlockly() {
 
     $('#updateCode').click(function () {
         Blockly.JavaScript.addReservedWords('code');
+        document.getElementById('updateCodeBW').style.display = 'inherit';
+        document.getElementById('updateCode').style.display = 'none';
         var code = Blockly.JavaScript.workspaceToCode(workspace);
         try {
             eval(code);
@@ -147,6 +150,11 @@ function setUpBlockly() {
         }
     })
 
+}
+
+function onBlocklyChange(event) {
+    document.getElementById('updateCodeBW').style.display = 'none';
+    document.getElementById('updateCode').style.display = 'inherit';
 }
 
 function blocklyCreateBlocks() {
