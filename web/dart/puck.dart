@@ -51,7 +51,10 @@ class AudioPuck extends TunePuck {
 
 
   void eval(PlayHead player) {
-    Sounds.playSound(sound, volume : player.gain, playback : player.playback);
+    Sounds.playSound(sound, 
+      volume : player.gain, 
+      playback : player.playback,
+      convolve : player.convolve);
     _pop = 1.0;
   }
 
@@ -406,5 +409,49 @@ class PitchPuck extends TunePuck {
   }
 }
 
+
+
+
+/**
+ * Increases the pitch of a play head
+ */
+class DistortPuck extends TunePuck {
+
+  String impulse = null;
+
+  DistortPuck(num cx, num cy, this.impulse) : super(cx, cy, "#e2e7ed");
+
+
+  TuneBlock clone(num cx, num cy) {
+    return new DistortPuck(cx, cy, impulse);
+  }
+
+
+  void eval(PlayHead player) {
+    player.convolve = impulse;
+  }
+
+
+  bool skipAhead(PlayHead player) {
+    return true;
+  }
+
+
+  void _drawIcon(CanvasRenderingContext2D ctx) { 
+    ctx.save();
+    {
+      ctx.translate(centerX, centerY);
+      if (socket != null) {
+        ctx.rotate(socket.parent.rotation * -1);
+      }
+      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+      ctx.font = "40px FontAwesome";
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
+      ctx.fillText(impulse == "impulse" ? "\uf0d0" : "\uf0a1", 0, 0); 
+    }
+    ctx.restore();
+  }
+}
 
 

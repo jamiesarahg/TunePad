@@ -27,7 +27,7 @@ class Sounds {
   }
 
 
-  static void playSound(String name, { volume : 1.0, playback : 1.0 }) {
+  static void playSound(String name, { volume : 1.0, playback : 1.0, convolve : null }) {
     if (sounds[name] != null && !mute) {
       AudioBufferSourceNode source = audio.createBufferSource();
       source.buffer = sounds[name];
@@ -36,8 +36,17 @@ class Sounds {
 
       GainNode gain = audio.createGain();
       source.connectNode(gain);
-      gain.connectNode(audio.destination);
       gain.gain.value = volume;
+
+      if (convolve != null && sounds[convolve] != null) {
+        ConvolverNode convolver = audio.createConvolver();
+        convolver.buffer = sounds[convolve];
+        gain.connectNode(convolver);
+        convolver.connectNode(audio.destination);
+      } else {
+        gain.connectNode(audio.destination);
+      }
+
       //source.connectNode(audio.destination, 0, 0);
       source.start(0);
     }

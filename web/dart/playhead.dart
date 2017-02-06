@@ -28,7 +28,10 @@ class PlayHead {
 
   num playback = 1.0;
 
+  String convolve = null;
+
   bool paused = false;
+
 
   PlayLink parent;
 
@@ -44,6 +47,7 @@ class PlayHead {
     tempo = other.tempo;
     gain = other.gain;
     playback = other.playback;
+    convolve = other.convolve;
     paused = false;
     parent = other.parent;
   }
@@ -55,6 +59,9 @@ class PlayHead {
   void restart() {
     current = start;
     tempo = 8;
+    gain = 0.6;
+    playback = 1.0;
+    convolve = null;
     paused = false;
   }
 

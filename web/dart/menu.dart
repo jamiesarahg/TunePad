@@ -101,6 +101,12 @@ class BlockMenu extends Touchable {
         case 'pitch-down':
           addBlock(new PitchPuck(colToX(b['col']), rowToY(b['row']), false));
           break;
+        case 'distort':
+          addBlock(new DistortPuck(colToX(b['col']), rowToY(b['row']), b['impulse']));
+          break;
+        case 'distort':
+          addBlock(new DistortPuck(colToX(b['col']), rowToY(b['row']), b['impulse']));
+          break;
       }
     }
   }

@@ -62,6 +62,9 @@ void main() {
   workspace = new TunePad("video-canvas");
   workspace.loadBlocks("json/blocks.json");
   Sounds.loadSound("click", "sounds/drumkit/click.wav");
+  Sounds.loadSound("impulse", "sounds/impulseresponse.wav");
+  Sounds.loadSound("dustbin", "sounds/dustbin.wav");
+
 }
 
 
