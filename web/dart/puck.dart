@@ -51,7 +51,7 @@ class AudioPuck extends TunePuck {
 
 
   void eval(PlayHead player) {
-    Sounds.playSound(sound, volume : player.gain);
+    Sounds.playSound(sound, volume : player.gain, playback : player.playback);
     _pop = 1.0;
   }
 
@@ -302,7 +302,7 @@ class TempoPuck extends TunePuck {
       ctx.font = "40px FontAwesome";
       ctx.textBaseline = "middle";
       ctx.textAlign = "center";
-      ctx.fillText(up ? "\uf04e" : "\uf04a", 0, 0); // lightning
+      ctx.fillText(up ? "\uf04e" : "\uf04a", up ? 4 : -4, 0); // lightning
     }
     ctx.restore();
   }
@@ -356,3 +356,55 @@ class GainPuck extends TunePuck {
     ctx.restore();
   }
 }
+
+
+
+
+/**
+ * Increases the pitch of a play head
+ */
+class PitchPuck extends TunePuck {
+
+  bool up = true;
+
+  PitchPuck(num cx, num cy, this.up) : super(cx, cy, "#e2e7ed");
+
+
+  TuneBlock clone(num cx, num cy) {
+    return new PitchPuck(cx, cy, up);
+  }
+
+
+  void eval(PlayHead player) {
+    if (up) {
+      player.playback = min(4.0, player.playback * 2);
+    } else {
+      player.playback = max(0.25, player.playback * 0.5);
+    }
+  }
+
+
+  bool skipAhead(PlayHead player) {
+    return true;
+  }
+
+
+  void _drawIcon(CanvasRenderingContext2D ctx) { 
+    ctx.save();
+    {
+      ctx.translate(centerX, centerY);
+      if (socket != null) {
+        ctx.rotate(socket.parent.rotation * -1);
+      }
+      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+      ctx.font = "40px FontAwesome";
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
+      ctx.fillText(up ? "\uf062" : "\uf063", 0, 0); 
+    }
+    ctx.restore();
+  }
+}
+
+
+

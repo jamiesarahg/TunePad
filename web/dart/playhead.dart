@@ -26,6 +26,8 @@ class PlayHead {
 
   num gain = 0.6;
 
+  num playback = 1.0;
+
   bool paused = false;
 
   PlayLink parent;
@@ -40,6 +42,8 @@ class PlayHead {
     start = other.start;
     current = other.current;
     tempo = other.tempo;
+    gain = other.gain;
+    playback = other.playback;
     paused = false;
     parent = other.parent;
   }

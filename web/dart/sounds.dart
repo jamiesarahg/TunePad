@@ -27,12 +27,12 @@ class Sounds {
   }
 
 
-  static void playSound(String name, { volume : 1.0 }) {
+  static void playSound(String name, { volume : 1.0, playback : 1.0 }) {
     if (sounds[name] != null && !mute) {
       AudioBufferSourceNode source = audio.createBufferSource();
       source.buffer = sounds[name];
       source.loop = false;
-      source.playbackRate.value = 1;
+      source.playbackRate.value = playback;
 
       GainNode gain = audio.createGain();
       source.connectNode(gain);
