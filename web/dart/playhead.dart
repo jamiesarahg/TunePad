@@ -58,11 +58,16 @@ class PlayHead {
 
   void restart() {
     current = start;
+    reset();
+    paused = false;
+  }
+
+
+  void reset() {
     tempo = 8;
     gain = 0.6;
     playback = 1.0;
     convolve = null;
-    paused = false;
   }
 
 

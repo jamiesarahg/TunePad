@@ -104,8 +104,8 @@ class BlockMenu extends Touchable {
         case 'distort':
           addBlock(new DistortPuck(colToX(b['col']), rowToY(b['row']), b['impulse']));
           break;
-        case 'distort':
-          addBlock(new DistortPuck(colToX(b['col']), rowToY(b['row']), b['impulse']));
+        case 'reset':
+          addBlock(new ResetPuck(colToX(b['col']), rowToY(b['row'])));
           break;
       }
     }

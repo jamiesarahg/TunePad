@@ -302,7 +302,7 @@ class TempoPuck extends TunePuck {
         ctx.rotate(socket.parent.rotation * -1);
       }
       ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-      ctx.font = "40px FontAwesome";
+      ctx.font = "32px FontAwesome";
       ctx.textBaseline = "middle";
       ctx.textAlign = "center";
       ctx.fillText(up ? "\uf04e" : "\uf04a", up ? 4 : -4, 0); // lightning
@@ -351,7 +351,7 @@ class GainPuck extends TunePuck {
         ctx.rotate(socket.parent.rotation * -1);
       }
       ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-      ctx.font = "40px FontAwesome";
+      ctx.font = "32px FontAwesome";
       ctx.textBaseline = "middle";
       ctx.textAlign = "center";
       ctx.fillText(up ? "\uf028" : "\uf027", 0, 0); 
@@ -400,7 +400,7 @@ class PitchPuck extends TunePuck {
         ctx.rotate(socket.parent.rotation * -1);
       }
       ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-      ctx.font = "40px FontAwesome";
+      ctx.font = "32px FontAwesome";
       ctx.textBaseline = "middle";
       ctx.textAlign = "center";
       ctx.fillText(up ? "\uf062" : "\uf063", 0, 0); 
@@ -419,7 +419,11 @@ class DistortPuck extends TunePuck {
 
   String impulse = null;
 
-  DistortPuck(num cx, num cy, this.impulse) : super(cx, cy, "#e2e7ed");
+  DistortPuck(num cx, num cy, this.impulse) : super(cx, cy, "#e2e7ed") {
+    if (!Sounds.hasSound(impulse)) {
+      Sounds.loadSound(impulse, impulse);
+    }
+  }
 
 
   TuneBlock clone(num cx, num cy) {
@@ -445,13 +449,60 @@ class DistortPuck extends TunePuck {
         ctx.rotate(socket.parent.rotation * -1);
       }
       ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-      ctx.font = "40px FontAwesome";
+      ctx.font = "32px FontAwesome";
       ctx.textBaseline = "middle";
       ctx.textAlign = "center";
-      ctx.fillText(impulse == "impulse" ? "\uf0d0" : "\uf0a1", 0, 0); 
+      ctx.fillText("\uf0d0", 0, 0); 
     }
     ctx.restore();
   }
 }
+
+
+
+
+/**
+ * Resets the play head to its default state
+ */
+class ResetPuck extends TunePuck {
+
+  String impulse = null;
+
+  ResetPuck(num cx, num cy) : super(cx, cy, "#e2e7ed");
+
+
+  TuneBlock clone(num cx, num cy) {
+    return new ResetPuck(cx, cy);
+  }
+
+
+  void eval(PlayHead player) {
+    player.reset();
+  }
+
+
+  bool skipAhead(PlayHead player) {
+    return true;
+  }
+
+
+  void _drawIcon(CanvasRenderingContext2D ctx) { 
+    ctx.save();
+    {
+      ctx.translate(centerX, centerY);
+      if (socket != null) {
+        ctx.rotate(socket.parent.rotation * -1);
+      }
+      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+      ctx.font = "32px FontAwesome";
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
+      ctx.fillText("\uf05e", 0, 0); 
+    }
+    ctx.restore();
+  }
+}
+
+
 
 
