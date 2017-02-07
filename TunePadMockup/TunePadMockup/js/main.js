@@ -60,6 +60,14 @@ $(document).ready(function () {
                 emission[5] = 'fade';
             }
         })
+        nodeTups.forEach(function (nodeTup) {
+            console.log(nodeTup[0].left)
+            if (0 > nodeTup[0].left || nodeTup[0].left > 1800 || 0 > nodeTup[0].top || nodeTup[0].top > 500) {
+                    nodeTup[0].remove();   
+                    var index = nodeTups.indexOf(nodeTup);
+                    nodeTups.splice(index, 1);
+                }
+            })
     })
 
     var trashCan = new Image();
