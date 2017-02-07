@@ -374,7 +374,7 @@ function blocklyCreateBlocks() {
         var value_node = Blockly.JavaScript.valueToCode(block, 'node', Blockly.JavaScript.ORDER_ATOMIC);
         var number_distance = block.getFieldValue('distance');
         var statements_node_if_do = Blockly.JavaScript.statementToCode(block, 'node_if_do');
-        var code = 'if ( distance(' +  value_node.slice(1, -1) + '[0], self) ' + operator + ' ' + number_distance + ') {' + statements_node_if_do + '}';
+        var code = 'if ( findDistance(' + value_node.slice(1, -1) + '[0], self[0]) ' + operator + ' ' + number_distance + ') {' + statements_node_if_do + '}';
         return code;
     };    
 }
@@ -428,7 +428,7 @@ function addNode(canvas, color) {
     canvasArea = document.getElementById('canvas');
     var left = getRandomInt(canvasArea.style.left.substring(0, canvasArea.style.left.length - 2) + 20, canvasArea.style.left.substring(0, canvasArea.style.left.length - 2) + canvasArea.style.width.substring(0, canvasArea.style.width.length - 2) - 20);
     var top = getRandomInt(canvasArea.style.top.substring(0, canvasArea.style.top.length - 2) + 20, canvasArea.style.top.substring(0, canvasArea.style.top.length - 2) + canvasArea.style.height.substring(0, canvasArea.style.height.length - 2) - 50);
-    var circle = new fabric.Circle({ radius: 10, fill: color, top: top, left: left });
+    var circle = new fabric.Circle({ radius: 15, fill: color, top: top, left: left });
     circle.hasControls = false;
     circle.lockScalingX = true;
     circle.lockScalingY = true;
@@ -472,7 +472,7 @@ distance_between_two_nodes
 inputs: nodeA, nodeB
 outputs: distance in pixels
 */
-function distance(nodeA, nodeB) {
+function findDistance(nodeA, nodeB) {
     var start = { x: parseFloat(nodeA.left) + parseFloat(nodeA.radius), y: parseFloat(nodeA.top) + parseFloat(nodeA.radius) };
     var end = { x: parseFloat(nodeB.left) + parseFloat(nodeB.radius), y: parseFloat(nodeB.top) + parseFloat(nodeB.radius) };
     return Math.sqrt(Math.pow((end.x - start.x), 2) + Math.pow((end.y - start.y), 2));
@@ -489,7 +489,7 @@ function emit(nodeTup, endNodeTup) {
     if (nodeTup[0] !== endNodeTup[0]) {
         var start = { x: parseFloat(nodeTup[0].left) + parseFloat(nodeTup[0].radius), y: parseFloat(nodeTup[0].top) + parseFloat(nodeTup[0].radius) };
         var end = { x: parseFloat(endNodeTup[0].left) + parseFloat(endNodeTup[0].radius), y: parseFloat(endNodeTup[0].top) + parseFloat(endNodeTup[0].radius) };
-        var d = distance(nodeTup[0], endNodeTup[0]);
+        var d = findDistance(nodeTup[0], endNodeTup[0]);
         var perc = 100.0 / d; //looks at distance from start to end position and decides what percentage of the distance the emission should move every 10ms
         var emission = new fabric.Circle({ radius: 3, fill: 'black', top: start.y, left: start.x });
         emission.hasControls = false;
