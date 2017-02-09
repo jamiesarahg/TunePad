@@ -495,11 +495,12 @@ starts an emission from node to node of endNodeTup
 updates emissions array
 */
 function emit(nodeTup, endNodeTup) {
-    if (emissions.length() > 100) {
+    if (emissions.length > 800) {
         emissions.forEach(function (emission) {
             canvas.remove(emission[0]);
         });
         emissions = [];
+        alert('IT EXPLOADED!');
     }
     if (nodeTup[0] !== endNodeTup[0]) {
         var start = { x: parseFloat(nodeTup[0].left) + parseFloat(nodeTup[0].radius), y: parseFloat(nodeTup[0].top) + parseFloat(nodeTup[0].radius) };
