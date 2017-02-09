@@ -22,6 +22,8 @@ var mousedown = false;
 
 $(document).ready(function () {
     canvas = new fabric.Canvas('canvas');
+    canvas.setHeight(window.innerHeight / 2);
+    canvas.setWidth(window.innerWidth);
     setInterval(tenSeconds, 10000); // emits a emission from black node every second
     setInterval(moveEmissions, 10); // moves all emissions every 10ms
 
@@ -61,7 +63,6 @@ $(document).ready(function () {
             }
         })
         nodeTups.forEach(function (nodeTup) {
-            console.log(nodeTup[0].left)
             if (0 > nodeTup[0].left || nodeTup[0].left > 1800 || 0 > nodeTup[0].top || nodeTup[0].top > 500) {
                     nodeTup[0].remove();   
                     var index = nodeTups.indexOf(nodeTup);
@@ -114,7 +115,7 @@ setUpBlockly
 Inputs/Outputs: none
 Puts blockly div in the blockly area defined in HTML
 */
-function setUpBlockly() {
+function setUpBlockly(canvas) {
     var blocklyArea = document.getElementById('blocklyArea');
     var blocklyDiv = document.getElementById('blocklyDiv');
 
