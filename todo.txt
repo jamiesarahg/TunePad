@@ -1,6 +1,13 @@
+Trash entire chain.
+
+Don't allow two link loops
+Spread out the split links a little. 
+Don't allow short-circuit connections across split node joints
+Allow for deleting chains
+Repulsion
+
+
 \uf140 bullseye
-\uf0d0 magic wand
-\uf06d flame
 \uf001 music
 \uf062 arrow-up
 
@@ -16,9 +23,6 @@ Count loops
 Subroutines
 Random splits
 Logic splits
-
-distortion pucks
-pitch pucks
 
 background drag to pan
 pinch to zoom
