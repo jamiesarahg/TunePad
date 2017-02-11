@@ -327,10 +327,10 @@ class SplitLink extends TuneLink {
 
   SplitLink(num cx, num cy) : super(cx, cy) {
     joints.removeLast();
-    num l = _width * 1.5;
+    num l = _width * 1.8;
     num h = l * tan(PI / 6);
-    joints.add(new Plug(this, cx, cy, _width * 0.75, -h));
-    joints.add(new Plug(this, cx, cy, _width * 0.75, h));
+    joints.add(new Plug(this, cx, cy, _width * 0.9, -h));
+    joints.add(new Plug(this, cx, cy, _width * 0.9, h));
     joints.add(new Joint(this, cx, cy, _width, 0) .. invisible = true);
   }
 
