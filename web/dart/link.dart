@@ -259,6 +259,36 @@ class TuneLink extends TuneBlock {
   }
 
 
+/** 
+ * Recursively delete an entire chain of links 
+ */
+  void _trashChain() {
+    trash = true;
+
+    // 1. throw away pucks
+    for (Joint j in joints) {
+      if (j is Socket) {
+        Socket s = j;
+        if (s.puck != null) {
+          s.puck.trash = true;
+          s.puck.disconnect();
+        }
+      }
+    }
+
+    // 2. recursively throw away connected links
+    for (Joint j in joints) {
+      for (int k = j.connections.length - 1; k >= 0; k--) {
+        Joint c = j.connections[k];
+        if (!c.parent.trash) {  // prevent infinite recursion
+          c.parent._trashChain();
+        }
+      }
+      j.disconnect();
+    }
+  }
+
+
   bool containsTouch(Contact c) {
     for (Joint j in joints) {
       if (j.containsTouch(c)) return true;
@@ -291,14 +321,8 @@ class TuneLink extends TuneBlock {
       connect();
     }
     _target = null;
-    if (isOverMenu && !isConnected) {
-      trash = true;
-      for (Joint j in joints) {
-        if (j is Socket) {
-          Socket s = j;
-          if (s.puck != null) s.puck.trash = true;
-        }
-      }
+    if (isOverMenu) {
+      _trashChain();
     }
     inMenu = false;
     workspace.draw();
