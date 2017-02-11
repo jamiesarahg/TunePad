@@ -92,6 +92,9 @@ class TunePad extends TouchLayer {
   bool _puckdrag = false;
   bool _highlightTrash = false;
 
+  // shows hint message
+  String _hintText = null;
+  double _hintAlpha = 0.0;
 
 
   TunePad(String canvasId) {
@@ -105,15 +108,27 @@ class TunePad extends TouchLayer {
     tmanager.registerEvents(canvas);
     tmanager.addTouchLayer(this);
 
+
+
+    // master clock for audio timing
     clock.start();
 
     // start animation timer
     window.animationFrame.then(animate);
 
-    zoomIn(0.75);
+    // restart button
+    bindClickEvent("restart-button", (e) {
+      window.location.reload();
+    });
+
+    zoomIn(0.85);
+
     // start audio timer
     new Timer.periodic(const Duration(milliseconds : 25), (timer) => vocalize());
-    new Timer(const Duration(milliseconds : 100), () => draw());
+
+    // let things load and then repaint
+    new Timer(const Duration(milliseconds : 500), () => draw());
+    new Timer(const Duration(milliseconds : 3000), () => draw());
   }
 
 
@@ -139,6 +154,17 @@ class TunePad extends TouchLayer {
         }
       }
     }
+  }
+
+
+  void showHint(String hint) {
+    _hintText = hint;
+    _hintAlpha = 0.5;
+  }
+
+
+  void clearHint() {
+    _hintText = null;
   }
 
 
@@ -217,6 +243,15 @@ class TunePad extends TouchLayer {
     ctx.fillRect(0, 0, width, height);
     ctx.strokeStyle = "black";
     ctx.strokeRect(0, 0, width, height);
+
+    // hint message
+    if (_hintText != null && _hintAlpha > 0.0) {
+      ctx.fillStyle = "rgba(0, 0, 0, ${_hintAlpha})";
+      ctx.textAlign = "left";
+      ctx.font = "600 30px sans-serif";
+      ctx.fillText("$_hintText", 80, 80);
+    }
+
     ctx.save();
     {
       //setScale(scale, scale);
@@ -338,7 +373,6 @@ class TunePad extends TouchLayer {
         resetTransform(); 
         break;
       default: 
-        print(kbd.keyCode); 
         break;
     }
     draw();
@@ -355,5 +389,20 @@ class TunePad extends TouchLayer {
     });
   }
 
+}
+
+
+/**
+ * Binds a click event to a button
+ */
+void bindClickEvent(String id, Function callback) {
+  Element element = querySelector("#${id}");
+  if (element != null) {
+    if (isFlagSet("debug")) {
+      element.onClick.listen(callback);
+    } else {
+      element.onTouchStart.listen(callback);    
+    }
+  }
 }
 
