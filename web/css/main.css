@@ -22,3 +22,25 @@ body {
   margin: 0;
   background-color: #666;
 }
+
+#content {
+  position: relative;
+}
+
+#restart-button {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 100px;
+  height: 100px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1.5px solid rgba(0, 0, 0, 0.8);
+  border-radius: 50px;
+  outline: none;
+  font-size: 50px;
+  color: rgba(0, 0, 0, 0.8);
+}
+
+#restart-button:active {
+  background-color: rgba(255, 255, 255, 0.3);
+}
