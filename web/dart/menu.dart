@@ -84,28 +84,28 @@ class BlockMenu extends Touchable {
             b['sound']));
           break;
         case 'tempo-up':
-          addBlock(new TempoPuck(colToX(b['col']), rowToY(b['row']), true));
+          addBlock(new TempoPuck(colToX(b['col']), rowToY(b['row']), true, b['hint']));
           break;
         case 'tempo-down':
-          addBlock(new TempoPuck(colToX(b['col']), rowToY(b['row']), false));
+          addBlock(new TempoPuck(colToX(b['col']), rowToY(b['row']), false, b['hint']));
           break;
         case 'volume-up':
-          addBlock(new GainPuck(colToX(b['col']), rowToY(b['row']), true));
+          addBlock(new GainPuck(colToX(b['col']), rowToY(b['row']), true, b['hint']));
           break;
         case 'volume-down':
-          addBlock(new GainPuck(colToX(b['col']), rowToY(b['row']), false));
+          addBlock(new GainPuck(colToX(b['col']), rowToY(b['row']), false, b['hint']));
           break;
         case 'pitch-up':
-          addBlock(new PitchPuck(colToX(b['col']), rowToY(b['row']), true));
+          addBlock(new PitchPuck(colToX(b['col']), rowToY(b['row']), true, b['hint']));
           break;
         case 'pitch-down':
-          addBlock(new PitchPuck(colToX(b['col']), rowToY(b['row']), false));
+          addBlock(new PitchPuck(colToX(b['col']), rowToY(b['row']), false, b['hint']));
           break;
         case 'distort':
-          addBlock(new DistortPuck(colToX(b['col']), rowToY(b['row']), b['impulse']));
+          addBlock(new DistortPuck(colToX(b['col']), rowToY(b['row']), b['impulse'], b['hint']));
           break;
         case 'reset':
-          addBlock(new ResetPuck(colToX(b['col']), rowToY(b['row'])));
+          addBlock(new ResetPuck(colToX(b['col']), rowToY(b['row']), b['hint']));
           break;
       }
     }
