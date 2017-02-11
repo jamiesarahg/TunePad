@@ -67,9 +67,32 @@ class TuneLink extends TuneBlock {
  * Return true if there's a direct connection (1 degree of separation) to the
  * other link
  */
-  bool isDirectlyConnected(TuneLink other) {
+  bool isDirectConnection(TuneLink other) {
     for (Joint j in joints) {
       if (j.isConnectedTo(other)) return true;
+    }
+    return false;
+  }
+
+
+/**
+ * Detects a special case where two links are directly connected across 
+ * a split link fork.
+ */
+  bool isShortCircuit(TuneLink other) {
+    for (Joint j in joints) {
+      for (Joint k in j.connections) {
+        if (k.parent is SplitLink) {
+          if (other.isDirectConnection(k.parent)) {
+            return true;
+          }
+        }
+        else if (other is SplitLink) {
+          if (k.parent.isDirectConnection(other)) {
+            return true;
+          }
+        }
+      }
     }
     return false;
   }
@@ -243,13 +266,15 @@ class TuneLink extends TuneBlock {
   void connect() {
     for (Joint j in joints) {
       if (j.highlight != null) {
-        j.highlight.connections.add(j);
-        j.connections.add(j.highlight);
-        j.cx = j.highlight.cx;
-        j.cy = j.highlight.cy;
-        j.dragChain();
+        if (!isDirectConnection(j.highlight.parent)) {
+          j.highlight.connections.add(j);
+          j.connections.add(j.highlight);
+          j.cx = j.highlight.cx;
+          j.cy = j.highlight.cy;
+          j.dragChain();
+          Sounds.playSound("click");
+        }
         j.highlight = null;
-        Sounds.playSound("click");
       }
     }
   }
@@ -262,9 +287,13 @@ class TuneLink extends TuneBlock {
 
   Joint findOpenConnector(Joint j) {
     for (TuneLink other in workspace.links) {
-      if (other != this && !isDirectlyConnected(other)) {
+      if (other != this && !isDirectConnection(other)) {
         for (Joint joint in other.joints) {
-          if (joint.isConnection(j)) return joint;
+          if (joint.isConnection(j)) {
+            if (!isShortCircuit(other)) {
+              return joint;
+            }
+          }
         }
       }
     }
