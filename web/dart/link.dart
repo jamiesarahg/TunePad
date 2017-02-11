@@ -63,9 +63,22 @@ class TuneLink extends TuneBlock {
     return false;
   }
 
+/**
+ * Return true if there's a direct connection (1 degree of separation) to the
+ * other link
+ */
+  bool isDirectlyConnected(TuneLink other) {
+    for (Joint j in joints) {
+      if (j.isConnectedTo(other)) return true;
+    }
+    return false;
+  }
+
 
   bool get isOverMenu {
-    for (Joint j in joints) if (workspace.isOverMenu(j.cx, j.cy)) return true;
+    for (Joint j in joints) {
+      if (workspace.isOverMenu(j.cx, j.cy)) return true;
+    }
     return false;
   }
 
@@ -249,7 +262,7 @@ class TuneLink extends TuneBlock {
 
   Joint findOpenConnector(Joint j) {
     for (TuneLink other in workspace.links) {
-      if (other != this) {
+      if (other != this && !isDirectlyConnected(other)) {
         for (Joint joint in other.joints) {
           if (joint.isConnection(j)) return joint;
         }

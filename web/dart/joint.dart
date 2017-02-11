@@ -60,6 +60,13 @@ class Joint extends Touchable {
 
   bool get isConnected => connections.isNotEmpty;
 
+  bool isConnectedTo(TuneLink other) {
+    for (Joint j in connections) {
+      if (j.parent == other) return true;
+    }
+    return false;
+  }
+
   num get radius => cw / 2;
 
   bool isNear(Joint o) => distance(o) < (radius + o.radius);

@@ -143,7 +143,7 @@ class BlockMenu extends Touchable {
     // draw trashcan !
     ctx.save();
     {
-      ctx.fillStyle = workspace.highlightTrash ? "white" : "rgba(0, 0, 0, 0.5)";
+      ctx.fillStyle = workspace.highlightTrash ? "white" : "rgba(0, 0, 0, 0.4)";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.font = "86px FontAwesome";
