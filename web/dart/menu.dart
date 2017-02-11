@@ -140,25 +140,18 @@ class BlockMenu extends Touchable {
     ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
     ctx.fillRect(menuX, menuY, width, menuH);
 
-    /*
-    if (_target != null && _target.inMenu) {
-      for (int i=0; i<4; i++) {
-        _target.draw(ctx, i);
-      }
-    }
-    */
-
+    // draw trashcan !
     ctx.save();
     {
-      ctx.fillStyle = workspace.highlightTrash ? "white" : "rgba(255, 255, 255, 0.5)";
+      ctx.fillStyle = workspace.highlightTrash ? "white" : "rgba(0, 0, 0, 0.5)";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.font = "120px FontAwesome";
-      ctx.shadowOffsetX = 5 * workspace.zoom;
-      ctx.shadowOffsetY = 5 * workspace.zoom;
-      ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
-      ctx.shadowBlur = 5 * workspace.zoom;
-      ctx.fillText("\uf1f8", menuX + width * 0.5, menuY + menuH - 100);
+      ctx.font = "86px FontAwesome";
+      ctx.shadowOffsetX = -1 * workspace.zoom;
+      ctx.shadowOffsetY = -1 * workspace.zoom;
+      ctx.shadowColor = "rgba(255, 255, 255, 0.5)";
+      ctx.shadowBlur = 1 * workspace.zoom;
+      ctx.fillText("\uf1f8", menuX + width * 0.5, menuY + menuH - 70);
     }
     ctx.restore();
   }
