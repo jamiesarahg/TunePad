@@ -1,11 +1,6 @@
-Trash entire chain.
-
-Don't allow two link loops
-Spread out the split links a little. 
 Don't allow short-circuit connections across split node joints
-Allow for deleting chains
 Repulsion
-
+Random splits
 
 \uf140 bullseye
 \uf001 music
@@ -14,14 +9,11 @@ Repulsion
 
 Reload button
 double loops into a split causes explosion!
-don't allow links to form a two-link loop
-
-releasing in menu should fly out to the screen maybe?
 
 bongos
+mic
 Count loops
 Subroutines
-Random splits
 Logic splits
 
 background drag to pan
