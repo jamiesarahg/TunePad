@@ -83,6 +83,13 @@ class BlockMenu extends Touchable {
             b['color'],
             b['sound']));
           break;
+        case 'sound':
+          addBlock(new AudioPuck(
+            colToX(b['col']), 
+            rowToY(b['row']), 
+            b['color'],
+            b['sound']) .. icon = "\uf001");
+          break;
         case 'tempo-up':
           addBlock(new TempoPuck(colToX(b['col']), rowToY(b['row']), true, b['hint']));
           break;

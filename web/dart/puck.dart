@@ -25,6 +25,9 @@ abstract class TunePuck extends TuneBlock {
   // socket that this puck is connected to
   Socket socket = null;
 
+  // icon to draw on the puck
+  String icon = "\uf0e7";
+
   // variables for touch interaction
   bool _dragging = false;
   num _touchX, _touchY, _lastX, _lastY;
@@ -202,7 +205,6 @@ class AudioPuck extends TunePuck {
   // animates sounds playing
   num _pop = 0.0;
 
-
   AudioPuck(num cx, num cy, String color, this.sound) : super(cx, cy, color, null) {
     if (!Sounds.hasSound(sound)) {
       Sounds.loadSound(sound, sound);
@@ -211,7 +213,7 @@ class AudioPuck extends TunePuck {
 
 
   TuneBlock clone(num cx, num cy) {
-    return new AudioPuck(cx, cy, color, sound);
+    return new AudioPuck(cx, cy, color, sound) .. icon = icon;
   }
 
   bool animate(int millis) { 
@@ -247,13 +249,7 @@ class AudioPuck extends TunePuck {
       ctx.font = "${size}px FontAwesome";
       ctx.textBaseline = "middle";
       ctx.textAlign = "center";
-    //ctx.fillText("\uf001", centerX, centerY); // music
-      ctx.fillText("\uf0e7", 0, 0); // lightning
-
-    //ctx.fillText("\uf04b \uf04e \uf04c \uf0e7 \uf074 \uf00d", centerX, centerY);
-    //ctx.fillText("\uf026 \uf027 \uf028 \uf0e7 \uf074 \uf00d", centerX, centerY + 100);
-    //ctx.font = "30px sans-serif";
-    //ctx.fillText("\u221e", centerX + 30, centerY + 30);
+      ctx.fillText("$icon", -1, 0); // lightning
     }
     ctx.restore();
   }
@@ -461,8 +457,6 @@ class DistortPuck extends TunePuck {
     ctx.restore();
   }
 }
-
-
 
 
 /**
