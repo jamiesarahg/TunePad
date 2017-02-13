@@ -503,4 +503,45 @@ class ResetPuck extends TunePuck {
 
 
 
+/**
+ * Hexagonal logic puck abstract base class
+ */
+abstract class LogicPuck extends TunePuck {
+
+  LogicPuck(num cx, num cy, String hint) : super(cx, cy, "#222", hint);
+
+
+  TuneBlock clone(num cx, num cy) {
+    return new LogicPuck(cx, cy, hint);
+  }
+
+
+  void eval(PlayHead player) {
+  }
+
+
+  bool skipAhead(PlayHead player) {
+    return true;
+  }
+
+
+  void _drawIcon(CanvasRenderingContext2D ctx) { 
+    ctx.save();
+    {
+      ctx.translate(centerX, centerY);
+      if (socket != null) {
+        ctx.rotate(socket.parent.rotation * -1);
+      }
+      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+      ctx.font = "32px FontAwesome";
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
+      ctx.fillText("\uf04e", 0, 0); 
+    }
+    ctx.restore();
+  }
+}
+
+
+
 
