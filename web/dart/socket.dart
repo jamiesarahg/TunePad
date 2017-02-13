@@ -28,7 +28,7 @@ class Socket extends Joint {
 
 
   bool canAcceptPuck(TunePuck p) {
-    return true;
+    return !(p is LogicPuck);
   }
 
 
@@ -89,6 +89,69 @@ class Socket extends Joint {
   }
 
   bool isConnection(Joint o) => (o is Plug && isOpen && o.isOpen && isNear(o));
+}
+
+
+
+/**
+ * A logic socket takes hexagonal logic pucks
+ */
+class LogicSocket extends Socket {
+
+
+  LogicSocket(TuneLink parent, num cx, num cy, num offX, num offY) : 
+    super(parent, cx, cy, offX, offY) {
+    maxConnections = 2;
+    cw = SOCKET_WIDTH;
+  }
+
+
+  bool canAcceptPuck(TunePuck p) {
+    return p is LogicPuck;
+  }
+
+
+  void drawCap(CanvasRenderingContext2D ctx) {
+    ctx.save();
+    {
+      ctx.fillStyle = "white";
+      ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+      ctx.shadowOffsetX = 2 * workspace.zoom;
+      ctx.shadowOffsetY = 2 * workspace.zoom;
+      ctx.shadowBlur = 5 * workspace.zoom;
+      ctx.translate(cx, cy);
+      ctx.rotate(PI / 6 - parent.rotation);
+      ctx.beginPath();
+      ctx.moveTo(0, -radius);
+      for (int i=0; i<6; i++) {
+        ctx.rotate(PI / 3);
+        ctx.lineTo(0, -radius);
+      }
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+
+    ctx.save();
+    {
+      ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+      ctx.shadowOffsetX = -1 * workspace.zoom;
+      ctx.shadowOffsetY = -1 * workspace.zoom;
+      ctx.shadowBlur = 2 * workspace.zoom;
+      ctx.fillStyle = "#e2e7ed";//"#d2d7dd";
+      ctx.translate(cx, cy);
+      ctx.rotate(PI / 6 - parent.rotation);
+      ctx.beginPath();
+      ctx.moveTo(0, PUCK_WIDTH * -0.5);
+      for (int i=0; i<6; i++) {
+        ctx.rotate(PI / 3);
+        ctx.lineTo(0, PUCK_WIDTH * -0.5);
+      }
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+  }
 }
 
 
