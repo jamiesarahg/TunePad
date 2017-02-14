@@ -435,6 +435,7 @@ function moveEmissions() {
             var opacity = 1 - (1 / (500 * emission[4]) * emission[3]);
             //checks to see if emission reached end
             if (emission[3] >= 100 & emission[5] != 'fade') {
+
                 canvas.remove(emission[0]);
                 var index = emissions.indexOf(emission);
                 emissions.splice(index, 1);
@@ -443,6 +444,7 @@ function moveEmissions() {
             }
                 //moves remainder of emissions
             else {
+
                 emission[3] += emission[4];
                 var newLocation = getLineXYatPercent(emission[1], emission[2], emission[3])
                 emission[0].left = newLocation.x;
@@ -468,19 +470,35 @@ adds a node to the canvas at (100,100) of input color
 appends to nodeTups array
 */
 function addNode(canvas, color) {
+    console.log(nodeTups)
     canvasArea = document.getElementById('canvas');
-    var left = getRandomInt(canvasArea.style.left.substring(0, canvasArea.style.left.length - 2) + 20, canvasArea.style.left.substring(0, canvasArea.style.left.length - 2) + canvasArea.style.width.substring(0, canvasArea.style.width.length - 2) - 20);
-    var top = getRandomInt(canvasArea.style.top.substring(0, canvasArea.style.top.length - 2) + 20, canvasArea.style.top.substring(0, canvasArea.style.top.length - 2) + canvasArea.style.height.substring(0, canvasArea.style.height.length - 2) - 50);
-    var circle = new fabric.Circle({ radius: 15, fill: color, top: top, left: left });
-    circle.hasControls = false;
-    circle.lockScalingX = true;
-    circle.lockScalingY = true;
     var nodeNumber = -1;
     nodeTups.forEach(function (node) {
         nodeNumber = (node[2] > nodeNumber) ? node[2] : nodeNumber;
     });
-    nodeTups.push([circle, color, nodeNumber+1]);
-    canvas.add(circle);
+    nodeNumber = nodeNumber + 1;
+    var left = getRandomInt(canvasArea.style.left.substring(0, canvasArea.style.left.length - 2) + 20, canvasArea.style.left.substring(0, canvasArea.style.left.length - 2) + canvasArea.style.width.substring(0, canvasArea.style.width.length - 2) - 20);
+    var top = getRandomInt(canvasArea.style.top.substring(0, canvasArea.style.top.length - 2) + 20, canvasArea.style.top.substring(0, canvasArea.style.top.length - 2) + canvasArea.style.height.substring(0, canvasArea.style.height.length - 2) - 50);
+    var c = new fabric.Circle({ radius: 15, fill: color, top: top, left: left });
+    //var t = new fabric.Text(stationID, {
+    //    fontFamily: 'Calibri',
+    //    fontSize: 1.2,
+    //    textAlign: 'center',
+    //    originX: 'center',
+    //    originY: 'center',
+    //    left: LayoutCoordX(STA),
+    //    top: LayoutCoordY(BL - BLOffset) - radius - .4
+    //});
+    var t = new fabric.Text(String(nodeNumber), { left: left+10, top: top+2, fontSize: 24, fill: 'white' });
+
+    var g = new fabric.Group([c, t], {
+        // any group attributes here
+    });
+    g.hasControls = false;
+    g.lockScalingX = true;
+    g.lockScalingY = true;
+    nodeTups.push([g, color, nodeNumber]);
+    canvas.add(g);
 }
 /*
 getRandomInt
@@ -502,6 +520,7 @@ If black nodes are on the board, emit and emission for every other node
 function tenSeconds() {
     if (!mousedown) {
         nodeTups.forEach(function (nodeTup) {
+            console.log(nodeTups);
             if (nodeTup[1] == 'black') {
                 nodeTups.forEach(function (endNodeTup) {
                     if (endNodeTup[1] != 'black') {
@@ -520,10 +539,16 @@ inputs: nodeA, nodeB
 outputs: distance in pixels
 */
 function findDistance(nodeA, nodeB) {
-    var start = { x: parseFloat(nodeA.left) + parseFloat(nodeA.radius), y: parseFloat(nodeA.top) + parseFloat(nodeA.radius) };
-    var end = { x: parseFloat(nodeB.left) + parseFloat(nodeB.radius), y: parseFloat(nodeB.top) + parseFloat(nodeB.radius) };
+    var start = { x: parseFloat(nodeA.left), y: parseFloat(nodeA.top)  };
+    var end = { x: parseFloat(nodeB.left) , y: parseFloat(nodeB.top)  };
     return Math.sqrt(Math.pow((end.x - start.x), 2) + Math.pow((end.y - start.y), 2));
 }
+
+//function findDistanceXY(nodeA, nodeB) {
+//    var start = { nodeA.x + parseFloat(nodeA.radius), y: parseFloat(nodeA.top) + parseFloat(nodeA.radius) };
+//    var end = { x: parseFloat(nodeB.left) + parseFloat(nodeB.radius), y: parseFloat(nodeB.top) + parseFloat(nodeB.radius) };
+//    return Math.sqrt(Math.pow((end.x - start.x), 2) + Math.pow((end.y - start.y), 2));
+//}
 
 /*
 emit
@@ -541,9 +566,13 @@ function emit(nodeTup, endNodeTup) {
         alert('IT EXPLOADED!');
     }
     if (nodeTup[0] !== endNodeTup[0]) {
-        var start = { x: parseFloat(nodeTup[0].left) + parseFloat(nodeTup[0].radius), y: parseFloat(nodeTup[0].top) + parseFloat(nodeTup[0].radius) };
-        var end = { x: parseFloat(endNodeTup[0].left) + parseFloat(endNodeTup[0].radius), y: parseFloat(endNodeTup[0].top) + parseFloat(endNodeTup[0].radius) };
+        startDot = nodeTup[0]._objects[0]
+        endDot = endNodeTup[0]._objects[0]
+
+        var start = { x: parseFloat(nodeTup[0].left) + parseFloat(startDot.radius), y: parseFloat(nodeTup[0].top) + parseFloat(startDot.radius) };
+        var end = { x: parseFloat(endNodeTup[0].left) + parseFloat(endDot.radius), y: parseFloat(endNodeTup[0].top) + parseFloat(endDot.radius) };
         var d = findDistance(nodeTup[0], endNodeTup[0]);
+
         var perc = 100.0 / d; //looks at distance from start to end position and decides what percentage of the distance the emission should move every 10ms
         var emission = new fabric.Circle({ radius: 3, fill: 'black', top: start.y, left: start.x });
         emission.hasControls = false;
@@ -552,7 +581,6 @@ function emit(nodeTup, endNodeTup) {
         emission.selectable = false;
         canvas.add(emission);
         emissions.push([emission, start, end, 0, perc, endNodeTup]);
-        //document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + emissions.length;
     }  
 }
 /*
