@@ -43,9 +43,22 @@ $(document).ready(function () {
     green = new Function(['self', 'distance'], '');
     purple = new Function(['self', 'distance'], '');
     
-   
-    //initializs canvas with a black node
-    addNode(canvas, 'black');
+    var trashCan = new Image();
+    trashCan.src = 'images/trash.png';
+    trashCan.onload = function () {
+        var image = new fabric.Image(trashCan);
+        image.left = 10;
+        image.top = 430;
+        image.hasControls = false;
+        image.lockMovementX = true;
+        image.lockMovementY = true;
+        image.selectable = false;
+        canvas.add(image);
+
+        //initializs canvas with a black node
+        addNode(canvas, 'black');
+    }
+
 
     canvas.on('mouse:down', function (options) {
         mousedown = true;
@@ -70,19 +83,6 @@ $(document).ready(function () {
                 }
             })
     })
-
-    var trashCan = new Image();
-    trashCan.src = 'images/trash.png';
-    trashCan.onload = function () {
-        var image = new fabric.Image(trashCan);
-        image.left = 10;
-        image.top = 430;
-        image.hasControls = false;
-        image.lockMovementX = true;
-        image.lockMovementY = true;
-        image.selectable = false;
-        canvas.add(image);
-    }
 });
 
 window.onload = function () {
@@ -95,7 +95,7 @@ function onChange(options) {
     options.target.setCoords();
     //TODO
     //must find better way to identify trashcan
-    trashCan = canvas.getObjects()[1];
+    trashCan = canvas.getObjects()[0];
     if (options.target != trashCan) {
         var intersects = options.target.intersectsWithObject(trashCan);
         if (intersects) {
