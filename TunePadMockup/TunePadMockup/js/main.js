@@ -144,10 +144,13 @@ function setUpBlockly(canvas) {
     Blockly.svgResize(workspace);
 
     $('#updateCode').click(function () {
+        console.log('code')
+        console.log(code)
         Blockly.JavaScript.addReservedWords('code');
         document.getElementById('updateCodeBW').style.display = 'inherit';
         document.getElementById('updateCode').style.display = 'none';
         var code = Blockly.JavaScript.workspaceToCode(workspace);
+
         try {
             eval(code);
         } catch (e) {
@@ -164,11 +167,11 @@ function onBlocklyChange(event) {
 function dynamicOptions() {
     var options = [];
     var nodeLen = nodeTups.length;
-    nodeTups.forEach(function (node) {
-        options.push([String(node[2]), String(node[2])])
-
+    nodeTups.forEach(function (nodeTup) {
+        options.push([String(nodeTup[2]), String(nodeTup[2])])
     })
-
+    console.log('options')
+    console.log(options)
     return options;
 }
 function blocklyCreateBlocks() {
@@ -266,16 +269,17 @@ function blocklyCreateBlocks() {
         }
     };
 
-    var dropdown = new Blockly.FieldDropdown(dynamicOptions);
+    //var dropdown = new Blockly.FieldDropdown(dynamicOptions);
     Blockly.Blocks['individual_node'] = {
         init: function () {
             this.appendDummyInput()
                 .appendField("node")
-                .appendField(dropdown, 'node_number');
+                .appendField(new Blockly.FieldDropdown(dynamicOptions), 'node_number');
             this.setOutput(true, "node");
             this.setColour(65);
             this.setTooltip('');
             this.setHelpUrl('');
+            console.log('here');
         }
     };
 
@@ -352,6 +356,8 @@ function blocklyCreateBlocks() {
     Blockly.JavaScript['define_purple'] = function (block) {
         var statements_purplecode = Blockly.JavaScript.statementToCode(block, 'purpleCode');
         purple = new Function(['self', 'distance'], statements_purplecode);
+        console.log(purple);
+
     };
     Blockly.JavaScript['make_sound'] = function (block) {
         var dropdown_note = block.getFieldValue('note');
@@ -362,7 +368,8 @@ function blocklyCreateBlocks() {
     Blockly.JavaScript['emitblock'] = function (block) {
         var value_emit_from = Blockly.JavaScript.valueToCode(block, 'emit_from', Blockly.JavaScript.ORDER_ATOMIC);
         var value_emit_to = Blockly.JavaScript.valueToCode(block, 'emit_to', Blockly.JavaScript.ORDER_ATOMIC);
-        var code = 'emit('+value_emit_from+','+value_emit_to + ');';
+        var code = 'emit(' + value_emit_from + ',' + value_emit_to + ');';
+        console.log(code);
         return code;
     };
     Blockly.JavaScript['node_variable'] = function (block) {
@@ -380,6 +387,20 @@ function blocklyCreateBlocks() {
         var statements_foreach_statements = Blockly.JavaScript.statementToCode(block, 'foreach_statements');
         var code = 'nodeTups.forEach(function ' + value_foreach_variable + ' {' + statements_foreach_statements + '});';
         return code;
+    };
+    Blockly.JavaScript['individual_node'] =  function (block) {
+        var dropdown_node_number = block.getFieldValue('node_number');
+        var index = null;
+        console.log('drop')
+        console.log(dropdown_node_number);
+        nodeTups.forEach(function (nodeTup) {
+            if (String(nodeTup[2]) == String(dropdown_node_number)) {
+                index = nodeTups.indexOf(nodeTup);
+            }
+        });
+        var code = 'nodeTups['+index+']';
+        console.log(code);
+        return [String(code), Blockly.JavaScript.ORDER_NONE];
     };
 
     Blockly.JavaScript['if_node_color_block'] = function (block) {
@@ -469,7 +490,6 @@ function addNode(canvas, color) {
     nodeTups.forEach(function (node) {
         nodeNumber = (node[2] > nodeNumber) ? node[2] : nodeNumber;
     });
-    console.log(nodeNumber);
     nodeTups.push([circle, color, nodeNumber+1]);
     canvas.add(circle);
 }
