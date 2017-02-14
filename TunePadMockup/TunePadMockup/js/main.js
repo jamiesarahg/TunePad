@@ -144,8 +144,6 @@ function setUpBlockly(canvas) {
     Blockly.svgResize(workspace);
 
     $('#updateCode').click(function () {
-        console.log('code')
-        console.log(code)
         Blockly.JavaScript.addReservedWords('code');
         document.getElementById('updateCodeBW').style.display = 'inherit';
         document.getElementById('updateCode').style.display = 'none';
@@ -170,8 +168,6 @@ function dynamicOptions() {
     nodeTups.forEach(function (nodeTup) {
         options.push([String(nodeTup[2]), String(nodeTup[2])])
     })
-    console.log('options')
-    console.log(options)
     return options;
 }
 function blocklyCreateBlocks() {
@@ -279,7 +275,6 @@ function blocklyCreateBlocks() {
             this.setColour(65);
             this.setTooltip('');
             this.setHelpUrl('');
-            console.log('here');
         }
     };
 
@@ -356,8 +351,6 @@ function blocklyCreateBlocks() {
     Blockly.JavaScript['define_purple'] = function (block) {
         var statements_purplecode = Blockly.JavaScript.statementToCode(block, 'purpleCode');
         purple = new Function(['self', 'distance'], statements_purplecode);
-        console.log(purple);
-
     };
     Blockly.JavaScript['make_sound'] = function (block) {
         var dropdown_note = block.getFieldValue('note');
@@ -369,7 +362,6 @@ function blocklyCreateBlocks() {
         var value_emit_from = Blockly.JavaScript.valueToCode(block, 'emit_from', Blockly.JavaScript.ORDER_ATOMIC);
         var value_emit_to = Blockly.JavaScript.valueToCode(block, 'emit_to', Blockly.JavaScript.ORDER_ATOMIC);
         var code = 'emit(' + value_emit_from + ',' + value_emit_to + ');';
-        console.log(code);
         return code;
     };
     Blockly.JavaScript['node_variable'] = function (block) {
@@ -391,15 +383,12 @@ function blocklyCreateBlocks() {
     Blockly.JavaScript['individual_node'] =  function (block) {
         var dropdown_node_number = block.getFieldValue('node_number');
         var index = null;
-        console.log('drop')
-        console.log(dropdown_node_number);
         nodeTups.forEach(function (nodeTup) {
             if (String(nodeTup[2]) == String(dropdown_node_number)) {
                 index = nodeTups.indexOf(nodeTup);
             }
         });
         var code = 'nodeTups['+index+']';
-        console.log(code);
         return [String(code), Blockly.JavaScript.ORDER_NONE];
     };
 
