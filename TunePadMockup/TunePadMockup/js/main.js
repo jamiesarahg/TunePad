@@ -227,7 +227,7 @@ function blocklyCreateBlocks() {
     Blockly.Blocks['emitblock'] = {
         init: function () {
             this.appendDummyInput()
-                .appendField("emit");
+                .appendField("send dot ");
             this.appendValueInput("emit_from")
                 .setCheck("node")
                 .appendField("from");
