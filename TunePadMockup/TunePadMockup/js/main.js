@@ -24,6 +24,7 @@ $(document).ready(function () {
     canvas = new fabric.Canvas('canvas');
     canvas.setHeight(window.innerHeight / 2);
     canvas.setWidth(window.innerWidth);
+    canvas.selection = false; // disable group selection
     setInterval(tenSeconds, 10000); // emits a emission from black node every second
     setInterval(moveEmissions, 10); // moves all emissions every 10ms
 
