@@ -166,7 +166,7 @@ function blocklyCreateBlocks() {
     Blockly.Blocks['define_red'] = {
         init: function () {
             this.appendDummyInput()
-                .appendField("if red node hit");
+                .appendField("if red node is hit");
             this.appendStatementInput("redCode")
                 .setCheck(null)
                 .appendField("do:");
@@ -179,7 +179,7 @@ function blocklyCreateBlocks() {
     Blockly.Blocks['define_green'] = {
         init: function () {
             this.appendDummyInput()
-                .appendField("if green node hit");
+                .appendField("if green node is hit");
             this.appendStatementInput("greenCode")
                 .setCheck(null)
                 .appendField("do:");
@@ -192,7 +192,7 @@ function blocklyCreateBlocks() {
     Blockly.Blocks['define_purple'] = {
         init: function () {
             this.appendDummyInput()
-                .appendField("if purple node hit");
+                .appendField("if purple node is hit");
             this.appendStatementInput("purpleCode")
                 .setCheck(null)
                 .appendField("do:");
@@ -206,9 +206,9 @@ function blocklyCreateBlocks() {
     Blockly.Blocks['make_sound'] = {
         init: function () {
             this.appendDummyInput()
-                .appendField("makeSound(")
+                .appendField("play the note: ")
                 .appendField(new Blockly.FieldDropdown([["A3", "A3"], ["B3", "B3"], ["C4", "C4"], ["D4", "D4"], ["E4", "E4"], ["F4", "F4"], ["G4", "G4"]]), "note")
-                .appendField(")");
+                .appendField("");
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setColour(230);
@@ -237,7 +237,7 @@ function blocklyCreateBlocks() {
     Blockly.Blocks['self_node'] = {
         init: function() {
             this.appendDummyInput()
-                .appendField("node: 'self'");
+                .appendField("this node");
             this.setOutput(true, "node");
             this.setColour(65);
             this.setTooltip('');
@@ -246,9 +246,10 @@ function blocklyCreateBlocks() {
     };
     Blockly.Blocks['node_variable'] = {
         init: function () {
-            this.appendValueInput("node_name")
-                .setCheck(null)
-                .appendField(new Blockly.FieldTextInput("node"), "node_name");
+            //this.appendValueInput("node_name")
+            this.appendDummyInput()
+                //.setCheck(null)
+                .appendField(new Blockly.FieldTextInput("node_on_the_board"), "node_name");
             this.setOutput(true, "node");
             this.setColour(65);
             this.setTooltip('');
@@ -262,7 +263,7 @@ function blocklyCreateBlocks() {
             this.appendValueInput("foreach_variable")
                 .setCheck("node");
             this.appendDummyInput()
-                .appendField("on the board");
+                .appendField("");
             this.appendStatementInput("foreach_statements")
                 .setCheck(null)
                 .appendField("do:");
@@ -276,7 +277,7 @@ function blocklyCreateBlocks() {
     Blockly.Blocks['if_node_color_block'] = {
         init: function () {
             this.appendDummyInput()
-                .appendField("if ");
+                .appendField("if the ");
             this.appendValueInput("node")
                 .setCheck("node");
             this.appendDummyInput()
@@ -296,14 +297,14 @@ function blocklyCreateBlocks() {
     Blockly.Blocks['if_node_distance_block'] = {
         init: function () {
             this.appendDummyInput()
-                .appendField("if ");
+                .appendField("if the ");
             this.appendValueInput("node")
                 .setCheck("node");
             this.appendDummyInput()
                 .appendField("is")
                 .appendField(new Blockly.FieldDropdown([ [">", "greater_than"], [">=", "greater_or_equal"], ["<", "less_than"], ["<+", "less_or_equal"], ["=", "equal"], ["!=", "not_equal"]]), "operator")
                 .appendField(new Blockly.FieldNumber(0, 0), "distance")
-                .appendField("pixels from self:");
+                .appendField("pixels from this node");
             this.appendStatementInput("node_if_do")
                 .setCheck(null)
                 .appendField("do:");
