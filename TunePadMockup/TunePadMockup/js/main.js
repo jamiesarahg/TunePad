@@ -99,8 +99,16 @@ function onChange(options) {
     trashCan = canvas.getObjects()[0];
     if (options.target != trashCan) {
         var intersects = options.target.intersectsWithObject(trashCan);
+        console.log(intersects);
         if (intersects) {
-            options.target.remove();
+            console.log('here');
+            if (canvas.getActiveGroup()) {
+                canvas.getActiveGroup().forEachObject(function (o) { canvas.remove(o) });
+                canvas.discardActiveGroup().renderAll();
+            } else {
+                canvas.remove(canvas.getActiveObject());
+            } console.log(options.target);
+            //options.target.remove();
             nodeTups.forEach(function (nodeTup) {
                 if (nodeTup[0] == options.target) {
                     var index = nodeTups.indexOf(nodeTup);
@@ -471,7 +479,6 @@ adds a node to the canvas at (100,100) of input color
 appends to nodeTups array
 */
 function addNode(canvas, color) {
-    console.log(nodeTups)
     canvasArea = document.getElementById('canvas');
     var nodeNumber = -1;
     nodeTups.forEach(function (node) {
@@ -521,7 +528,6 @@ If black nodes are on the board, emit and emission for every other node
 function tenSeconds() {
     if (!mousedown) {
         nodeTups.forEach(function (nodeTup) {
-            console.log(nodeTups);
             if (nodeTup[1] == 'black') {
                 nodeTups.forEach(function (endNodeTup) {
                     if (endNodeTup[1] != 'black') {
