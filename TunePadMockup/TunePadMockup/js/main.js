@@ -161,7 +161,16 @@ function onBlocklyChange(event) {
     document.getElementById('updateCodeBW').style.display = 'none';
     document.getElementById('updateCode').style.display = 'inherit';
 }
+function dynamicOptions() {
+    var options = [];
+    var nodeLen = nodeTups.length;
+    nodeTups.forEach(function (node) {
+        options.push([String(node[2]), String(node[2])])
 
+    })
+
+    return options;
+}
 function blocklyCreateBlocks() {
     Blockly.Blocks['define_red'] = {
         init: function () {
@@ -256,6 +265,20 @@ function blocklyCreateBlocks() {
             this.setHelpUrl('');
         }
     };
+
+    var dropdown = new Blockly.FieldDropdown(dynamicOptions);
+    Blockly.Blocks['individual_node'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("node")
+                .appendField(dropdown, 'node_number');
+            this.setOutput(true, "node");
+            this.setColour(65);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+
     Blockly.Blocks['for_each_block'] = {
         init: function () {
             this.appendDummyInput()
@@ -442,7 +465,12 @@ function addNode(canvas, color) {
     circle.hasControls = false;
     circle.lockScalingX = true;
     circle.lockScalingY = true;
-    nodeTups.push([circle, color]);
+    var nodeNumber = -1;
+    nodeTups.forEach(function (node) {
+        nodeNumber = (node[2] > nodeNumber) ? node[2] : nodeNumber;
+    });
+    console.log(nodeNumber);
+    nodeTups.push([circle, color, nodeNumber+1]);
     canvas.add(circle);
 }
 /*
