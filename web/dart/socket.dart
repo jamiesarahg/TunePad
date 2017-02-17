@@ -98,11 +98,34 @@ class Socket extends Joint {
  */
 class LogicSocket extends Socket {
 
+  // hidden split puck
+  SplitPuck _spuck = null;
+
 
   LogicSocket(TuneLink parent, num cx, num cy, num offX, num offY) : 
     super(parent, cx, cy, offX, offY) {
     maxConnections = 2;
     cw = SOCKET_WIDTH;
+    _spuck = new SplitPuck(cx, cy, "Split");
+  }
+
+
+  LogicPuck get logicPuck => (puck == null) ? _spuck : (puck as LogicPuck);
+
+
+  void eval(PlayHead player) {
+    logicPuck.eval(player);
+    parent.eval(player);
+  }
+
+
+  bool goLeft(PlayHead player) => logicPuck.goLeft(player);
+
+  bool goRight(PlayHead player) => logicPuck.goRight(player);
+
+
+  bool skipAhead(PlayHead player) {
+    return true;
   }
 
 
@@ -122,10 +145,10 @@ class LogicSocket extends Socket {
       ctx.translate(cx, cy);
       ctx.rotate(PI / 6 - parent.rotation);
       ctx.beginPath();
-      ctx.moveTo(0, -radius);
+      ctx.moveTo(0, -radius * 1.15);
       for (int i=0; i<6; i++) {
         ctx.rotate(PI / 3);
-        ctx.lineTo(0, -radius);
+        ctx.lineTo(0, -radius * 1.15);
       }
       ctx.closePath();
       ctx.fill();
@@ -139,13 +162,13 @@ class LogicSocket extends Socket {
       ctx.shadowOffsetY = -1 * workspace.zoom;
       ctx.shadowBlur = 2 * workspace.zoom;
       ctx.fillStyle = "#e2e7ed";//"#d2d7dd";
-      ctx.translate(cx, cy);
+      ctx.translate(cx + 1, cy + 1);
       ctx.rotate(PI / 6 - parent.rotation);
       ctx.beginPath();
-      ctx.moveTo(0, PUCK_WIDTH * -0.5);
+      ctx.moveTo(0, PUCK_WIDTH * -0.575);
       for (int i=0; i<6; i++) {
         ctx.rotate(PI / 3);
-        ctx.lineTo(0, PUCK_WIDTH * -0.5);
+        ctx.lineTo(0, PUCK_WIDTH * -0.575);
       }
       ctx.closePath();
       ctx.fill();
@@ -153,91 +176,3 @@ class LogicSocket extends Socket {
     ctx.restore();
   }
 }
-
-
-class ButtonJoint extends Socket {
-
-  bool _down = false;
-
-  bool playing = false;
-
-  num _startX, _startY;
-
-  Function action = null;
-
-  ButtonJoint(TuneLink parent, num cx, num cy, num offX, num offY) : 
-    super(parent, cx, cy, offX, offY) {
-    maxConnections = 0;
-    cw = SOCKET_WIDTH;
-  }
-
-
-  bool canAcceptPuck(TunePuck p) {
-    return false;
-  }
-
-
-  void drawCap(CanvasRenderingContext2D ctx) {
-    ctx.save();
-    {
-      ctx.translate(cx, cy);
-      ctx.rotate(-parent.rotation);
-      ctx.fillStyle = _down ? "#aaeeff" : "white";
-      ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
-      ctx.shadowOffsetX = 2 * workspace.zoom;
-      ctx.shadowOffsetY = 2 * workspace.zoom;
-      ctx.shadowBlur = 5 * workspace.zoom;
-      ctx.beginPath();
-      ctx.arc(0, 0, radius, 0, PI * 2, false);
-      ctx.fill();
-
-      ctx.font = "64px FontAwesome";
-      ctx.fillStyle = "#5f6972";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
-      ctx.shadowOffsetX = 2 * workspace.zoom;
-      ctx.shadowOffsetY = 2 * workspace.zoom;
-      ctx.shadowBlur = 3 * workspace.zoom;
-      // pause \uf04c
-      // stop \uf04d
-      // fforward \uf04e
-      // play \uf04b
-      num delta = _down ? 2 * workspace.zoom : 0;
-      ctx.fillText(playing ? "\uf28b" : "\uf144", delta, delta); // f28b pause-circle
-    }
-    ctx.restore();
-  }
-
-  void flash(CanvasRenderingContext2D ctx) { }
-
-  bool isConnection(Joint o) => false;
-
-
-  Touchable touchDown(Contact c) {
-    _down = !parent.inMenu;
-    return super.touchDown(c);
-  }
-
-
-  void touchUp(Contact c) { 
-    if (_down) {
-      playing = !playing;
-      if (action != null) {
-        Function.apply(action, [ this ]);
-      }
-    }
-    _down = false;
-    super.touchUp(c);
-  }
- 
-
-  void touchDrag(Contact c) {
-    if (!_down || !containsTouch(c)) {
-      _down = false;
-      super.touchDrag(c);
-    }
-  }
-}
-
-
