@@ -508,12 +508,14 @@ class ResetPuck extends TunePuck {
  */
 abstract class LogicPuck extends TunePuck {
 
-  LogicPuck(num cx, num cy, String hint) : super(cx, cy, "#222", hint);
-
-
-  TuneBlock clone(num cx, num cy) {
-    return new LogicPuck(cx, cy, hint);
+  LogicPuck(num cx, num cy, String hint) : super(cx, cy, "#5f6972", hint) {
+    radius = PUCK_WIDTH * 0.5 * 1.15;
   }
+
+
+  bool goLeft(PlayHead player) { return false;  }
+
+  bool goRight(PlayHead player) { return false; }
 
 
   void eval(PlayHead player) {
@@ -525,6 +527,57 @@ abstract class LogicPuck extends TunePuck {
   }
 
 
+  void draw(CanvasRenderingContext2D ctx, [layer = 0]) {
+    ctx.save();
+    {
+      switch (layer) {
+
+        case 2:
+  
+          // highlight socket
+          if (highlight != null) {
+            ctx.fillStyle = "#aaeeff";
+            ctx.beginPath();
+            ctx.arc(highlight.cx, highlight.cy, highlight.radius * 0.85, 0, PI * 2, false);
+            ctx.fill();
+          }
+          break;
+
+        case 3: 
+          ctx.save();
+          {
+            ctx.fillStyle = color; 
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
+            ctx.lineWidth = 2;
+
+            ctx.translate(centerX, centerY);
+            if (socket != null) {
+              ctx.rotate(socket.parent.rotation * -1);
+            }
+            ctx.rotate(PI / 6);
+            ctx.beginPath();
+            ctx.moveTo(0, -radius);
+            for (int i=0; i<6; i++) {
+              ctx.rotate(PI / 3);
+              ctx.lineTo(0, PUCK_WIDTH * -0.575);
+            }
+            ctx.closePath();
+            ctx.stroke();
+            ctx.shadowOffsetX = 2; // * workspace.zoom;
+            ctx.shadowOffsetY = 2; // * workspace.zoom;
+            ctx.shadowBlur = 4; // * workspace.zoom;
+            ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
+            ctx.fill();
+          }
+          ctx.restore();
+          _drawIcon(ctx);
+          break;
+      }
+    }
+    ctx.restore();
+  }
+
+
   void _drawIcon(CanvasRenderingContext2D ctx) { 
     ctx.save();
     {
@@ -532,15 +585,70 @@ abstract class LogicPuck extends TunePuck {
       if (socket != null) {
         ctx.rotate(socket.parent.rotation * -1);
       }
-      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
       ctx.font = "32px FontAwesome";
       ctx.textBaseline = "middle";
       ctx.textAlign = "center";
-      ctx.fillText("\uf04e", 0, 0); 
+      ctx.fillText("$icon", 0, 0); 
     }
     ctx.restore();
   }
 }
+
+
+/**
+ * Random puck
+ */
+class RandomPuck extends LogicPuck {
+
+  bool _goLeft = false;
+
+  Random _rand = new Random();
+
+  RandomPuck(num cx, num cy, String hint) : super(cx, cy, hint) {
+    icon = "\uf074";
+  }
+
+  TuneBlock clone(num cx, num cy) {
+    return new RandomPuck(cx, cy, hint);
+  }
+
+  void eval(PlayHead) { 
+    _goLeft = _rand.nextBool();
+  }
+
+  bool goLeft(PlayHead player) { return _goLeft;  }
+
+  bool goRight(PlayHead player) { return !_goLeft; }
+
+}
+
+
+/**
+ * Split puck
+ */
+class SplitPuck extends LogicPuck {
+
+  PlayHead _clone  = null;
+
+
+  SplitPuck(num cx, num cy, String hint) : super(cx, cy, hint) {
+    icon = "\uf1e0";
+  }
+
+  TuneBlock clone(num cx, num cy) {
+    return new SplitPuck(cx, cy, hint);
+  }
+
+  void eval(PlayHead player) {
+    _clone = player.parent.split(player);
+  }
+
+  bool goLeft(PlayHead player) => (player == _clone);
+
+  bool goRight(PlayHead player) => (player != _clone);
+}
+
 
 
 
