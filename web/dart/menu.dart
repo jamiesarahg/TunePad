@@ -77,18 +77,10 @@ class BlockMenu extends Touchable {
     for (var b in json) {
       switch (b['type']) {
         case 'beat':
-          addBlock(new AudioPuck(
-            colToX(b['col']), 
-            rowToY(b['row']), 
-            b['color'],
-            b['sound']));
+          addBlock(new AudioPuck(colToX(b['col']), rowToY(b['row']), b['color'], b['sound']));
           break;
         case 'sound':
-          addBlock(new AudioPuck(
-            colToX(b['col']), 
-            rowToY(b['row']), 
-            b['color'],
-            b['sound']) .. icon = "\uf001");
+          addBlock(new AudioPuck(colToX(b['col']), rowToY(b['row']), b['color'], b['sound']) .. icon = "\uf001");
           break;
         case 'tempo-up':
           addBlock(new TempoPuck(colToX(b['col']), rowToY(b['row']), true, b['hint']));
@@ -113,6 +105,12 @@ class BlockMenu extends Touchable {
           break;
         case 'reset':
           addBlock(new ResetPuck(colToX(b['col']), rowToY(b['row']), b['hint']));
+          break;
+        case 'random':
+          addBlock(new RandomPuck(colToX(b['col']), rowToY(b['row']), b['hint']));
+          break;
+        case 'split':
+          addBlock(new SplitPuck(colToX(b['col']), rowToY(b['row']), b['hint']));
           break;
       }
     }
