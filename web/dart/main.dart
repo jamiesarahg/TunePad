@@ -25,10 +25,11 @@ part "joint.dart";
 part "link.dart";
 part "menu.dart";
 part "matrix.dart";
-part "playhead.dart";
+part "play.dart";
 part "puck.dart";
 part "socket.dart";
 part "sounds.dart";
+part "split.dart";
 part "touch.dart";
 
 
@@ -153,6 +154,9 @@ class TunePad extends TouchLayer {
           (link as PlayLink).stepProgram(_lastbeat);
         }
       }
+
+      // TODO: does this prevent an accumulation of error on timing?
+      //_lastbeat = millis; 
     }
   }
 
