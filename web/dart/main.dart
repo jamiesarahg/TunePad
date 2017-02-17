@@ -154,9 +154,6 @@ class TunePad extends TouchLayer {
           (link as PlayLink).stepProgram(_lastbeat);
         }
       }
-
-      // TODO: does this prevent an accumulation of error on timing?
-      //_lastbeat = millis; 
     }
   }
 

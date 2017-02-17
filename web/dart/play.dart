@@ -146,13 +146,13 @@ class PlayLink extends TuneLink {
   void stepProgram(int millis) {
     bool running = false;
 
-    for (int i=players.length - 1; i >= 0; i--) {
+    for (int i=0; i < players.length; i++) {
       players[i].stepProgram(millis);
-      if (players[i].isDone) {
-        players.removeAt(i);
-      } else {
-        running = true;
-      }
+      if (!players[i].isDone) running = true;
+    }
+
+    for (int i=players.length - 1; i >= 0; i--) {
+      if (players[i].isDone) players.removeAt(i);
     }
 
     if (!running && button.playing) {
