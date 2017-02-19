@@ -38,10 +38,19 @@ abstract class TunePuck extends TuneBlock {
   // hint message
   String hint;
 
+  // menu options
+  List<PuckMenuItem> menu = new List<PuckMenuItem>();
+
 
 
   TunePuck(this.centerX, this.centerY, this.color, this.hint) {
     this.radius = PUCK_WIDTH / 2;
+    menu.add(new PuckMenuItem("a", 0.5));  // half note
+    menu.add(new PuckMenuItem("b", 0.75)); // dotted quarter
+    menu.add(new PuckMenuItem("c", 0.25)..selected = true); // quarter note
+    menu.add(new PuckMenuItem("d", 0.125)); // 8th note
+    menu.add(new PuckMenuItem("e", 0.0625)); // 16th note
+    menu.add(new PuckMenuItem("f", 0.03125)); // 32nd note
   }
 
 
@@ -56,6 +65,17 @@ abstract class TunePuck extends TuneBlock {
 
   bool skipAhead(PlayHead player) {
     return false;
+  }
+
+
+  void menuSelection(int index) {
+    if (index >= 0 && index < menu.length) {
+      for (PuckMenuItem m in menu) {
+        m.selected = false;
+      }
+      icon = menu[index].icon;
+      menu[index].selected = true;
+    }
   }
 
 
@@ -120,6 +140,87 @@ abstract class TunePuck extends TuneBlock {
       }
     }
     ctx.restore();
+  }
+
+
+  void drawMenu(CanvasRenderingContext2D ctx, num touchX, num touchY) {
+    if (menu == null || menu.isEmpty) return;
+    ctx.save();
+    {
+      ctx.translate(centerX, centerY);
+
+      // figure out the highlighted menu slice
+      int target = screenToMenuIndex(touchX, touchY);
+
+      // menu background
+      ctx.fillStyle = "#ddd";
+      ctx.strokeStyle = "#777";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * 4, 0, PI * 2, true);
+      ctx.fill();
+
+      // menu segments
+      ctx.rotate(PI * 0.5);
+      int segments = menu.length;
+      num arc = PI * 2 / segments;
+
+      for (int i=0; i<segments; i++) {
+        if (i == target) {
+          ctx.fillStyle = "white";
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(0, radius * -4);
+          ctx.arc(0, 0, radius * 4, -PI/2, -PI/2 - arc, true);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = "#777";
+        }
+        else if (menu[i].selected) {
+          ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.lineTo(0, radius * -4);
+          ctx.arc(0, 0, radius * 4, -PI/2, -PI/2 - arc, true);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = "#eee";
+        } else {
+          ctx.fillStyle = "#777";
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, radius * -4);
+        ctx.stroke();
+
+        ctx.rotate(arc * -0.5);
+        menu[i].draw(ctx, 0, radius * -2.6);        
+        ctx.rotate(arc * -0.5);
+      }
+
+      ctx.beginPath();
+      ctx.arc(0, 0, radius * 4, 0, PI * 2, true);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+
+  int screenToMenuIndex(num tx, num ty) {
+    tx -= centerX;
+    ty -= centerY;
+    int segments = menu.length;
+    num arc = PI * 2 / segments;
+    num alpha = atan2(-ty, tx);
+    if (alpha < 0) alpha += 2 * PI;
+    int target = alpha ~/= arc;
+    num d = dist(tx, ty, 0, 0);
+    if (d >= radius && d <= radius * 4) {
+      return target;
+    } else {
+      return -1;
+    }
   }
 
 
@@ -650,6 +751,29 @@ class SplitPuck extends LogicPuck {
 }
 
 
+/**
+ * Each item in the menu knows how to draw itself
+ */
+class PuckMenuItem {
+
+  String icon = "";
+  var data;
+  String font = "40px tune-pad";
+
+  bool selected = false;
+
+  bool highlight = false;
+
+
+  PuckMenuItem(this.icon, this.data);
+
+  void draw(CanvasRenderingContext2D ctx, num dx, num dy) {
+    ctx.font = font;
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+    ctx.fillText("$icon", dx, dy); 
+  }
+}
 
 
 
