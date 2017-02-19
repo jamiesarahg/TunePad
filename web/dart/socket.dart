@@ -32,6 +32,9 @@ class Socket extends Joint {
   }
 
 
+  bool get hasPuck => (puck != null);
+
+
   bool animate() {
     return super.animate();
   }
@@ -68,6 +71,10 @@ class Socket extends Joint {
   void drawCap(CanvasRenderingContext2D ctx) {
     ctx.save();
     {
+      if (_showMenu && hasPuck) {
+        puck.drawMenu(ctx, _menuX, _menuY);
+      }
+
       ctx.fillStyle = "white";
       ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
       ctx.shadowOffsetX = 2 * workspace.zoom;
@@ -89,6 +96,41 @@ class Socket extends Joint {
   }
 
   bool isConnection(Joint o) => (o is Plug && isOpen && o.isOpen && isNear(o));
+
+
+  Touchable touchDown(Contact c) {
+    _showMenu = false;
+    _menuX = c.touchX;
+    _menuY = c.touchY;
+    new Timer(const Duration(milliseconds : 850), _launchMenu);
+    return super.touchDown(c);
+  }
+
+
+  void touchUp(Contact event) { 
+    if (_showMenu && hasPuck) {
+      puck.menuSelection(puck.screenToMenuIndex(_menuX, _menuY));
+    }
+    _showMenu = false;
+    super.touchUp(event);
+  }
+ 
+  num _menuX, _menuY;
+  void touchDrag(Contact c) {
+    _menuX = c.touchX;
+    _menuY = c.touchY;
+    if (!_showMenu) {
+      super.touchDrag(c);
+    }
+  }
+   
+  bool _showMenu = false;
+
+  void _launchMenu() {
+    if (!_dragged && hasPuck) {
+      _showMenu = true;
+    }
+  }
 }
 
 
