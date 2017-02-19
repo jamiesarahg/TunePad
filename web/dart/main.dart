@@ -407,3 +407,10 @@ void bindClickEvent(String id, Function callback) {
   }
 }
 
+
+/**
+ * Distance between two points
+ */
+num dist(num x0, num y0, num x1, num y1) {
+  return sqrt((x1-x0) * (x1-x0) + (y1-y0) * (y1-y0));
+}
