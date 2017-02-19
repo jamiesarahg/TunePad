@@ -46,8 +46,10 @@ class Joint extends Touchable {
 
   // used for touch interaction
   bool _dragging = false;
+  bool _dragged = false;
   num _lastX, _lastY;
   num _touchX, _touchY;
+  num _startX, _startY;
 
 
   Joint(this.parent, this.cx, this.cy, this.offX, this.offY) {
@@ -173,14 +175,13 @@ class Joint extends Touchable {
     highlight = null;
 
     if (_dragging) {
-      //if (this == parent.center) {
-      //  translateBlock(_touchX - _lastX, _touchY - _lastY);
-      //} else {
+      if (_dragged || dist(_touchX, _touchY, _startX, _startY) >= radius * 0.75) {
         cx += (_touchX - _lastX);
         cy += (_touchY - _lastY);
-      //}
-      _lastX = _touchX;
-      _lastY = _touchY;
+        _lastX = _touchX;
+        _lastY = _touchY;
+        _dragged = true;
+      }
       highlight = parent.findOpenConnector(this);
       return true;
     } 
@@ -222,16 +223,20 @@ class Joint extends Touchable {
 
   Touchable touchDown(Contact c) {
     _dragging = true;
+    _dragged = false;
     _touchX = c.touchX;
     _touchY = c.touchY;
     _lastX = c.touchX;
     _lastY = c.touchY;
+    _startX = c.touchX;
+    _startY = c.touchY;
     return this;
   }
 
 
   void touchUp(Contact event) { 
     _dragging = false;
+    _dragged = false;
   }
  
 
