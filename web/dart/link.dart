@@ -178,18 +178,17 @@ class TuneLink extends TuneBlock {
 
         break;
 
+      //----------------------------------------------
+      // joint caps
+      //----------------------------------------------
       case 1:
-        //----------------------------------------------
-        // joint caps
-        //----------------------------------------------
         for (Joint j in joints) j.drawCap(ctx);
         break;
 
-
+      //----------------------------------------------
+      // highlights
+      //----------------------------------------------
       case 2:
-        //----------------------------------------------
-        // highlight
-        //----------------------------------------------
         ctx.fillStyle = "rgba(255, 255, 240, 0.9)";
         for (Joint j in joints) {
           if (j.highlight != null) {
@@ -201,6 +200,15 @@ class TuneLink extends TuneBlock {
           if (j is Socket && workspace.isPuckDragging) {
             j.flash(ctx);
           }
+        }
+        break;
+
+      //----------------------------------------------
+      // pie menus for sockets
+      //----------------------------------------------
+      case 4:
+        for (Joint j in joints) {
+          if (j is Socket) (j as Socket).drawMenu(ctx);
         }
         break;
       }
