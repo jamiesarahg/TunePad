@@ -71,10 +71,6 @@ class Socket extends Joint {
   void drawCap(CanvasRenderingContext2D ctx) {
     ctx.save();
     {
-      if (_showMenu && hasPuck) {
-        puck.drawMenu(ctx, _menuX, _menuY);
-      }
-
       ctx.fillStyle = "white";
       ctx.shadowColor = "rgba(0, 0, 0, 0.3)";
       ctx.shadowOffsetX = 2 * workspace.zoom;
@@ -94,6 +90,14 @@ class Socket extends Joint {
     }
     ctx.restore();
   }
+
+
+  void drawMenu(CanvasRenderingContext2D ctx) {
+    if (_showMenu && hasPuck) {
+      puck.drawMenu(ctx, _menuX, _menuY);
+    }
+  }
+
 
   bool isConnection(Joint o) => (o is Plug && isOpen && o.isOpen && isNear(o));
 
@@ -127,7 +131,7 @@ class Socket extends Joint {
   bool _showMenu = false;
 
   void _launchMenu() {
-    if (!_dragged && hasPuck) {
+    if (!_dragged && _dragging && hasPuck) {
       _showMenu = true;
     }
   }
