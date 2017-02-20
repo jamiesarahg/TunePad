@@ -45,11 +45,9 @@ const PUCK_WIDTH = 60;
 
 
 
-// 1000 ms == quarter note
-// 500 ms == 8th note
-const millisPerBeat = 125;      // 250 ms == 32nd note
+const millisPerBeat = 128;      // 128ms == 32nd note
 const beatsPerMeasure = 32;     // 32nd notes as our smallest division (4 / 4 time)
-const millisPerMeasure = 4000;  // measures are 4,000 ms long
+const millisPerMeasure = 4096;  // measures are 4096 ms long
 
 Stopwatch clock = new Stopwatch(); // used to synchronize animation and vocalization timing
 
@@ -62,7 +60,7 @@ TunePad workspace;
 void main() {
   workspace = new TunePad("video-canvas");
   workspace.loadBlocks("json/blocks.json");
-  Sounds.loadSound("click", "sounds/drumkit/click.wav");
+  Sounds.loadSound("click", "sounds/click.wav");
 }
 
 
@@ -197,8 +195,8 @@ class TunePad extends TouchLayer {
 
 
 /**
- * Main animation / draw loop. This is separate from audio loop and runs on the window.animationFrame
- * timer.
+ * Main animation / draw loop. This is separate from audio loop and runs 
+ * on the window.animationFrame timer.
  */
   void animate(num t) {
     int millis = clock.elapsedMilliseconds;
