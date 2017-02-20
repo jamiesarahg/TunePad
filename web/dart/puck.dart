@@ -168,6 +168,9 @@ abstract class TunePuck extends TuneBlock {
     {
       ctx.translate(centerX, centerY);
 
+      num r1 = radius + 5;
+      num r2 = radius * 4;
+
       // figure out the highlighted menu slice
       int target = screenToMenuIndex(touchX, touchY);
 
@@ -176,7 +179,8 @@ abstract class TunePuck extends TuneBlock {
       ctx.strokeStyle = "#777";
       ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.arc(0, 0, radius * 4, 0, PI * 2, true);
+      ctx.arc(0, 0, r1, 0, PI * 2, false);
+      ctx.arc(0, 0, r2, 0, PI * 2, true);
       ctx.fill();
 
       // menu segments
@@ -190,9 +194,10 @@ abstract class TunePuck extends TuneBlock {
         if (i == target) {
           ctx.fillStyle = "white";
           ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.lineTo(0, radius * -4);
-          ctx.arc(0, 0, radius * 4, -PI/2, -PI/2 - arc, true);
+          ctx.moveTo(0, -r1);
+          ctx.lineTo(0, -r2);
+          ctx.arc(0, 0, r2, -PI/2, -PI/2 - arc, true);
+          ctx.arc(0, 0, r1, -PI/2 - arc, -PI/2, false);
           ctx.closePath();
           ctx.fill();
           ctx.fillStyle = "#777";
@@ -200,9 +205,10 @@ abstract class TunePuck extends TuneBlock {
         else if (menu[i].selected) {
           ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
           ctx.beginPath();
-          ctx.moveTo(0, 0);
-          ctx.lineTo(0, radius * -4);
-          ctx.arc(0, 0, radius * 4, -PI/2, -PI/2 - arc, true);
+          ctx.moveTo(0, -r1);
+          ctx.lineTo(0, -r2);
+          ctx.arc(0, 0, r2, -PI/2, -PI/2 - arc, true);
+          ctx.arc(0, 0, r1, -PI/2 - arc, -PI/2, false);
           ctx.closePath();
           ctx.fill();
           ctx.fillStyle = "#eee";
@@ -211,8 +217,8 @@ abstract class TunePuck extends TuneBlock {
         }
 
         ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(0, radius * -4);
+        ctx.moveTo(0, -r1);
+        ctx.lineTo(0, -r2);
         ctx.stroke();
 
         ctx.rotate(arc * -0.5);
@@ -222,8 +228,12 @@ abstract class TunePuck extends TuneBlock {
       }
 
       ctx.beginPath();
-      ctx.arc(0, 0, radius * 4, 0, PI * 2, true);
+      ctx.arc(0, 0, r2, 0, PI * 2, true);
       ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(0, 0, r1, 0, PI*2, true);
+      ctx.stroke();
+
     }
     ctx.restore();
   }
@@ -335,7 +345,7 @@ class AudioPuck extends TunePuck {
     icon = "d"; // eight note
     duration = millisPerMeasure / 8;
     menu.add(new PuckMenuItem("a", 1/2));  // half note
-    menu.add(new PuckMenuItem("b", 3/4)); // dotted quarter
+    menu.add(new PuckMenuItem("b", 3/8)); // dotted quarter
     menu.add(new PuckMenuItem("c", 1/4)); // quarter note
     menu.add(new PuckMenuItem("d", 1/8)..selected = true); // 8th note
     menu.add(new PuckMenuItem("e", 1/16)); // 16th note
