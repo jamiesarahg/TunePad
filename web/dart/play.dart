@@ -26,8 +26,8 @@ class PlayHead {
   // Current socket in the chain
   Socket current = null;
 
-  // 1, 2, 4, 8, 16, or 32 (higher means faster)
-  int tempo = 8; // 8th notes
+  // Tempo multiplier (e.g. 1/2, 1/4, 1, 2, 4)
+  num tempo = 1.0; // no speed-up or slow-down
 
   // volume
   num gain = 0.6;  
@@ -59,7 +59,7 @@ class PlayHead {
 
 
   void reset() {
-    tempo = 8;
+    tempo = 1.0;
     gain = 0.6;
     playback = 1.0;
     convolve = null;
@@ -84,7 +84,8 @@ class PlayHead {
 
     if (current == null) return;
 
-    int rest = (current.duration < 0) ? 1 : current.duration;
+    int rest = max(1, (current.duration * tempo).toInt());
+    print(rest);
 
     // advance on the next matching beat
     if ((millis - _lastbeat) % rest == 0) {
