@@ -84,25 +84,31 @@ class PlayHead {
 
     if (current == null) return;
 
+    int rest = (current.duration < 0) ? 1 : current.duration;
+
     // advance on the next matching beat
-    if (millis % (millisPerMeasure ~/ tempo) == 0) {
+    if ((millis - _lastbeat) % rest == 0) {
+
       Socket source = null;
       while (current != null && current != source) {
+        _lastbeat = millis;
+
+        // move to the next socket in the chain
+        current = current.advance(this);
 
         // this prevents short circuits and stack overflows
         if (source == null && current != start) source = current;
 
-        // move to the next socket in the chain
-        current = current.advance(this);
+        // call eval on the current socket 
         if (current != null) {
-
-          // call eval on the current socket 
           current.eval(this);
-          if (!current.skipAhead(this)) break;
+          if (current.duration >= 0) break;
         }
       }
     }
   }
+
+  int _lastbeat = 0;
 
 
   bool animate(int millis) { }
