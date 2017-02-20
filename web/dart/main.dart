@@ -258,7 +258,7 @@ class TunePad extends TouchLayer {
       //ctx.scale(scale,scale);
       menu.draw(ctx);
 
-      for (int i=0; i<4; i++) {
+      for (int i=0; i<5; i++) {
         drawLayer(i);
       }
     }
