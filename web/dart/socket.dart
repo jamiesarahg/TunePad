@@ -63,8 +63,8 @@ class Socket extends Joint {
  * Certain types of pucks should get evaluated instantly and then 
  * advance the playhead
  */
-  bool skipAhead(PlayHead player) {
-    return (puck != null && puck.skipAhead(player));
+  int get duration {
+    return (puck == null)? millisPerMeasure / 8 : puck.duration;
   }
 
 
@@ -165,11 +165,7 @@ class LogicSocket extends Socket {
 
   bool goRight(PlayHead player) => logicPuck.goRight(player);
 
-
-  bool skipAhead(PlayHead player) {
-    return true;
-  }
-
+  int get duration => -1;
 
   bool canAcceptPuck(TunePuck p) {
     return p is LogicPuck;
