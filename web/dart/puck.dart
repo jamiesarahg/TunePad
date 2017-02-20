@@ -19,6 +19,9 @@ abstract class TunePuck extends TuneBlock {
   // size and position of the puck
   num centerX, centerY, radius;
 
+  // duration of the puck (-1 means auto-advance)
+  int duration = -1; 
+
   // matching socket highlight
   Socket highlight = null;
 
@@ -28,9 +31,8 @@ abstract class TunePuck extends TuneBlock {
   // icon to draw on the puck
   String icon = "\uf0e7";
 
-  // variables for touch interaction
-  bool _dragging = false;
-  num _touchX, _touchY, _lastX, _lastY;
+  // font face / size to draw in
+  String font = "32px FontAwesome";
 
   // color of the block
   String color = "rgb(0, 160, 227)";
@@ -38,19 +40,17 @@ abstract class TunePuck extends TuneBlock {
   // hint message
   String hint;
 
-  // menu options
+  // puck context menu options
   List<PuckMenuItem> menu = new List<PuckMenuItem>();
+
+  // variables for touch interaction
+  bool _dragging = false;
+  num _touchX, _touchY, _lastX, _lastY;
 
 
 
   TunePuck(this.centerX, this.centerY, this.color, this.hint) {
     this.radius = PUCK_WIDTH / 2;
-    menu.add(new PuckMenuItem("a", 0.5));  // half note
-    menu.add(new PuckMenuItem("b", 0.75)); // dotted quarter
-    menu.add(new PuckMenuItem("c", 0.25)..selected = true); // quarter note
-    menu.add(new PuckMenuItem("d", 0.125)); // 8th note
-    menu.add(new PuckMenuItem("e", 0.0625)); // 16th note
-    menu.add(new PuckMenuItem("f", 0.03125)); // 32nd note
   }
 
 
@@ -60,23 +60,28 @@ abstract class TunePuck extends TuneBlock {
 
   bool get isConnected => socket != null;
 
-
+/** 
+ * As the playhead moves through a chain, it calls eval on sockets 
+ * and pucks
+ */
   void eval(PlayHead) { }
 
-  bool skipAhead(PlayHead player) {
-    return false;
-  }
 
-
+/**
+ * Callback for when a menu option is changed
+ */
   void menuSelection(int index) {
     if (index >= 0 && index < menu.length) {
       for (PuckMenuItem m in menu) {
-        m.selected = false;
+        m.selected = false;  // clear existing selection
       }
       icon = menu[index].icon;
       menu[index].selected = true;
+      _menuSelectionChanged(index);
     }
   }
+
+  void _menuSelectionChanged(int index) { }
 
 
   void connect(Socket s) {
@@ -100,7 +105,21 @@ abstract class TunePuck extends TuneBlock {
   }
 
 
-  void _drawIcon(CanvasRenderingContext2D ctx);
+  void _drawIcon(CanvasRenderingContext2D ctx) {
+    ctx.save();
+    {
+      ctx.translate(centerX, centerY);
+      if (socket != null) {
+        ctx.rotate(socket.parent.rotation * -1);
+      }
+      ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+      ctx.font = font;
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
+      ctx.fillText("$icon", -1, 0);
+    }
+    ctx.restore();
+  }
 
 
   void draw(CanvasRenderingContext2D ctx, [layer = 0]) {
@@ -164,6 +183,8 @@ abstract class TunePuck extends TuneBlock {
       ctx.rotate(PI * 0.5);
       int segments = menu.length;
       num arc = PI * 2 / segments;
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
 
       for (int i=0; i<segments; i++) {
         if (i == target) {
@@ -195,7 +216,8 @@ abstract class TunePuck extends TuneBlock {
         ctx.stroke();
 
         ctx.rotate(arc * -0.5);
-        menu[i].draw(ctx, 0, radius * -2.6);        
+        ctx.font = menu[i].font;
+        ctx.fillText("${menu[i].icon}", 0, radius * -2.6); 
         ctx.rotate(arc * -0.5);
       }
 
@@ -242,9 +264,7 @@ abstract class TunePuck extends TuneBlock {
 
 
   num distance(num tx, num ty) {
-    num a2 = (tx - centerX) * (tx - centerX);
-    num b2 = (ty - centerY) * (ty - centerY);
-    return sqrt(a2 + b2);
+    return dist(tx, ty, centerX, centerY);
   }
 
 
@@ -306,16 +326,31 @@ class AudioPuck extends TunePuck {
   // animates sounds playing
   num _pop = 0.0;
 
+
   AudioPuck(num cx, num cy, String color, this.sound) : super(cx, cy, color, null) {
     if (!Sounds.hasSound(sound)) {
       Sounds.loadSound(sound, sound);
     }
+    font = "40px tune-pad";
+    icon = "d"; // eight note
+    duration = millisPerMeasure / 8;
+    menu.add(new PuckMenuItem("a", 1/2));  // half note
+    menu.add(new PuckMenuItem("b", 3/4)); // dotted quarter
+    menu.add(new PuckMenuItem("c", 1/4)); // quarter note
+    menu.add(new PuckMenuItem("d", 1/8)..selected = true); // 8th note
+    menu.add(new PuckMenuItem("e", 1/16)); // 16th note
   }
 
 
   TuneBlock clone(num cx, num cy) {
     return new AudioPuck(cx, cy, color, sound) .. icon = icon;
   }
+
+
+  void _menuSelectionChanged(int index) { 
+    duration = millisPerMeasure * menu[index].data;
+  }
+
 
   bool animate(int millis) { 
     bool refresh = super.animate(millis);
@@ -339,20 +374,9 @@ class AudioPuck extends TunePuck {
 
 
   void _drawIcon(CanvasRenderingContext2D ctx) { 
-    ctx.save();
-    {
-      ctx.translate(centerX, centerY);
-      if (socket != null) {
-        ctx.rotate(socket.parent.rotation * -1);
-      }
-      ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
-      int size = 30 + (_pop * 60).toInt();
-      ctx.font = "${size}px FontAwesome";
-      ctx.textBaseline = "middle";
-      ctx.textAlign = "center";
-      ctx.fillText("$icon", -1, 0); // lightning
-    }
-    ctx.restore();
+    int size = 40 + (_pop * 60).toInt();
+    font = "${size}px tune-pad";
+    super._drawIcon(ctx);
   }
 
 
@@ -373,7 +397,10 @@ class TempoPuck extends TunePuck {
 
   bool up = true;
 
-  TempoPuck(num cx, num cy, this.up, String hint) : super(cx, cy, "#e2e7ed", hint);
+  TempoPuck(num cx, num cy, bool up, String hint) : super(cx, cy, "#e2e7ed", hint) {
+    this.up = up;
+    icon = up ? "\uf04e" : "\uf04a";
+  }
 
 
   TuneBlock clone(num cx, num cy) {
@@ -388,28 +415,6 @@ class TempoPuck extends TunePuck {
       player.tempo = max(1, player.tempo ~/ 2);
     }
   }
-
-
-  bool skipAhead(PlayHead player) {
-    return true;
-  }
-
-
-  void _drawIcon(CanvasRenderingContext2D ctx) { 
-    ctx.save();
-    {
-      ctx.translate(centerX, centerY);
-      if (socket != null) {
-        ctx.rotate(socket.parent.rotation * -1);
-      }
-      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-      ctx.font = "32px FontAwesome";
-      ctx.textBaseline = "middle";
-      ctx.textAlign = "center";
-      ctx.fillText(up ? "\uf04e" : "\uf04a", up ? 4 : -4, 0); // lightning
-    }
-    ctx.restore();
-  }
 }
 
 
@@ -422,7 +427,9 @@ class GainPuck extends TunePuck {
 
   bool up = true;
 
-  GainPuck(num cx, num cy, this.up, String hint) : super(cx, cy, "#e2e7ed", hint);
+  GainPuck(num cx, num cy, this.up, String hint) : super(cx, cy, "#e2e7ed", hint) {
+    icon = up? "\uf028" : "\uf027";
+  }
 
 
   TuneBlock clone(num cx, num cy) {
@@ -437,28 +444,6 @@ class GainPuck extends TunePuck {
       player.gain = max(0.05, player.gain - 0.2);
     }
   }
-
-
-  bool skipAhead(PlayHead player) {
-    return true;
-  }
-
-
-  void _drawIcon(CanvasRenderingContext2D ctx) { 
-    ctx.save();
-    {
-      ctx.translate(centerX, centerY);
-      if (socket != null) {
-        ctx.rotate(socket.parent.rotation * -1);
-      }
-      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-      ctx.font = "32px FontAwesome";
-      ctx.textBaseline = "middle";
-      ctx.textAlign = "center";
-      ctx.fillText(up ? "\uf028" : "\uf027", 0, 0); 
-    }
-    ctx.restore();
-  }
 }
 
 
@@ -471,7 +456,9 @@ class PitchPuck extends TunePuck {
 
   bool up = true;
 
-  PitchPuck(num cx, num cy, this.up, String hint) : super(cx, cy, "#e2e7ed", hint);
+  PitchPuck(num cx, num cy, this.up, String hint) : super(cx, cy, "#e2e7ed", hint) {
+    icon = up ? "\uf062" : "\uf063";
+  }
 
 
   TuneBlock clone(num cx, num cy) {
@@ -485,28 +472,6 @@ class PitchPuck extends TunePuck {
     } else {
       player.playback = max(0.25, player.playback * 0.5);
     }
-  }
-
-
-  bool skipAhead(PlayHead player) {
-    return true;
-  }
-
-
-  void _drawIcon(CanvasRenderingContext2D ctx) { 
-    ctx.save();
-    {
-      ctx.translate(centerX, centerY);
-      if (socket != null) {
-        ctx.rotate(socket.parent.rotation * -1);
-      }
-      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-      ctx.font = "32px FontAwesome";
-      ctx.textBaseline = "middle";
-      ctx.textAlign = "center";
-      ctx.fillText(up ? "\uf062" : "\uf063", 0, 0); 
-    }
-    ctx.restore();
   }
 }
 
@@ -524,6 +489,7 @@ class DistortPuck extends TunePuck {
     if (!Sounds.hasSound(impulse)) {
       Sounds.loadSound(impulse, impulse);
     }
+    icon = "\uf0d0";
   }
 
 
@@ -535,28 +501,6 @@ class DistortPuck extends TunePuck {
   void eval(PlayHead player) {
     player.convolve = impulse;
   }
-
-
-  bool skipAhead(PlayHead player) {
-    return true;
-  }
-
-
-  void _drawIcon(CanvasRenderingContext2D ctx) { 
-    ctx.save();
-    {
-      ctx.translate(centerX, centerY);
-      if (socket != null) {
-        ctx.rotate(socket.parent.rotation * -1);
-      }
-      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-      ctx.font = "32px FontAwesome";
-      ctx.textBaseline = "middle";
-      ctx.textAlign = "center";
-      ctx.fillText("\uf0d0", 0, 0); 
-    }
-    ctx.restore();
-  }
 }
 
 
@@ -567,7 +511,9 @@ class ResetPuck extends TunePuck {
 
   String impulse = null;
 
-  ResetPuck(num cx, num cy, String hint) : super(cx, cy, "#e2e7ed", hint);
+  ResetPuck(num cx, num cy, String hint) : super(cx, cy, "#e2e7ed", hint) {
+    icon = "\uf05e";
+  }
 
 
   TuneBlock clone(num cx, num cy) {
@@ -578,29 +524,8 @@ class ResetPuck extends TunePuck {
   void eval(PlayHead player) {
     player.reset();
   }
-
-
-  bool skipAhead(PlayHead player) {
-    return true;
-  }
-
-
-  void _drawIcon(CanvasRenderingContext2D ctx) { 
-    ctx.save();
-    {
-      ctx.translate(centerX, centerY);
-      if (socket != null) {
-        ctx.rotate(socket.parent.rotation * -1);
-      }
-      ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
-      ctx.font = "32px FontAwesome";
-      ctx.textBaseline = "middle";
-      ctx.textAlign = "center";
-      ctx.fillText("\uf05e", 0, 0); 
-    }
-    ctx.restore();
-  }
 }
+
 
 
 
@@ -620,11 +545,6 @@ abstract class LogicPuck extends TunePuck {
 
 
   void eval(PlayHead player) {
-  }
-
-
-  bool skipAhead(PlayHead player) {
-    return true;
   }
 
 
@@ -674,23 +594,6 @@ abstract class LogicPuck extends TunePuck {
           _drawIcon(ctx);
           break;
       }
-    }
-    ctx.restore();
-  }
-
-
-  void _drawIcon(CanvasRenderingContext2D ctx) { 
-    ctx.save();
-    {
-      ctx.translate(centerX, centerY);
-      if (socket != null) {
-        ctx.rotate(socket.parent.rotation * -1);
-      }
-      ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
-      ctx.font = "32px FontAwesome";
-      ctx.textBaseline = "middle";
-      ctx.textAlign = "center";
-      ctx.fillText("$icon", 0, 0); 
     }
     ctx.restore();
   }
@@ -768,10 +671,6 @@ class PuckMenuItem {
   PuckMenuItem(this.icon, this.data);
 
   void draw(CanvasRenderingContext2D ctx, num dx, num dy) {
-    ctx.font = font;
-    ctx.textBaseline = "middle";
-    ctx.textAlign = "center";
-    ctx.fillText("$icon", dx, dy); 
   }
 }
 
