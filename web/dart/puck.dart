@@ -34,8 +34,11 @@ abstract class TunePuck extends TuneBlock {
   // font face / size to draw in
   String font = "32px FontAwesome";
 
+  // foreground color of the block
+  String color = "rgba(255, 255, 255, 0.9)";
+
   // color of the block
-  String color = "rgb(0, 160, 227)";
+  String background = "rgb(0, 160, 227)";
 
   // hint message
   String hint;
@@ -49,7 +52,7 @@ abstract class TunePuck extends TuneBlock {
 
 
 
-  TunePuck(this.centerX, this.centerY, this.color, this.hint) {
+  TunePuck(this.centerX, this.centerY, this.background, this.hint) {
     this.radius = PUCK_WIDTH / 2;
   }
 
@@ -112,11 +115,11 @@ abstract class TunePuck extends TuneBlock {
       if (socket != null) {
         ctx.rotate(socket.parent.rotation * -1);
       }
-      ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+      ctx.fillStyle = color; 
       ctx.font = font;
       ctx.textBaseline = "middle";
       ctx.textAlign = "center";
-      ctx.fillText("$icon", -1, 0);
+      ctx.fillText("$icon", 0, 0);
     }
     ctx.restore();
   }
@@ -141,7 +144,7 @@ abstract class TunePuck extends TuneBlock {
         case 3: 
           ctx.save();
           {
-            ctx.fillStyle = color; 
+            ctx.fillStyle = background; 
             ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
             ctx.lineWidth = 2;
             ctx.beginPath();
@@ -337,7 +340,8 @@ class AudioPuck extends TunePuck {
   num _pop = 0.0;
 
 
-  AudioPuck(num cx, num cy, String color, this.sound) : super(cx, cy, color, null) {
+  AudioPuck(num cx, num cy, String background, this.sound) : 
+  super(cx, cy, background, null) {
     if (!Sounds.hasSound(sound)) {
       Sounds.loadSound(sound, sound);
     }
@@ -353,7 +357,7 @@ class AudioPuck extends TunePuck {
 
 
   TuneBlock clone(num cx, num cy) {
-    return new AudioPuck(cx, cy, color, sound) .. icon = icon;
+    return new AudioPuck(cx, cy, background, sound) .. icon = icon;
   }
 
 
@@ -401,29 +405,41 @@ class AudioPuck extends TunePuck {
 
 
 /**
- * Increases the tempo of a play head
+ * Changes the master tempo of a play head
  */
 class TempoPuck extends TunePuck {
 
-  bool up = true;
+  num tempo = 2;
 
-  TempoPuck(num cx, num cy, bool up, String hint) : super(cx, cy, "#e2e7ed", hint) {
-    this.up = up;
-    icon = up ? "\uf04e" : "\uf04a";
+
+  TempoPuck(num cx, num cy, String hint) : super(cx, cy, "#e2e7ed", hint) {
+    color = "#666";
+    icon = "\uf04e";
+
+    menu.add(new PuckMenuItem("\u00bc", 1/4));  // slow down by 1/4
+    menu.add(new PuckMenuItem("\u00bd", 1/2)); // slow down by half
+//    menu.add(new PuckMenuItem("\u00be", 3/4)); // slow down by 3/4
+    menu.add(new PuckMenuItem("1\u00d7", 1));
+//    menu.add(new PuckMenuItem("1\u00bd", 1.5));
+    menu.add(new PuckMenuItem("2\u00d7", 2) .. selected = true); // double time
+    menu.add(new PuckMenuItem("4\u00d7", 4)); // quadruple time
+    for (PuckMenuItem m in menu) {
+      m.font = "30pt sans-serif";
+    }
+  }
+
+  void _menuSelectionChanged(int index) { 
+    tempo = menu[index].data;
   }
 
 
   TuneBlock clone(num cx, num cy) {
-    return new TempoPuck(cx, cy, up, hint);
+    return new TempoPuck(cx, cy, hint);
   }
 
 
   void eval(PlayHead player) {
-    if (up) {
-      player.tempo = min(32, player.tempo * 2);
-    } else {
-      player.tempo = max(1, player.tempo ~/ 2);
-    }
+    player.tempo = 1.0 / tempo; // min(32, player.tempo * 2);
   }
 }
 
@@ -577,7 +593,7 @@ abstract class LogicPuck extends TunePuck {
         case 3: 
           ctx.save();
           {
-            ctx.fillStyle = color; 
+            ctx.fillStyle = background; 
             ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
             ctx.lineWidth = 2;
 
