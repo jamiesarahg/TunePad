@@ -85,17 +85,11 @@ class BlockMenu extends Touchable {
         case 'tempo':
           addBlock(new TempoPuck(colToX(b['col']), rowToY(b['row']), b['hint']));
           break;
-        case 'volume-up':
-          addBlock(new GainPuck(colToX(b['col']), rowToY(b['row']), true, b['hint']));
+        case 'volume':
+          addBlock(new GainPuck(colToX(b['col']), rowToY(b['row']), b['hint']));
           break;
-        case 'volume-down':
-          addBlock(new GainPuck(colToX(b['col']), rowToY(b['row']), false, b['hint']));
-          break;
-        case 'pitch-up':
-          addBlock(new PitchPuck(colToX(b['col']), rowToY(b['row']), true, b['hint']));
-          break;
-        case 'pitch-down':
-          addBlock(new PitchPuck(colToX(b['col']), rowToY(b['row']), false, b['hint']));
+        case 'pitch':
+          addBlock(new PitchPuck(colToX(b['col']), rowToY(b['row']), b['hint']));
           break;
         case 'distort':
           addBlock(new DistortPuck(colToX(b['col']), rowToY(b['row']), b['impulse'], b['hint']));
@@ -108,6 +102,9 @@ class BlockMenu extends Touchable {
           break;
         case 'split':
           addBlock(new SplitPuck(colToX(b['col']), rowToY(b['row']), b['hint']));
+          break;
+        case 'loop':
+          addBlock(new LoopPuck(colToX(b['col']), rowToY(b['row']), b['hint']));
           break;
       }
     }
@@ -211,4 +208,163 @@ class BlockMenu extends Touchable {
     return c;
   }
 }
+
+
+
+/**
+ * Pie menu for pucks
+ */
+class PieMenu {
+
+  List<PuckMenuItem> _items = new List<PuckMenuItem>();
+
+  TunePuck parent;
+
+
+  PieMenu(this.parent);
+
+
+  PuckMenuItem operator[](int index) => _items[index];
+
+  bool get isEmpty => _items.isEmpty;
+
+  int get segments => _items.length;
+
+  num get arc => PI / max(1, segments);
+
+  num get r1 => parent.radius * 1.15;
+
+  num get r2 => parent.radius * 4;
+
+  num get centerX => parent.centerX;
+
+  num get centerY => parent.centerY;
+
+
+  void addItem(String icon, var data, [bool selected = false]) {
+    _items.add(new PuckMenuItem(icon, data) .. selected = selected);
+  }
+
+
+  void draw(CanvasRenderingContext2D ctx, num touchX, num touchY) {
+    if (isEmpty) return;
+    ctx.save();
+    {
+      ctx.translate(centerX, centerY);
+
+      // figure out the highlighted menu slice
+      int target = _screenToMenuIndex(touchX, touchY);
+
+      // menu segments
+      for (int i=0; i<segments; i++) {
+        if (i == target) {
+          _fillWedge(ctx, i, "white");
+          _fillText(ctx, i, "#777");
+        }
+        else if (_items[i].selected) {
+          _fillWedge(ctx, i, "#444");
+          _fillText(ctx, i, "#eee");
+        } else {
+          _fillWedge(ctx, i, "#ddd");
+          _fillText(ctx, i, "#777");
+        }
+
+        ctx.save();
+        {
+          ctx.strokeStyle = "#777";
+          ctx.rotate(PI * 0.5 - arc * i);
+          ctx.beginPath();
+          ctx.moveTo(0, -r1);
+          ctx.lineTo(0, -r2);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      ctx.strokeStyle = "#777";
+      ctx.beginPath();
+      ctx.moveTo(r2, 0);
+      ctx.arc(0, 0, r2, 0, PI, true);
+      ctx.lineTo(-r1, 0);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+
+  void _fillWedge(CanvasRenderingContext2D ctx, int index, String bg) {
+    ctx.save();
+    {
+      ctx.rotate(PI * 0.5 - arc * index);
+      ctx.fillStyle = bg;
+      ctx.beginPath();
+      ctx.moveTo(0, -r1);
+      ctx.lineTo(0, -r2);
+      ctx.arc(0, 0, r2, -PI/2, -PI/2 - arc, true);
+      ctx.arc(0, 0, r1, -PI/2 - arc, -PI/2, false);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+
+  void _fillText(CanvasRenderingContext2D ctx, int index, String fg) {
+    ctx.save();
+    {
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "center";
+      ctx.fillStyle = fg;
+      ctx.font = _items[index].font;
+      num theta = -arc * index - arc * 0.5;
+      num dx = r1 * 2.3 * cos(theta);
+      num dy = r1 * 2.3 * sin(theta);
+      ctx.fillText("${_items[index].icon}", dx, dy);
+    }
+    ctx.restore();
+  }
+
+
+  void touchUp(num tx, num ty) {
+    int index = _screenToMenuIndex(tx, ty);
+    if (index >= 0 && index < segments) {
+      for (PuckMenuItem m in _items) {
+        m.selected = false;
+      }
+      parent.icon = _items[index].icon;
+      _items[index].selected = true;
+      parent.menuSelection(_items[index]);
+    }
+  }
+
+
+  int _screenToMenuIndex(num tx, num ty) {
+    tx -= parent.centerX;
+    ty -= parent.centerY;
+    num alpha = atan2(-ty, tx);
+    if (alpha < 0) alpha += 2 * PI;
+    int target = alpha ~/= arc;
+    num d = dist(tx, ty, 0, 0);
+    if (d >= r1 && d <= r2) {
+      return target;
+    } else {
+      return -1;
+    }
+  }  
+}
+
+
+/**
+ * Each item in the menu knows how to draw itself
+ */
+class PuckMenuItem {
+
+  String icon = "";
+  var data;
+  String font = "34px tune-pad";
+  bool selected = false;
+
+  PuckMenuItem(this.icon, this.data);
+}
+
 
