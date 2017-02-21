@@ -578,7 +578,15 @@ class LoopPuck extends LogicPuck {
 
   int count = 2;
 
+  int id = 0;
+
+  static int LOOP_ID = 0;
+
+  String get key => "loop-${id}";
+
+
   LoopPuck(num cx, num cy, String hint) : super(cx, cy, hint) {
+    id = LOOP_ID++;
     icon = "t";
     fontSize = 38;
     menu.addItem("w", 5); 
@@ -591,10 +599,30 @@ class LoopPuck extends LogicPuck {
     return new LoopPuck(cx, cy, hint);
   }
 
-  void eval(PlayHead player) {
+
+  void menuSelection(PuckMenuItem item) { 
+    count = item.data;
   }
 
-  bool goLeft(PlayHead player) => true;
 
-  bool goRight(PlayHead player) => false;
+  void eval(PlayHead player) {
+    if (player[key] == null) {
+      player[key] = count;
+    } else {
+      player[key]--;
+    }
+  }
+
+  bool goLeft(PlayHead player) {
+    if (player.containsKey(key) && player[key] <= 0) {
+      player.removeKey(key);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool goRight(PlayHead player) {
+    return !goLeft(player);
+  }
 }

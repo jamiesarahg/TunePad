@@ -38,6 +38,8 @@ class PlayHead {
   // covolution impulse to play with sounds
   String convolve = null;
 
+  // pucks can use this to store arbitrary data in the playhead
+  Map<String, dynamic> _data = new Map<String, dynamic>();
   
   PlayLink get parent => start.parent;
 
@@ -46,6 +48,15 @@ class PlayHead {
   PlayHead(this.start) {
     current = start;
   }
+
+
+  dynamic operator [](String key) => _data[key];
+
+  void operator []=(String key, var value) => _data[key] = value;
+
+  bool containsKey(String key) => _data.containsKey(key);
+
+  void removeKey(String key) => _data.remove(key);
 
 
   PlayHead.copy(PlayHead other) {
@@ -85,7 +96,6 @@ class PlayHead {
     if (current == null) return;
 
     int rest = max(1, (current.duration * tempo).toInt());
-    print(rest);
 
     // advance on the next matching beat
     if ((millis - _lastbeat) % rest == 0) {
@@ -94,16 +104,16 @@ class PlayHead {
       while (current != null && current != source) {
         _lastbeat = millis;
 
-        // move to the next socket in the chain
-        current = current.advance(this);
-
         // this prevents short circuits and stack overflows
         if (source == null && current != start) source = current;
+
+        // move to the next socket in the chain
+        current = current.advance(this);
 
         // call eval on the current socket 
         if (current != null) {
           current.eval(this);
-          if (current.duration >= 0) break;
+          if (current.duration > 0) break;
         }
       }
     }
