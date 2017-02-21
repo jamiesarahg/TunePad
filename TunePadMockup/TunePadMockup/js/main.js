@@ -23,6 +23,7 @@ var numSeconds = 10000;
 
 var interval;
 
+var workspace;  //this is the main Blockly workspace
 
 $(document).ready(function () {
     canvas = new fabric.Canvas('canvas');
@@ -144,7 +145,7 @@ function setUpBlockly(canvas) {
     var blocklyDiv = document.getElementById('blocklyDiv');
 
     blocklyCreateBlocks();
-    var workspace = Blockly.inject(blocklyDiv,
+    workspace = Blockly.inject(blocklyDiv,
         { toolbox: document.getElementById('toolbox') });
     workspace.addChangeListener(onBlocklyChange);
 
@@ -200,8 +201,26 @@ outputs: none
 makes the update button in color when something has changed in blockly
 */
 function onBlocklyChange(event) {
+    if (event.type == "create") {
+        var blockId = event.blockId;
+        if (blockId != null) disableBlock(blockId, true);   
+    }
+    if (event.type == "delete") {
+        var blockId = event.blockId;
+        if (blockId != null) disableBlock(blockId, false); 
+    }
+
     document.getElementById('updateCodeBW').style.display = 'none';
     document.getElementById('updateCode').style.display = 'inherit';
+}
+
+function disableBlock(blockID, disabled) {
+    var block = document.getElementById(blockID);
+    if (block != null) {
+        block.setAttribute("disabled", disabled);
+        workspace.updateToolbox(document.getElementById('toolbox'));
+    }
+
 }
 
 /*
