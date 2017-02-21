@@ -94,7 +94,7 @@ class Socket extends Joint {
 
   void drawMenu(CanvasRenderingContext2D ctx) {
     if (_showMenu && hasPuck) {
-      puck.drawMenu(ctx, _menuX, _menuY);
+      puck.menu.draw(ctx, _menuX, _menuY);
     }
   }
 
@@ -113,7 +113,7 @@ class Socket extends Joint {
 
   void touchUp(Contact event) { 
     if (_showMenu && hasPuck) {
-      puck.menuSelection(puck.screenToMenuIndex(_menuX, _menuY));
+      puck.menu.touchUp(_menuX, _menuY);
     }
     _showMenu = false;
     super.touchUp(event);
