@@ -56,7 +56,7 @@ $(document).ready(function () {
     trashCan.onload = function () {
         var image = new fabric.Image(trashCan);
         image.left = 10;
-        image.top = 260;
+        image.top = canvas.height-80;
         image.hasControls = false;
         image.lockMovementX = true;
         image.lockMovementY = true;
@@ -147,6 +147,9 @@ function setUpBlockly(canvas) {
     var workspace = Blockly.inject(blocklyDiv,
         { toolbox: document.getElementById('toolbox') });
     workspace.addChangeListener(onBlocklyChange);
+
+
+
     var onresize = function (e) {
         // Compute the absolute coordinates and dimensions of blocklyArea.
         var element = blocklyArea;
@@ -162,6 +165,11 @@ function setUpBlockly(canvas) {
         blocklyDiv.style.top = y + 'px';
         blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
         blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+
+        console.log(blocklyArea.offsetHeight);
+
+        document.getElementById('updateCode').style.top = blocklyArea.offsetTop + 5 + 'px';
+        document.getElementById('updateCodeBW').style.top = blocklyArea.offsetTop + 5 + 'px';
     };
     window.addEventListener('resize', onresize, false);
     onresize();
