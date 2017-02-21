@@ -8,14 +8,13 @@
   { "type" : "beat", "color" : "#87decf", "sound" : "sounds/drumkit/rim.wav", "row" : 8, "col" : 1 },
   { "type" : "beat", "color" : "#ff8080", "sound" : "sounds/drumkit/snare.wav", "row" : 8, "col" : 2 },
   { "type" : "beat", "color" : "#55ddff", "sound" : "sounds/drumkit/tom.wav", "row" : 8, "col" : 3 },
-  { "type" : "random", "row" : 9.5, "col" : 0, "hint" : "Randomize" },
-  { "type" : "split", "row" : 9.5, "col" : 1, "hint" : "Split" },
-  { "type" : "tempo", "row" : 11, "col" : 0, "hint" : "Change Tempo" },
-  { "type" : "volume-up", "row" : 11, "col" : 2, "hint" : "Louder" },
-  { "type" : "volume-down", "row" : 11, "col" : 3, "hint" : "Softer" },
-  { "type" : "pitch-up", "row" : 12, "col" : 0, "hint" : "Pitch Up" },
-  { "type" : "pitch-down", "row" : 12, "col" : 1, "hint" : "Pitch Down" },
-  { "type" : "distort", "row" : 12, "col" : 2, "impulse" : "sounds/impulse.wav", "hint" : "Distortion" },
-  { "type" : "reset", "row" : 12, "col" : 3, "hint" : "Reset Effects" },
-  { "type" : "beat", "color" : "#cd87de", "sound" : "sounds/drumkit/click.wav", "row" : 100, "col" : 2 }
+  { "type" : "tempo", "row" : 9.5, "col" : 0, "hint" : "Tempo" },
+  { "type" : "volume", "row" : 9.5, "col" : 1, "hint" : "Volume" },
+  { "type" : "pitch", "row" : 9.5, "col" : 2, "hint" : "Pitch" },
+  { "type" : "distort", "row" : 9.5, "col" : 3, "impulse" : "sounds/impulse.wav", "hint" : "Distortion" },
+  { "type" : "random", "row" : 11, "col" : 0, "hint" : "Randomize" },
+  { "type" : "split", "row" : 11, "col" : 1, "hint" : "Split" },
+  { "type" : "loop", "row" : 11, "col" : 2, "hint" : "Loop" },
+  { "type" : "beat", "color" : "#cd87de", "sound" : "sounds/drumkit/click.wav", "row" : 100, "col" : 2 },
+  { "type" : "reset", "row" : 100, "col" : 3, "hint" : "Reset Effects" }
 ]
