@@ -19,14 +19,21 @@ var sounds = {};
 
 var mousedown = false;
 
+var numSeconds = 10000;
+
+var interval;
+
 
 $(document).ready(function () {
     canvas = new fabric.Canvas('canvas');
     canvas.setHeight(window.innerHeight / 2); //set the canvas to be half of the height of the screen
     canvas.setWidth(window.innerWidth); // set the canvas to be the entire width of the screen
     canvas.selection = false; // disable group selection
-    setInterval(tenSeconds, 10000); // emits a emission from black node every second
+    interval = setInterval(tenSeconds, numSeconds); // emits a emission from black node every second
     setInterval(moveEmissions, 10); // moves all emissions every 10ms
+
+    $('#seconds').val(10);
+    $('#seconds').on('change',onBlocklyChange);
 
     //Click functions for adding new nodes to the canvas of each color
     $('#green').click(function () {
@@ -49,7 +56,7 @@ $(document).ready(function () {
     trashCan.onload = function () {
         var image = new fabric.Image(trashCan);
         image.left = 10;
-        image.top = 430;
+        image.top = 260;
         image.hasControls = false;
         image.lockMovementX = true;
         image.lockMovementY = true;
@@ -106,7 +113,7 @@ function onChange(options) {
     //TODO
     //must find better way to identify trashcan
     trashCan = canvas.getObjects()[0];
-    if (options.target != trashCan) {
+    if (options.target != trashCan && options.target._objects[0].fill != 'black') {
         var intersects = options.target.intersectsWithObject(trashCan);
         if (intersects) {
             //nodes are now groups, so have to delete the entire group
@@ -165,6 +172,11 @@ function setUpBlockly(canvas) {
         document.getElementById('updateCodeBW').style.display = 'inherit';
         document.getElementById('updateCode').style.display = 'none';
         var code = Blockly.JavaScript.workspaceToCode(workspace);
+
+        clearInterval(interval);
+        numSeconds = (document.getElementById('seconds').value)*1000;
+        interval = setInterval(tenSeconds, numSeconds);
+        console.log(numSeconds);
 
         try {
             eval(code);
