@@ -1,23 +1,18 @@
+
 Triangle playhead
-random splits
 bongos 
 mic
 subroutines
 
 Repulsion
-Random splits
-
-\uf140 bullseye
 
 double loops into a split causes explosion!
 
-Count loops
 Logic splits
 
 background drag to pan
 pinch to zoom
 
-split arrow decoration for split blocks
 
   { "type" : "sound", "color" : "#ddafe9", "sound" : "sounds/bongos/level1.wav", "row" : 9.5, "col" : 0 },
   { "type" : "sound", "color" : "#cd87de", "sound" : "sounds/bongos/level2.wav", "row" : 9.5, "col" : 1 },
