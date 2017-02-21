@@ -65,17 +65,11 @@
 .tp-bolt:before {
   content: "\6c";
 }
-.tp-forward:before {
-  content: "\6d";
-}
 .tp-magic:before {
   content: "\6e";
 }
 .tp-microphone:before {
   content: "\6f";
-}
-.tp-music:before {
-  content: "\70";
 }
 .tp-pause:before {
   content: "\71";
@@ -87,22 +81,19 @@
   content: "\73";
 }
 .tp-refresh:before {
-  content: "\74";
+  content: "\52";
 }
 .tp-retweet:before {
-  content: "\75";
+  content: "\53";
 }
 .tp-share-alt:before {
-  content: "\76";
+  content: "\55";
 }
 .tp-trash-o:before {
-  content: "\77";
+  content: "\56";
 }
 .tp-trash:before {
   content: "\78";
-}
-.tp-volume-up:before {
-  content: "\79";
 }
 .tp-random:before {
   content: "\7a";
@@ -116,11 +107,8 @@
 .tp-ban:before {
   content: "\43";
 }
-.tp-quarter-dot-note-1:before {
-  content: "\67";
-}
 .tp-arrow-down:before {
-  content: "\68";
+  content: "\54";
 }
 .tp-clock-o:before {
   content: "\69";
@@ -154,4 +142,58 @@
 }
 .tp-cog:before {
   content: "\4c";
+}
+.tp-fast-forward:before {
+  content: "\4f";
+}
+.tp-gauge:before {
+  content: "\50";
+}
+.tp-volume-0:before {
+  content: "\30";
+}
+.tp-volume-1:before {
+  content: "\31";
+}
+.tp-volume-2:before {
+  content: "\32";
+}
+.tp-volume-3:before {
+  content: "\33";
+}
+.tp-tempo-0:before {
+  content: "\34";
+}
+.tp-tempo-1:before {
+  content: "\35";
+}
+.tp-tempo-2:before {
+  content: "\36";
+}
+.tp-tempo-3:before {
+  content: "\37";
+}
+.tp-pitch-even:before {
+  content: "\79";
+}
+.tp-arrow-graph-down-left:before {
+  content: "\67";
+}
+.tp-arrow-graph-up-right:before {
+  content: "\68";
+}
+.tp-loop-2:before {
+  content: "\74";
+}
+.tp-loop-3:before {
+  content: "\75";
+}
+.tp-loop-4:before {
+  content: "\76";
+}
+.tp-loop-5:before {
+  content: "\77";
+}
+.tp-split:before {
+  content: "\6d";
 }
