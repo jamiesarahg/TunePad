@@ -106,6 +106,9 @@ class BlockMenu extends Touchable {
         case 'loop':
           addBlock(new LoopPuck(colToX(b['col']), rowToY(b['row']), b['hint']));
           break;
+        case 'jump':
+          addBlock(new JumpPuck(colToX(b['col']), rowToY(b['row']), b['hint']));
+          break;
       }
     }
   }
@@ -243,6 +246,13 @@ class PieMenu {
 
   void addItem(String icon, var data, [bool selected = false]) {
     _items.add(new PuckMenuItem(icon, data) .. selected = selected);
+  }
+
+
+  void setFont(String font) {
+    for (PuckMenuItem item in _items) {
+      item.font = font;
+    }
   }
 
 
