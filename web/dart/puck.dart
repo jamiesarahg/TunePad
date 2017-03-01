@@ -273,6 +273,7 @@ class AudioPuck extends TunePuck {
       playback : player.playback,
       convolve : player.convolve);
     _pop = 1.0;
+    score.addNote(0, player.lastbeat, duration * player.tempo, background);
   }
 
 
@@ -415,6 +416,36 @@ class DistortPuck extends TunePuck {
 
   void eval(PlayHead player) {
     player.convolve = impulse;
+  }
+}
+
+
+/**
+ * Jumps to a subroutine
+ */
+class JumpPuck extends TunePuck {
+
+  String target = null;
+
+  JumpPuck(num cx, num cy, String hint) : super(cx, cy, "#c12", hint) {
+    color = "white";
+    font = "sans-serif";
+    icon = "A";
+    menu.addItem("E", "E"); 
+    menu.addItem("D", "D"); 
+    menu.addItem("C", "C"); 
+    menu.addItem("B", "B");
+    menu.addItem("A", "A", true);
+    menu.setFont("30px sans-serif");
+  }
+
+
+  TuneBlock clone(num cx, num cy) {
+    return new JumpPuck(cx, cy, hint);
+  }
+
+
+  void eval(PlayHead player) {
   }
 }
 
