@@ -38,6 +38,8 @@ class PlayHead {
   // covolution impulse to play with sounds
   String convolve = null;
 
+  int lastbeat = 0;
+
   // pucks can use this to store arbitrary data in the playhead
   Map<String, dynamic> _data = new Map<String, dynamic>();
   
@@ -98,11 +100,11 @@ class PlayHead {
     int rest = max(1, (current.duration * tempo).toInt());
 
     // advance on the next matching beat
-    if ((millis - _lastbeat) % rest == 0) {
+    if ((millis - lastbeat) % rest == 0) {
 
       Socket source = null;
       while (current != null && current != source) {
-        _lastbeat = millis;
+        lastbeat = millis;
 
         // this prevents short circuits and stack overflows
         if (source == null && current != start) source = current;
@@ -118,8 +120,6 @@ class PlayHead {
       }
     }
   }
-
-  int _lastbeat = 0;
 
 
   bool animate(int millis) { }
@@ -158,6 +158,9 @@ class PlayLink extends TuneLink {
   TuneBlock clone(num cx, num cy) {
     return new PlayLink(cx, cy);
   }
+
+
+  bool get isPlaying => button.playing;
 
 
   void stepProgram(int millis) {
