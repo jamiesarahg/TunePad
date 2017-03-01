@@ -15,6 +15,7 @@
   { "type" : "random", "row" : 11, "col" : 0, "hint" : "Randomize" },
   { "type" : "split", "row" : 11, "col" : 1, "hint" : "Split" },
   { "type" : "loop", "row" : 11, "col" : 2, "hint" : "Loop" },
+  { "type" : "jump", "row" : 100, "col" : 3, "hint" : "Jump" },
   { "type" : "beat", "color" : "#cd87de", "sound" : "sounds/drumkit/click.wav", "row" : 100, "col" : 2 },
   { "type" : "reset", "row" : 100, "col" : 3, "hint" : "Reset Effects" }
 ]
