@@ -27,15 +27,11 @@ part "menu.dart";
 part "matrix.dart";
 part "play.dart";
 part "puck.dart";
+part "score.dart";
 part "socket.dart";
 part "sounds.dart";
 part "split.dart";
 part "touch.dart";
-
-
-// IMPORTANT! This has to match js/video.js
-const VIDEO_WIDTH = 1280; //1920; // 1280; // 800
-const VIDEO_HEIGHT = 720; // 1080; // 720; // 600
 
 
 const PLUG_WIDTH = 40;
@@ -55,6 +51,8 @@ AudioContext audio = new AudioContext();
 
 
 TunePad workspace;
+
+TuneScore score;
 
 
 void main() {
@@ -90,6 +88,7 @@ class TunePad extends TouchLayer {
 
   bool _puckdrag = false;
   bool _highlightTrash = false;
+  bool _playing = false;
 
   // shows hint message
   String _hintText = null;
@@ -102,12 +101,13 @@ class TunePad extends TouchLayer {
     width = canvas.width;
     height = canvas.height;
     menu = new BlockMenu(350, this);
+    // score shows notes over time
+    score = new TuneScore(0, height, width - 350);
+
 
     // register touch events
     tmanager.registerEvents(canvas);
     tmanager.addTouchLayer(this);
-
-
 
     // master clock for audio timing
     clock.start();
@@ -136,6 +136,7 @@ class TunePad extends TouchLayer {
  */
   bool get isPuckDragging => _puckdrag;
   bool get highlightTrash => _highlightTrash;
+  bool get isPlaying => _playing;
 
 
 /**
@@ -145,11 +146,13 @@ class TunePad extends TouchLayer {
     int millis = clock.elapsedMilliseconds;
 
     if (millis >= _lastbeat + millisPerBeat) {
+      _playing = false;
       _lastbeat = (millis ~/ millisPerBeat) * millisPerBeat;
 
       for (TuneLink link in links) {
         if (link is PlayLink) {
           (link as PlayLink).stepProgram(_lastbeat);
+          if ((link as PlayLink).isPlaying) _playing = true;
         }
       }
     }
@@ -221,6 +224,12 @@ class TunePad extends TouchLayer {
     }
     if (menu.animate(millis)) refresh = true;
     if (refresh) draw();
+
+    // animate the score
+    score.animate(t);
+    if (isPlaying) score.draw(ctx);
+
+    // trigger next animation frame
     window.animationFrame.then(animate);
   }
 
@@ -248,7 +257,7 @@ class TunePad extends TouchLayer {
       ctx.fillStyle = "rgba(0, 0, 0, ${_hintAlpha})";
       ctx.textAlign = "left";
       ctx.font = "600 30px sans-serif";
-      ctx.fillText("$_hintText", 80, 80);
+      ctx.fillText("$_hintText", 130, 80);
     }
 
     ctx.save();
@@ -263,7 +272,6 @@ class TunePad extends TouchLayer {
       }
     }
     ctx.restore();
-      
 /*
 
     Uint8List adata = Sounds.analyzeSound();
