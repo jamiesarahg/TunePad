@@ -242,28 +242,42 @@ class AudioPuck extends TunePuck {
   // sound file for this puck
   String sound;
 
+  // duration as fraction of a measure
+  num beat;
 
-  AudioPuck(num cx, num cy, String background, this.sound) : 
+  AudioPuck(num cx, num cy, String background, this.sound, this.beat) : 
   super(cx, cy, background, null) {
     if (!Sounds.hasSound(sound)) {
       Sounds.loadSound(sound, sound);
     }
-    icon = "d"; // eight note
-    duration = millisPerMeasure / 8;
-    menu.addItem("a", 1/2);  // half note
-    menu.addItem("c", 1/4); // dotted quarter
-    menu.addItem("d", 1/8, true); // 8th note
-    menu.addItem("e", 1/16); // 16th note
+    duration = beat * millisPerMeasure;
+
+    icon = beatToCharacter(beat);
+    menu.addItem("a", 1/2, (beat == 1/2));  // half note
+    menu.addItem("c", 1/4, (beat == 1/4)); // dotted quarter
+    menu.addItem("d", 1/8, (beat == 1/8)); // 8th note
+    menu.addItem("e", 1/16, (beat == 1/16)); // 16th note
   }
 
 
   TuneBlock clone(num cx, num cy) {
-    return new AudioPuck(cx, cy, background, sound) .. icon = icon;
+    return new AudioPuck(cx, cy, background, sound, beat);
+  }
+
+
+  String beatToCharacter(num b) {
+    if (b == 1/2) return "a";
+    if (b == 3/8) return "b";
+    if (b == 1/4) return "c";
+    if (b == 1/8) return "d";
+    if (b == 1/16) return "e";
+    return "d";
   }
 
 
   void menuSelection(PuckMenuItem item) { 
-    duration = millisPerMeasure * item.data;
+    beat = item.data;
+    duration = item.data * millisPerMeasure;
   }
 
 

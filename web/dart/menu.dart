@@ -77,10 +77,10 @@ class BlockMenu extends Touchable {
     for (var b in json) {
       switch (b['type']) {
         case 'beat':
-          addBlock(new AudioPuck(colToX(b['col']), rowToY(b['row']), b['color'], b['sound']));
+          addBlock(new AudioPuck(colToX(b['col']), rowToY(b['row']), b['color'], b['sound'], b['duration']));
           break;
         case 'sound':
-          addBlock(new AudioPuck(colToX(b['col']), rowToY(b['row']), b['color'], b['sound']) .. icon = "\uf001");
+          addBlock(new AudioPuck(colToX(b['col']), rowToY(b['row']), b['color'], b['sound'], b['duration']));
           break;
         case 'tempo':
           addBlock(new TempoPuck(colToX(b['col']), rowToY(b['row']), b['hint']));
