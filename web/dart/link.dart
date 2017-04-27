@@ -280,6 +280,10 @@ class TuneLink extends TuneBlock {
           j.cx = j.highlight.cx;
           j.cy = j.highlight.cy;
           j.dragChain();
+          if (j is Socket && j.hasPuck) {
+            j.puck.centerX = j.cx;
+            j.puck.centerY = j.cy;
+          }
           Sounds.playSound("click");
         }
         j.highlight = null;

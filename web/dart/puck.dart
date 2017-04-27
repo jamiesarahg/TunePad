@@ -182,16 +182,11 @@ abstract class TunePuck extends TuneBlock {
   }
 
 
-  num distance(num tx, num ty) {
-    return dist(tx, ty, centerX, centerY);
-  }
-
-
   bool containsTouch(Contact c) {
     if (isConnected) {
       return false;
     } else {
-      return distance(c.touchX, c.touchY) <= radius;
+      return dist(c.touchX, c.touchY, centerX, centerY) <= radius;
     }
   }
 
@@ -212,13 +207,28 @@ abstract class TunePuck extends TuneBlock {
 
 
   void touchUp(Contact c) {
+    // erase the hint when I let go of the puck
+    if (inMenu) workspace.clearHint();
+
     _dragging = false;
+
+    // connect to an existing socket
     if (highlight != null) {
       connect(highlight);
+      highlight = null;
     }
-    highlight = null;
-    if (isOverMenu) trash = true;
-    if (inMenu) workspace.clearHint();
+    // or trash if this is back over the menu
+    else if (isOverMenu) {
+      trash = true;
+    }
+
+    // or create a new socket
+    else {
+      TuneLink link = new TuneLink(centerX + BLOCK_WIDTH * 0.75, centerY);
+      workspace.addBlock(link);
+      connect(link.socket);
+    }
+
     inMenu = false;
     workspace.draw();
   }
