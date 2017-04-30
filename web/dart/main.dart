@@ -15,51 +15,28 @@ library TunePad;
 
 import 'dart:html';
 import 'dart:math';
-import 'dart:async';
-import 'dart:convert';
-import 'dart:web_audio';
-import 'dart:typed_data';
+import 'dart:async';      // timers 
+import 'dart:convert';    // JSON library
+import 'dart:web_audio';  // web audio
 
 part "block.dart";
-part "joint.dart";
-part "link.dart";
-part "menu.dart";
-part "matrix.dart";
-part "play.dart";
 part "puck.dart";
-part "score.dart";
-part "socket.dart";
+part "pulse.dart";
 part "sounds.dart";
-part "split.dart";
 part "touch.dart";
 
 
-const PLUG_WIDTH = 40;
-const JOINT_WIDTH = 35;
-const SOCKET_WIDTH = 70;
-const PUCK_WIDTH = 60;
-
-
-
-const millisPerBeat = 128;      // 128ms == 32nd note
-const beatsPerMeasure = 32;     // 32nd notes as our smallest division (4 / 4 time)
-const millisPerMeasure = 4096;  // measures are 4096 ms long
-
-Stopwatch clock = new Stopwatch(); // used to synchronize animation and vocalization timing
-
-AudioContext audio = new AudioContext();
-
-
+// global link to the tunepad workspace
 TunePad workspace;
-
-TuneScore score;
 
 
 void main() {
-  workspace = new TunePad("video-canvas");
-  workspace.loadBlocks("json/blocks.json");
+  workspace = new TunePad("game-canvas");
   Sounds.loadSound("click", "sounds/click.wav");
+  print("Hello");
 }
+
+
 
 
 class TunePad extends TouchLayer {
@@ -67,32 +44,17 @@ class TunePad extends TouchLayer {
   // size of the canvas
   int width, height;
 
-  // global scale of the canvas
-  num zoom = 1.0;
-
   // Canvas 2D drawing context
   CanvasRenderingContext2D ctx;
 
   // Touch event manager
   TouchManager tmanager = new TouchManager();
 
-  // List of all blocks on the screen
-  List<TuneLink> links = new List<TuneLink>();
+  // list of all sound generator pucks on the canvas
   List<TunePuck> pucks = new List<TunePuck>();
 
-
-  // block menu
-  BlockMenu menu;
-
-  int _lastbeat = 0;
-
-  bool _puckdrag = false;
-  bool _highlightTrash = false;
-  bool _playing = false;
-
-  // shows hint message
-  String _hintText = null;
-  double _hintAlpha = 0.0;
+  // list of pulses fired
+  List<TunePulse> pulses = new List<TunePulse>();
 
 
   TunePad(String canvasId) {
@@ -100,229 +62,77 @@ class TunePad extends TouchLayer {
     ctx = canvas.getContext('2d');
     width = canvas.width;
     height = canvas.height;
-    menu = new BlockMenu(350, this);
-    // score shows notes over time
-    score = new TuneScore(0, height, width - 350);
-
 
     // register touch events
     tmanager.registerEvents(canvas);
     tmanager.addTouchLayer(this);
 
-    // master clock for audio timing
-    clock.start();
+    // load some sound effects
+    Sounds.loadSound("fire", "sounds/drumkit/rim.wav");
+
+    // create some initial pucks
+    addBlock(new TunePuck(300, 300, "sounds/crank.wav"));
+    addBlock(new TunePuck(600, 300, "sounds/drumkit/clap.wav") .. background = "#f73");
 
     // start animation timer
     window.animationFrame.then(animate);
 
-    // restart button
-    bindClickEvent("restart-button", (e) {
-      window.location.reload();
-    });
-
-    zoomIn(0.85);
-
-    // start audio timer
-    new Timer.periodic(const Duration(milliseconds : 25), (timer) => vocalize());
-
-    // let things load and then repaint
-    new Timer(const Duration(milliseconds : 500), () => draw());
-    new Timer(const Duration(milliseconds : 3000), () => draw());
+    // initial repaint
+    new Timer(const Duration(milliseconds : 500), () => draw());    
   }
 
 
 /**
- * This flag is used by sockets to do flash highlighting
- */
-  bool get isPuckDragging => _puckdrag;
-  bool get highlightTrash => _highlightTrash;
-  bool get isPlaying => _playing;
-
-
-/**
- * Main audio loop. Set on a periodic timer at 125ms (32nd note metronome)
- */
-  void vocalize() {
-    int millis = clock.elapsedMilliseconds;
-
-    if (millis >= _lastbeat + millisPerBeat) {
-      _playing = false;
-      _lastbeat = (millis ~/ millisPerBeat) * millisPerBeat;
-
-      for (TuneLink link in links) {
-        if (link is PlayLink) {
-          (link as PlayLink).stepProgram(_lastbeat);
-          if ((link as PlayLink).isPlaying) _playing = true;
-        }
-      }
-    }
-  }
-
-
-  void showHint(String hint) {
-    _hintText = hint;
-    _hintAlpha = 0.5;
-  }
-
-
-  void clearHint() {
-    _hintText = null;
-  }
-
-
-  bool isOverMenu(num px, num py) {
-    return menu.isOverMenu(px, py);
-  }
-
-
-/** 
- * Match a puck to a socket
- */
-  Socket findMatchingSocket(TunePuck puck) {
-    for (TuneLink link in links) {
-      for (Joint j in link.joints) {
-        if (j is Socket) {
-          Socket s = j as Socket;
-          if (s.canAcceptPuck(puck)) {
-            num dx = j.cx - puck.centerX;
-            num dy = j.cy - puck.centerY;
-            if (sqrt(dx * dx + dy * dy) <= (j.radius + puck.radius)) {
-              return j;
-            }
-          }
-        }
-      }
-    }
-    return null;
-  }
-
-
-/**
- * Main animation / draw loop. This is separate from audio loop and runs 
- * on the window.animationFrame timer.
+ * Main animation / draw loop. 
  */
   void animate(num t) {
-    int millis = clock.elapsedMilliseconds;
-    bool refresh = false;
 
-    if (_highlightTrash) refresh = true;
-    _highlightTrash = false;
-    // animate and then relax to relieve spring forces
-    for (TuneLink link in links) {
-      if (link.animate(millis)) refresh = true;
-      if (link.isDragging && link.isOverMenu && !link.inMenu) _highlightTrash = true;
-    }
-    for (TuneLink link in links) {
-      link.relax();
-    }
-    if (_puckdrag) refresh = true;
-    _puckdrag = false;
+    bool refresh = false;      
+
+    // animate the audio pucks
     for (TunePuck puck in pucks) {
-      if (puck.animate(millis)) refresh = true;
-      if (puck.isDragging) _puckdrag = true;
-      if (puck.isDragging && puck.isOverMenu && !puck.inMenu) _highlightTrash = true;
+      if (puck.animate(t)) refresh = true;
     }
-    if (menu.animate(millis)) refresh = true;
-    if (refresh) draw();
 
-    // animate the score
-    score.animate(t);
-    if (isPlaying) score.draw(ctx);
+
+    // animate pulses and remove dead pulses 
+    // (make sure move backwards through the list)
+    for (int i=pulses.length - 1; i >= 0; i--) {
+      TunePulse pulse = pulses[i];
+      if (pulse.animate(t)) refresh = true;
+      if (pulse.dead) pulses.removeAt(i);
+    }
+
+    // only draw if we need to 
+    if (refresh) draw();
 
     // trigger next animation frame
     window.animationFrame.then(animate);
   }
 
 
-  void drawLayer(int layer) {
-    for (TuneLink link in links) {
-      link.draw(ctx, layer);
-    }
-    for (TunePuck puck in pucks) {
-      puck.draw(ctx, layer);
-    }
-  }
-
-
+/**
+ * Repaint the screen
+ */
   void draw() {
-    removeTrash();
-
+    // clear the screen
     ctx.fillStyle = "#abc";
     ctx.fillRect(0, 0, width, height);
-    ctx.strokeStyle = "black";
-    ctx.strokeRect(0, 0, width, height);
-
-    // hint message
-    if (_hintText != null && _hintAlpha > 0.0) {
-      ctx.fillStyle = "rgba(0, 0, 0, ${_hintAlpha})";
-      ctx.textAlign = "left";
-      ctx.font = "600 30px sans-serif";
-      ctx.fillText("$_hintText", 130, 80);
-    }
 
     ctx.save();
     {
-      //setScale(scale, scale);
-      transformContext(ctx);
-      //ctx.scale(scale,scale);
-      menu.draw(ctx);
 
-      for (int i=0; i<5; i++) {
-        drawLayer(i);
-      }
+      pulses.forEach((pulse) => pulse.draw(ctx));
+
+      pucks.forEach((puck) => puck.draw(ctx));
+
     }
     ctx.restore();
-/*
-
-    Uint8List adata = Sounds.analyzeSound();
-
-    if (adata != null) {
-
-      ctx.save();
-      {
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        num sliceWidth = 500.0 / adata.length;
-        num x = 0.0;
-        for (int i=0; i<adata.length; i++) {
-          num v = adata[i] / 128.0;
-          num y = v * 130.0 + 300.0;
-          if (i == 0) {
-            ctx.moveTo(x, y);
-          } else {
-            ctx.lineTo(x, y);
-          }
-          x += sliceWidth;
-        }
-        ctx.lineTo(500, 430);
-        ctx.stroke();
-      }
-      ctx.restore();
-    }
-*/    
-  }
-
-
-  void removeTrash() {
-    for (int i=links.length - 1; i >= 0; i--) {
-      TuneLink link = links[i];
-      if (link.trash) {
-        links.removeAt(i);
-        removeTouchable(link);
-      }
-    }
-    for (int i=pucks.length - 1; i >= 0; i--) {
-      TunePuck puck = pucks[i];
-      if (puck.trash) {
-        pucks.removeAt(i);
-        removeTouchable(puck);
-      }
-    }
   }
 
 
   void addBlock(TuneBlock block) {
-    moveToTop(block);
+    moveToTop(block);  // also adds to the list
     addTouchable(block);
   }
 
@@ -331,92 +141,38 @@ class TunePad extends TouchLayer {
  * Move a block to the top of the visual stack
  */
   void moveToTop(TuneBlock block) {
-    if (block is TuneLink) {
-      links.remove(block);
-      links.add(block);
-    } else if (block is TunePuck) {
+    if (block is TunePuck) {
       pucks.remove(block);
       pucks.add(block);
     }
   }
 
 
-/** 
- * Zooms the entire screen in or out
- */  
-  void zoomIn(num factor) {
-    zoom *= factor;
-    scaleAroundPoint(
-      factor, factor, 
-      worldToObjectX(width/2, height/2), 
-      worldToObjectY(width/2, height/2));
-  }
-
-
-  bool keyDown(KeyboardEvent kbd) {
-    num delta = 5 / zoom;
-    num cx = worldToObjectX(width/2, height/2);
-    num cy = worldToObjectY(width/2, height/2);
-    switch (kbd.keyCode) {
-      case 189: 
-        zoomIn(0.98);
-        break;
-      case 187: 
-        zoomIn(1 / 0.98);
-        break;
-      case 37: 
-        translate(delta, 0); 
-        break;
-      case 38: 
-        translate(0, delta); 
-        break;
-      case 39: 
-        translate(-delta, 0); 
-        break;
-      case 40: 
-        translate(0, -delta); 
-        break;
-      case 48: 
-        resetTransform(); 
-        break;
-      default: 
-        break;
-    }
-    draw();
+/**
+ * Fire a pulse with initial position and velocity
+ */
+  void firePulse(TunePuck parent, num cx, num cy, num vx, num vy) {
+    pulses.add(new TunePulse(parent, cx, cy, vx, vy));
   }
 
 
 /**
- * Load blocks from a JSON definition file
+ * check to see if the given pulse has collided with any pucks
  */
-  void loadBlocks(String url) {
-    var request = HttpRequest.getString(url).then((responseText) {
-      var json = JSON.decode(responseText);
-      menu.initBlocks(json);
-    });
-  }
-
-}
-
-
-/**
- * Binds a click event to a button
- */
-void bindClickEvent(String id, Function callback) {
-  Element element = querySelector("#${id}");
-  if (element != null) {
-    if (isFlagSet("debug")) {
-      element.onClick.listen(callback);
-    } else {
-      element.onTouchStart.listen(callback);    
+  TunePuck collisionCheck(TunePulse pulse) {
+    for (TunePuck puck in pucks) {
+      if (puck != pulse.parent) {
+        num d = dist(puck.centerX, puck.centerY, pulse.cx, pulse.cy);
+        if (d <= puck.radius + pulse.radius) {
+          return puck;
+        }
+      }
     }
+    return null;
   }
 }
 
 
-/**
- * Distance between two points
- */
 num dist(num x0, num y0, num x1, num y1) {
-  return sqrt((x1-x0) * (x1-x0) + (y1-y0) * (y1-y0));
+  return sqrt((x1-x0)*(x1-x0) + (y1-y0)*(y1-y0));
 }
