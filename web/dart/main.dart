@@ -18,28 +18,40 @@ import 'dart:math';
 import 'dart:async';      // timers 
 import 'dart:convert';    // JSON library
 import 'dart:web_audio';  // web audio
+import 'package:NetTango/ntango.dart' as NT;   // import NetTango
 
-part "block.dart";
+part "blocks.dart";
 part "puck.dart";
 part "pulse.dart";
 part "sounds.dart";
 part "touch.dart";
 
 
+const millisPerBeat = 256; // 128;      // 128ms == 32nd note
+const beatsPerMeasure = 32;     // 32nd notes as our smallest division (4 / 4 time)
+const millisPerMeasure = 4096;  // measures are 4096 ms long
+
+Stopwatch clock = new Stopwatch(); // used as metronome
+
 // global link to the tunepad workspace
 TunePad workspace;
 
+// global link to the block workspace
+NT.CodeWorkspace blocks;
+
+
 
 void main() {
+  blocks = new NT.CodeWorkspace(BLOCKS);
   workspace = new TunePad("game-canvas");
+  blocks.runtime = workspace;
   Sounds.loadSound("click", "sounds/click.wav");
-  print("Hello");
 }
 
 
 
 
-class TunePad extends TouchLayer {
+class TunePad extends TouchLayer with NT.Runtime {
 
   // size of the canvas
   int width, height;
@@ -57,6 +69,7 @@ class TunePad extends TouchLayer {
   List<TunePulse> pulses = new List<TunePulse>();
 
 
+
   TunePad(String canvasId) {
     CanvasElement canvas = querySelector("#$canvasId");
     ctx = canvas.getContext('2d');
@@ -67,8 +80,11 @@ class TunePad extends TouchLayer {
     tmanager.registerEvents(canvas);
     tmanager.addTouchLayer(this);
 
-    // load some sound effects
-    Sounds.loadSound("fire", "sounds/drumkit/rim.wav");
+    // master clock for audio timing
+    clock.start();
+
+    // start program step timer
+    new Timer.periodic(const Duration(milliseconds : 25), (timer) => vocalize());    
 
     // create some initial pucks
     addBlock(new TunePuck(300, 300, "sounds/crank.wav"));
@@ -112,6 +128,25 @@ class TunePad extends TouchLayer {
 
 
 /**
+ * Advance program at 32nd note intervals
+ */
+  int _lastbeat = 0; 
+  void vocalize() {
+    int millis = clock.elapsedMilliseconds;
+
+    if (millis >= _lastbeat + millisPerBeat) {
+
+      _lastbeat = (millis ~/ millisPerBeat) * millisPerBeat;
+      if (isRunning) {
+        for (TunePuck puck in pucks) {
+          puck.program.step();
+        }
+      }
+    }
+  }  
+
+
+/**
  * Repaint the screen
  */
   void draw() {
@@ -131,20 +166,18 @@ class TunePad extends TouchLayer {
   }
 
 
-  void addBlock(TuneBlock block) {
-    moveToTop(block);  // also adds to the list
-    addTouchable(block);
+  void addBlock(TunePuck puck) {
+    moveToTop(puck);  // also adds to the list
+    addTouchable(puck);
   }
 
 
 /**
  * Move a block to the top of the visual stack
  */
-  void moveToTop(TuneBlock block) {
-    if (block is TunePuck) {
-      pucks.remove(block);
-      pucks.add(block);
-    }
+  void moveToTop(TunePuck puck) {
+    pucks.remove(puck);
+    pucks.add(puck);
   }
 
 
@@ -169,6 +202,22 @@ class TunePad extends TouchLayer {
       }
     }
     return null;
+  }
+
+
+/**
+ * Runtime interface
+ */
+  void setup() {
+    // called when the restart button is pressed    
+  }
+
+  void programChanged() {
+    // called whenever the program is changed
+  }
+
+  void stepForward() {
+    // Step forward 1 tick (step forward button pressed)
   }
 }
 

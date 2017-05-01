@@ -39,7 +39,6 @@ class TunePulse {
 
   TunePulse(this.parent, this.cx, this.cy, this.vx, this.vy) {
     radius = PULSE_RADIUS;
-    Sounds.playSound("fire");
   }
 
 

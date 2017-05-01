@@ -14,7 +14,13 @@
 part of TunePad;
 
 
-class TunePuck extends TuneBlock {
+class TunePuck implements Touchable, NT.ProgramTarget {
+
+  // size and position of the block
+  num centerX, centerY, radius;
+
+  // heading of the pulse emitter 
+  num heading = 45.0;
 
   // sound file for this puck
   String sound;
@@ -31,6 +37,12 @@ class TunePuck extends TuneBlock {
   // background color of the block
   String background = "rgb(0, 160, 227)";
 
+  // used to randomize some commands
+  Random rnd = new Random();
+
+  // every block runs its own NetTango program
+  NT.Program program;
+
   // variables for touch interaction
   bool _dragging = false;
   num _touchX, _touchY, _lastX, _lastY;
@@ -39,13 +51,15 @@ class TunePuck extends TuneBlock {
   num _pop = 0.0;
 
 
-  TunePuck(num centerX, num centerY, this.sound) :
-    super(centerX, centerY) 
-  {
+
+
+  TunePuck(this.centerX, this.centerY, this.sound) {
     this.radius = 30;
-    if (!Sounds.hasSound(sound)) {
-      Sounds.loadSound(sound, sound);
-    }
+    Sounds.loadSound(sound, sound);
+    Sounds.loadSound("turn", "sounds/drumkit/block.wav");
+    Sounds.loadSound("pulse", "sounds/drumkit/rim.wav");
+    program = new NT.Program(blocks.start, this);
+    program.batched = false;  // execute blocks one at a time
   }
 
 
@@ -53,6 +67,37 @@ class TunePuck extends TuneBlock {
     _pop = 1.0;
     Sounds.playSound(sound);
   }
+
+
+
+/**
+ * This is the ProgramTarget interface (subclasses should redefine).
+ * Called by programs during block.eval
+ */
+  dynamic doAction(String action, List params) {
+    switch (action) {
+      case "turn":
+        num angle = params[0];
+        heading = (heading + angle) % 360.0;
+        Sounds.playSound("turn");
+        break;
+
+      case "pulse":
+        num velocity = params[0];
+        num dx = velocity * cos(PI * heading / 180.0);
+        num dy = velocity * sin(PI * heading / 180.0);
+        workspace.firePulse(this, centerX, centerY, dx, dy);
+        Sounds.playSound("pulse");
+        break;
+
+      case "rest":
+        break;
+
+      default:
+    }
+    return null;
+  }
+
 
 
   void draw(CanvasRenderingContext2D ctx) {
@@ -105,6 +150,9 @@ class TunePuck extends TuneBlock {
   }
 
 
+/**
+ * This is the Touchable interface
+ */
   bool containsTouch(Contact c) {
     return dist(c.touchX, c.touchY, centerX, centerY) <= radius;
   }
