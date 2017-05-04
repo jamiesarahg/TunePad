@@ -19,14 +19,22 @@ var sounds = {};
 
 var mousedown = false;
 
+var numSeconds = 10000;
+
+var interval;
+
+var workspace;  //this is the main Blockly workspace
 
 $(document).ready(function () {
     canvas = new fabric.Canvas('canvas');
-    canvas.setHeight(window.innerHeight / 2);
-    canvas.setWidth(window.innerWidth);
+    canvas.setHeight(window.innerHeight / 2); //set the canvas to be half of the height of the screen
+    canvas.setWidth(window.innerWidth); // set the canvas to be the entire width of the screen
     canvas.selection = false; // disable group selection
-    setInterval(tenSeconds, 10000); // emits a emission from black node every second
+    interval = setInterval(tenSeconds, numSeconds); // emits a emission from black node every second
     setInterval(moveEmissions, 10); // moves all emissions every 10ms
+
+    $('#seconds').val(10);
+    $('#seconds').on('change',onBlocklyChange);
 
     //Click functions for adding new nodes to the canvas of each color
     $('#green').click(function () {
@@ -49,7 +57,7 @@ $(document).ready(function () {
     trashCan.onload = function () {
         var image = new fabric.Image(trashCan);
         image.left = 10;
-        image.top = 430;
+        image.top = canvas.height-80;
         image.hasControls = false;
         image.lockMovementX = true;
         image.lockMovementY = true;
@@ -60,24 +68,28 @@ $(document).ready(function () {
         addNode(canvas, 'black');
     }
 
-
+    // sets variable when mouse is down
     canvas.on('mouse:down', function (options) {
         mousedown = true;
     });
+    // releases variable when mouse is up
     canvas.on('mouse:up', function (options) {
         mousedown = false;
         if (options.target) {
             onChange(options);
         }
     });
+    // if a node is moved, then any emissions going to that node will fade out.
+    // this changes the end goal of the particle to not be a node but to be 'fade'
     canvas.on('object:modified', function (options) {
         emissions.forEach(function (emission) {
             if (options.target == emission[5][0]) {
                 emission[5] = 'fade';
             }
         })
+    // if a node is dragged off of the screen then it is deleted.
         nodeTups.forEach(function (nodeTup) {
-            if (0 > nodeTup[0].left || nodeTup[0].left > 1800 || 0 > nodeTup[0].top || nodeTup[0].top > 500) {
+            if (0 > nodeTup[0].left || nodeTup[0].left > window.innerWidth || 0 > nodeTup[0].top || nodeTup[0].top > window.innerHeight/2) {
                     nodeTup[0].remove();   
                     var index = nodeTups.indexOf(nodeTup);
                     nodeTups.splice(index, 1);
@@ -86,21 +98,33 @@ $(document).ready(function () {
     })
 });
 
+// sets up blockly interface and web audio
 window.onload = function () {
     setUpBlockly();
     setUpSound();
-
 }
 
+// onChange
+// function for mouseup on the fabric canvas if something has changed
+// inputs: options from the change event
+// output: none
 function onChange(options) {
+    // Checks if item moved overlaps with the trash can object. If so, deletes node.
     options.target.setCoords();
     //TODO
     //must find better way to identify trashcan
     trashCan = canvas.getObjects()[0];
-    if (options.target != trashCan) {
+    if (options.target != trashCan && options.target._objects[0].fill != 'black') {
         var intersects = options.target.intersectsWithObject(trashCan);
         if (intersects) {
-            options.target.remove();
+            //nodes are now groups, so have to delete the entire group
+            if (canvas.getActiveGroup()) {
+                canvas.getActiveGroup().forEachObject(function (o) { canvas.remove(o) });
+                canvas.discardActiveGroup().renderAll();
+            } else {
+                canvas.remove(canvas.getActiveObject());
+            }
+            // also must take node out of nodeTups array
             nodeTups.forEach(function (nodeTup) {
                 if (nodeTup[0] == options.target) {
                     var index = nodeTups.indexOf(nodeTup);
@@ -121,9 +145,12 @@ function setUpBlockly(canvas) {
     var blocklyDiv = document.getElementById('blocklyDiv');
 
     blocklyCreateBlocks();
-    var workspace = Blockly.inject(blocklyDiv,
+    workspace = Blockly.inject(blocklyDiv,
         { toolbox: document.getElementById('toolbox') });
     workspace.addChangeListener(onBlocklyChange);
+
+
+
     var onresize = function (e) {
         // Compute the absolute coordinates and dimensions of blocklyArea.
         var element = blocklyArea;
@@ -139,6 +166,11 @@ function setUpBlockly(canvas) {
         blocklyDiv.style.top = y + 'px';
         blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
         blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+
+        console.log(blocklyArea.offsetHeight);
+
+        document.getElementById('updateCode').style.top = blocklyArea.offsetTop + 5 + 'px';
+        document.getElementById('updateCodeBW').style.top = blocklyArea.offsetTop + 5 + 'px';
     };
     window.addEventListener('resize', onresize, false);
     onresize();
@@ -149,20 +181,69 @@ function setUpBlockly(canvas) {
         document.getElementById('updateCodeBW').style.display = 'inherit';
         document.getElementById('updateCode').style.display = 'none';
         var code = Blockly.JavaScript.workspaceToCode(workspace);
+
+        clearInterval(interval);
+        numSeconds = (document.getElementById('seconds').value)*1000;
+        interval = setInterval(tenSeconds, numSeconds);
+        console.log(numSeconds);
+
         try {
             eval(code);
         } catch (e) {
             alert(e);
         }
     })
-
 }
-
+/*
+onBlocklyChange
+inputs: change event
+outputs: none
+makes the update button in color when something has changed in blockly
+*/
 function onBlocklyChange(event) {
+    if (event.type == "create") {
+        var blockId = event.blockId;
+        if (blockId != null) disableBlock(blockId, true);   
+    }
+    if (event.type == "delete") {
+        var blockId = event.blockId;
+        if (blockId != null) disableBlock(blockId, false); 
+    }
+
     document.getElementById('updateCodeBW').style.display = 'none';
     document.getElementById('updateCode').style.display = 'inherit';
 }
 
+function disableBlock(blockID, disabled) {
+    var block = document.getElementById(blockID);
+    if (block != null) {
+        block.setAttribute("disabled", disabled);
+        workspace.updateToolbox(document.getElementById('toolbox'));
+    }
+
+}
+
+/*
+dynamicOptions
+inputs: none
+output: list of options for dropdown menu of the nodes on the board
+Creates an array of arrays. In the array is a string of the number of each node on the board and the same string a second time
+This is the dropdown object and then the name of the dropdown object for blockly
+*/
+function dynamicOptions() {
+    var options = [];
+    var nodeLen = nodeTups.length;
+    nodeTups.forEach(function (nodeTup) {
+        options.push([String(nodeTup[2]), String(nodeTup[2])]) //nodeTup[2] is the number of each node
+    })
+    return options;
+}
+/*
+blocklyCreateBlocks
+inputs: none
+output: none
+defines my custom blocks, both the output JS and how they should look
+*/
 function blocklyCreateBlocks() {
     Blockly.Blocks['define_red'] = {
         init: function () {
@@ -257,6 +338,20 @@ function blocklyCreateBlocks() {
             this.setHelpUrl('');
         }
     };
+
+    //var dropdown = new Blockly.FieldDropdown(dynamicOptions);
+    Blockly.Blocks['individual_node'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("node")
+                .appendField(new Blockly.FieldDropdown(dynamicOptions), 'node_number');
+            this.setOutput(true, "node");
+            this.setColour(65);
+            this.setTooltip('');
+            this.setHelpUrl('');
+        }
+    };
+
     Blockly.Blocks['for_each_block'] = {
         init: function () {
             this.appendDummyInput()
@@ -340,7 +435,7 @@ function blocklyCreateBlocks() {
     Blockly.JavaScript['emitblock'] = function (block) {
         var value_emit_from = Blockly.JavaScript.valueToCode(block, 'emit_from', Blockly.JavaScript.ORDER_ATOMIC);
         var value_emit_to = Blockly.JavaScript.valueToCode(block, 'emit_to', Blockly.JavaScript.ORDER_ATOMIC);
-        var code = 'emit('+value_emit_from+','+value_emit_to + ');';
+        var code = 'emit(' + value_emit_from + ',' + value_emit_to + ');';
         return code;
     };
     Blockly.JavaScript['node_variable'] = function (block) {
@@ -358,6 +453,17 @@ function blocklyCreateBlocks() {
         var statements_foreach_statements = Blockly.JavaScript.statementToCode(block, 'foreach_statements');
         var code = 'nodeTups.forEach(function ' + value_foreach_variable + ' {' + statements_foreach_statements + '});';
         return code;
+    };
+    Blockly.JavaScript['individual_node'] =  function (block) {
+        var dropdown_node_number = block.getFieldValue('node_number');
+        var index = null;
+        nodeTups.forEach(function (nodeTup) {
+            if (String(nodeTup[2]) == String(dropdown_node_number)) {
+                index = nodeTups.indexOf(nodeTup);
+            }
+        });
+        var code = 'nodeTups['+index+']';
+        return [String(code), Blockly.JavaScript.ORDER_NONE];
     };
 
     Blockly.JavaScript['if_node_color_block'] = function (block) {
@@ -403,6 +509,7 @@ function moveEmissions() {
             var opacity = 1 - (1 / (500 * emission[4]) * emission[3]);
             //checks to see if emission reached end
             if (emission[3] >= 100 & emission[5] != 'fade') {
+
                 canvas.remove(emission[0]);
                 var index = emissions.indexOf(emission);
                 emissions.splice(index, 1);
@@ -411,6 +518,7 @@ function moveEmissions() {
             }
                 //moves remainder of emissions
             else {
+
                 emission[3] += emission[4];
                 var newLocation = getLineXYatPercent(emission[1], emission[2], emission[3])
                 emission[0].left = newLocation.x;
@@ -437,14 +545,27 @@ appends to nodeTups array
 */
 function addNode(canvas, color) {
     canvasArea = document.getElementById('canvas');
+    // finds the current highest node number
+    var nodeNumber = -1;   
+    nodeTups.forEach(function (node) {
+        nodeNumber = (node[2] > nodeNumber) ? node[2] : nodeNumber;
+    });
+    nodeNumber = nodeNumber + 1;
+    // picks random location on canvas to put the new node
     var left = getRandomInt(canvasArea.style.left.substring(0, canvasArea.style.left.length - 2) + 20, canvasArea.style.left.substring(0, canvasArea.style.left.length - 2) + canvasArea.style.width.substring(0, canvasArea.style.width.length - 2) - 20);
     var top = getRandomInt(canvasArea.style.top.substring(0, canvasArea.style.top.length - 2) + 20, canvasArea.style.top.substring(0, canvasArea.style.top.length - 2) + canvasArea.style.height.substring(0, canvasArea.style.height.length - 2) - 50);
-    var circle = new fabric.Circle({ radius: 15, fill: color, top: top, left: left });
-    circle.hasControls = false;
-    circle.lockScalingX = true;
-    circle.lockScalingY = true;
-    nodeTups.push([circle, color]);
-    canvas.add(circle);
+    //creates fabric circle for node and fabric text of the node number
+    var c = new fabric.Circle({ radius: 15, fill: color, top: top, left: left });
+    var t = new fabric.Text(String(nodeNumber), { left: left+10, top: top+2, fontSize: 24, fill: 'white' });
+    // creates a group of the circle and text
+    var g = new fabric.Group([c, t], {});
+    g.hasControls = false;
+    g.lockScalingX = true;
+    g.lockScalingY = true;
+    // adds new node group to nodeTups array
+    nodeTups.push([g, color, nodeNumber]);
+    //adds new node group to canvas
+    canvas.add(g);
 }
 /*
 getRandomInt
@@ -475,7 +596,6 @@ function tenSeconds() {
             }
         })
     }
-    
 }
 
 /*
@@ -484,19 +604,20 @@ inputs: nodeA, nodeB
 outputs: distance in pixels
 */
 function findDistance(nodeA, nodeB) {
-    var start = { x: parseFloat(nodeA.left) + parseFloat(nodeA.radius), y: parseFloat(nodeA.top) + parseFloat(nodeA.radius) };
-    var end = { x: parseFloat(nodeB.left) + parseFloat(nodeB.radius), y: parseFloat(nodeB.top) + parseFloat(nodeB.radius) };
+    var start = { x: parseFloat(nodeA.left), y: parseFloat(nodeA.top)  };
+    var end = { x: parseFloat(nodeB.left) , y: parseFloat(nodeB.top)  };
     return Math.sqrt(Math.pow((end.x - start.x), 2) + Math.pow((end.y - start.y), 2));
 }
 
 /*
 emit
-inputs: node: fabric element of node emitting from, endNodeTup: array of node in NodeTup form of destination node
+inputs: nodeTup: array of node in NodeTup form of origin node, endNodeTup: array of node in NodeTup form of destination node
 outputs: none
 starts an emission from node to node of endNodeTup
 updates emissions array
 */
 function emit(nodeTup, endNodeTup) {
+    // checks how many particles are on the board. If more than 800, alert user and erase all particles
     if (emissions.length > 800) {
         emissions.forEach(function (emission) {
             canvas.remove(emission[0]);
@@ -504,10 +625,16 @@ function emit(nodeTup, endNodeTup) {
         emissions = [];
         alert('IT EXPLOADED!');
     }
+    //only sends particle if the start node and end node are not the same
     if (nodeTup[0] !== endNodeTup[0]) {
-        var start = { x: parseFloat(nodeTup[0].left) + parseFloat(nodeTup[0].radius), y: parseFloat(nodeTup[0].top) + parseFloat(nodeTup[0].radius) };
-        var end = { x: parseFloat(endNodeTup[0].left) + parseFloat(endNodeTup[0].radius), y: parseFloat(endNodeTup[0].top) + parseFloat(endNodeTup[0].radius) };
+        //identifies circle element of node group
+        startDot = nodeTup[0]._objects[0] 
+        endDot = endNodeTup[0]._objects[0]
+
+        var start = { x: parseFloat(nodeTup[0].left) + parseFloat(startDot.radius), y: parseFloat(nodeTup[0].top) + parseFloat(startDot.radius) };
+        var end = { x: parseFloat(endNodeTup[0].left) + parseFloat(endDot.radius), y: parseFloat(endNodeTup[0].top) + parseFloat(endDot.radius) };
         var d = findDistance(nodeTup[0], endNodeTup[0]);
+
         var perc = 100.0 / d; //looks at distance from start to end position and decides what percentage of the distance the emission should move every 10ms
         var emission = new fabric.Circle({ radius: 3, fill: 'black', top: start.y, left: start.x });
         emission.hasControls = false;
@@ -516,9 +643,9 @@ function emit(nodeTup, endNodeTup) {
         emission.selectable = false;
         canvas.add(emission);
         emissions.push([emission, start, end, 0, perc, endNodeTup]);
-        //document.getElementById('emissionsCount').innerHTML = 'Number of Emissions:' + emissions.length;
     }  
 }
+
 /*
 getLineXYatPercent
 inputs: startPt: dictionary with x&y representing start position, endPt: dictionary with x&y representing end position, percentage of line that emission should be at
@@ -577,9 +704,10 @@ function setUpSound() {
         getSound.send(); // Send the Request and Load the File
     })
 }
+
 /*
-makeSound(note)
-inputs: note: string of a note
+makeSound
+inputs: note: string of a note, volume: percentage of volume that should be played from 0-1. Loudest is 1
 outputs: none
 plays the sound of given note string
 */
