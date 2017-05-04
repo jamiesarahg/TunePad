@@ -1,0 +1,8 @@
+name: TunePad
+
+dependencies:
+  browser: any
+  NetTango:
+    git:
+      url: https://github.com/NetTango/NetTango.git
+      ref: version_0.5
