@@ -9,14 +9,43 @@
   <meta charset="utf-8">
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/font-awesome.min.css">
+  <script src="../tracking.js/build/tracking-min.js"></script>
+
+  <style>
+  video {
+    margin-left: 100px;
+    margin-top: 35px;
+    position: absolute;
+  }
+  </style>
 </head>
 
 <body>
+
+
+  <div class="demo-frame">
+    <div class="demo-container">
+      <video id="video" width="600" height="450" preload autoplay loop muted controls></video>
+      <canvas id="canvas" width="600" height="450"></canvas>
+    </div>
+  </div>
+
   <div id="content">
     <canvas id="game-canvas" width="1000" height="500"></canvas>
     <canvas id="blocks-canvas" width="1000" height="500"></canvas>
 
   </div>
+
+  <script>
+    window.onload = function() {
+      var video = document.getElementById('video');
+      var canvas = document.getElementById('canvas');
+      var context = canvas.getContext('2d');
+
+      var tracker = new tracking.ColorTracker();
+      tracking.track('#video', tracker, { camera: true });
+    };
+  </script>
 
   <script type="application/dart" src="dart/main.dart"></script>
   <script src="packages/browser/dart.js"></script>
