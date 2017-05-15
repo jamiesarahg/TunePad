@@ -80,6 +80,8 @@ class TunePad extends TouchLayer with NT.Runtime {
     tmanager.registerEvents(canvas);
     tmanager.addTouchLayer(this);
 
+    //get pucks in puck.dart
+
     // master clock for audio timing
     clock.start();
 
@@ -89,6 +91,7 @@ class TunePad extends TouchLayer with NT.Runtime {
     // create some initial pucks
     addBlock(new TunePuck(300, 300, "sounds/crank.wav"));
     addBlock(new TunePuck(600, 300, "sounds/drumkit/clap.wav") .. background = "#f73");
+    addBlock(new TunePuck(400, 100, "sounds/drumkit/tom.wav") .. background = "#7733ff");
 
     // start animation timer
     window.animationFrame.then(animate);
@@ -185,8 +188,12 @@ class TunePad extends TouchLayer with NT.Runtime {
  * Fire a pulse with initial position and velocity
  */
   void firePulse(TunePuck parent, num cx, num cy, num vx, num vy) {
-    pulses.add(new TunePulse(parent, cx, cy, vx, vy));
-  }
+    num x = 1;
+    for (TunePuck puck in pucks) {
+      pulses.add(new TunePulse(parent, cx, cy , 7, 0));
+      x = x*10;
+    }
+}
 
 
 /**

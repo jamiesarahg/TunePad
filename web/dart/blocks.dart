@@ -65,6 +65,21 @@ var BLOCKS = {
       "instances" : 2,
       "name" : "chance",
       "type" : "chance"
+    },
+    {
+      "name" : "send to",
+      "instances" : 3,
+      "params" : [
+        {
+          "type" : "range",
+          "min" : 0,
+          "max" : 2,
+          "step" : 1,
+          "default" : 0,
+          "random" : true,
+          "label" : "puck number"
+        }
+      ]
     }
   ]
 };
