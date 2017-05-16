@@ -1,21 +1,20 @@
 function initGUIControllers(tracker) {
   // GUI Controllers
 
-  var gui = new dat.GUI();
+//var gui = new dat.GUI();
 
   var trackedColors = {
     custom: false
-    //cyan: true
-    //magenta: true
-    //yellow: true
   };
 
+  trackedColors["cyan"] = true;
+  trackedColors["magenta"] = true;
+  trackedColors["yellow"] = true;
 
-
- Object.keys(tracking.ColorTracker.knownColors_).forEach(function(color) {
+ /* Object.keys(tracking.ColorTracker.knownColors_).forEach(function(color) {
     trackedColors[color] = true;
     console.log(color);
-  }); 
+  }); */
 
 
 
@@ -63,7 +62,7 @@ function initGUIControllers(tracker) {
     }
 
     updateColors();
-  }
+  } 
 
 
 
@@ -78,11 +77,11 @@ function initGUIControllers(tracker) {
     }
 
     tracker.setColors(colors);
-  }
+  } 
 
-  var colorsFolder = gui.addFolder('Colors');
+  //var colorsFolder = gui.addFolder('Colors');
 
-  Object.keys(trackedColors).forEach(function(color) {
+  /*Object.keys(trackedColors).forEach(function(color) {
     if (color !== 'custom') {
       colorsFolder.add(trackedColors, color).onFinishChange(updateColors);
     }
@@ -94,7 +93,7 @@ function initGUIControllers(tracker) {
     } else {
       colorsFolder.remove(this.customColorElement);
     }
-  });
+  }); 
 
   var parametersFolder = gui.addFolder('Parameters');
 
@@ -103,6 +102,8 @@ function initGUIControllers(tracker) {
 
   colorsFolder.open();
   parametersFolder.open(); 
+
+  */
 
   updateColors();
 }
