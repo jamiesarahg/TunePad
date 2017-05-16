@@ -90,8 +90,8 @@ class TunePad extends TouchLayer with NT.Runtime {
 
     // create some initial pucks
     addBlock(new TunePuck(300, 300, "sounds/crank.wav"));
-    addBlock(new TunePuck(600, 300, "sounds/drumkit/clap.wav") .. background = "#f73");
-    addBlock(new TunePuck(400, 100, "sounds/drumkit/tom.wav") .. background = "#7733ff");
+    addBlock(new TunePuck(600, 300, "sounds/drumkit/clap.wav") .. background = "#f73" .. name = "Orange");
+    addBlock(new TunePuck(400, 100, "sounds/drumkit/tom.wav") .. background = "#7733ff" .. name = "Purple");
 
     // start animation timer
     window.animationFrame.then(animate);
@@ -194,16 +194,13 @@ class TunePad extends TouchLayer with NT.Runtime {
       x = x*10;
     // }
   }
-  void sendPulse(TunePuck parent, /*Tunepuck child,*/ num cx, num cy, num v) {
-  	for (TunePuck puck in pucks) {
-  		print(puck.centerX);
-  		num xdiff = (puck.centerX-parent.centerX);
-  		num ydiff = (puck.centerY-parent.centerY);
-  		num total = xdiff.abs()+ydiff.abs();
-  		xdiff = xdiff/total * v;
-  		ydiff = ydiff/total * v;
-  		pulses.add(new TunePulse(parent, cx, cy, xdiff, ydiff ));
-  	}
+  void sendPulse(TunePuck parent, TunePuck child, num cx, num cy, num v) {
+	num xdiff = (child.centerX-parent.centerX);
+	num ydiff = (child.centerY-parent.centerY);
+	num total = xdiff.abs()+ydiff.abs();
+	xdiff = xdiff/total * v;
+	ydiff = ydiff/total * v;
+	pulses.add(new TunePulse(parent, cx, cy, xdiff, ydiff ));
   }
 	
 

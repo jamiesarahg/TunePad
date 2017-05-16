@@ -37,6 +37,9 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   // background color of the block
   String background = "rgb(0, 160, 227)";
 
+  // background color name of block
+  String name = "Blue";
+
   // used to randomize some commands
   Random rnd = new Random();
 
@@ -95,7 +98,12 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
       case "send to":
       	num v = 5;
-      	workspace.sendPulse(this, centerX, centerY, v);
+      	String color = params[0];
+      	for (TunePuck puck in workspace.pucks) {
+      		if (puck.name == color){
+      			workspace.sendPulse(this, puck, centerX, centerY, v);
+      		}
+      	}
       	break;
 
       default:
