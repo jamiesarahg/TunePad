@@ -9,16 +9,18 @@
   <meta charset="utf-8">
   <link rel="stylesheet" href="css/main.css">
   <link rel="stylesheet" href="css/font-awesome.min.css">
-  <script src="../tracking.js/build/tracking-min.js"></script>
-  <script src="../tracking.js/node_modules/dat.gui/build/dat.gui.min.js"></script>
-  <script src="../tracking.js/examples/assets/stats.min.js"></script>
-  <script src="../tracking.js/examples/assets/color_camera_gui.js"></script>
+  <!-- <script src="../js/trackercam.js"></script> -->
+  <script src="../js/tracking.js/build/tracking-min.js"></script>
+  <script src="../js/tracking.js/node_modules/dat.gui/build/dat.gui.min.js"></script>
+  <script src="../js/tracking.js/examples/assets/stats.min.js"></script>
+  <script src="../js/tracking.js/examples/assets/color_camera_gui.js"></script>
 
   <style>
   video, #canvas1 {
-    margin-left: 100px;
-    margin-top: 35px;
+    margin-left: 0px;
+    margin-top: 0px;
     position: absolute;
+    opacity: 0.5;
   }
   </style>  
 </head>
@@ -27,23 +29,25 @@
 
 
   <div id="content">
-    <canvas id="game-canvas" width="1000" height="500"></canvas>
-    <canvas id="blocks-canvas" width="1000" height="500"></canvas>
+    <video id="video" width="640" height="500" preload autoplay loop muted ></video>
+    <canvas id="canvas1" width="640" height="500"></canvas>
+    <canvas id="game-canvas" width="640" height="500"></canvas>
+    <canvas id="blocks-canvas" width="640" height="500"></canvas>
   </div>
 
-<!--   <div class="demo-frame">
+  <!-- <div class="demo-frame">
     <div class="demo-container">
-      <video id="video" width="900" height="700" preload autoplay loop muted ></video>
+      <video id="video" width="640" height="480" preload autoplay loop muted ></video>
       <canvas id="canvas1" width="600" height="450"></canvas>
     </div>
   </div> -->
 
   
 
-  <script>
+<script>
     window.onload = function() {
       var video = document.getElementById('video');
-      var canvas = document.getElementById('canvas1');
+      var canvas = document.getElementById('canvas1'); 
       var context = canvas.getContext('2d');
 
       var tracker = new tracking.ColorTracker();
@@ -52,12 +56,10 @@
 
       tracker.on('track', function(event) {
         context.clearRect(0, 0, canvas.width, canvas.height);
-
         event.data.forEach(function(rect) {
           if (rect.color === 'custom') {
             rect.color = tracker.customColor;
           }
-
           context.strokeStyle = rect.color;
           context.strokeRect(rect.x, rect.y, rect.width, rect.height);
           context.font = '11px Helvetica';
