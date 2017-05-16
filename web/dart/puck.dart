@@ -93,6 +93,11 @@ class TunePuck implements Touchable, NT.ProgramTarget {
       case "rest":
         break;
 
+      case "send to":
+      	num v = 5;
+      	workspace.sendPulse(this, centerX, centerY, v);
+      	break;
+
       default:
     }
     return null;

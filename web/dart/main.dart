@@ -189,11 +189,23 @@ class TunePad extends TouchLayer with NT.Runtime {
  */
   void firePulse(TunePuck parent, num cx, num cy, num vx, num vy) {
     num x = 1;
-    for (TunePuck puck in pucks) {
-      pulses.add(new TunePulse(parent, cx, cy , 7, 0));
+    // for (TunePuck puck in pucks) {
+      pulses.add(new TunePulse(parent, cx, cy , vx, vy));
       x = x*10;
-    }
-}
+    // }
+  }
+  void sendPulse(TunePuck parent, /*Tunepuck child,*/ num cx, num cy, num v) {
+  	for (TunePuck puck in pucks) {
+  		print(puck.centerX);
+  		num xdiff = (puck.centerX-parent.centerX);
+  		num ydiff = (puck.centerY-parent.centerY);
+  		num total = xdiff.abs()+ydiff.abs();
+  		xdiff = xdiff/total * v;
+  		ydiff = ydiff/total * v;
+  		pulses.add(new TunePulse(parent, cx, cy, xdiff, ydiff ));
+  	}
+  }
+	
 
 
 /**
