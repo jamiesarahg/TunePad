@@ -13,9 +13,7 @@
 // import as stats from '../tracking.js/examples/assets/stats.min.js';
 // import as color_camera_gui from '../tracking.js/examples/assets/color_camera_gui.js';
 
-var tracker = require("../tracking-min.js");
-
-window.onload = function() {
+function onloade(){
   var video = document.getElementById('video');
   var canvas = document.getElementById('canvas1');
   var context = canvas.getContext('2d');
