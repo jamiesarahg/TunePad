@@ -70,21 +70,6 @@ var BLOCKS = {
       "instances" : 3
     },
     {
-      "name" : "turn",
-      "instances" : 3,
-      "params" : [
-        {
-          "type" : "range",
-          "min" : 0,
-          "max" : 90,
-          "step" : 1,
-          "default" : 45,
-          "random" : true,
-          "label" : "degrees"
-        }
-      ]
-    },
-    {
       "instances" : 2,
       "name" : "chance",
       "type" : "chance"
@@ -95,7 +80,7 @@ var BLOCKS = {
       "params" : [
         {
           "type" : "dropdown",
-          "values": [ "Cyan", "Magenta", "Yellow" ],
+          "values": [ "Cyan", "Magenta", "Yellow", "All" ],
           "random" : true,
           "label" : "color"
         }
