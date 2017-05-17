@@ -21,17 +21,19 @@ function trackerStart(){
 
 
       event.data.forEach(function(rect) {
-        if (rect.color === 'custom') {
-          rect.color = this.tracker.customColor;
-        }
+        // if (rect.color === 'custom') {
+        //   rect.color = this.tracker.customColor;
+        // }
 
-        context.strokeStyle = rect.color;
-        context.strokeRect(rect.x, rect.y, rect.width, rect.height);
-        context.font = '11px Helvetica';
-        context.fillStyle = "#fff";
-        context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
-        context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
-        dartPrint_main(String(rect.x)+','+String(rect.y)+','+String(rect.color));
+        // context.strokeStyle = rect.color;
+        // context.strokeRect(rect.x, rect.y, rect.width, rect.height);
+        // context.font = '11px Helvetica';
+        // context.fillStyle = "#fff";
+        // context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
+        // context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
+        var x = rect.x+(rect.width/2);
+        var y = rect.y+(rect.height/2);
+        dartPrint_main(String(x)+','+String(y)+','+String(rect.color));
     });
   });
 }

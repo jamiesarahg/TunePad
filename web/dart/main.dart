@@ -56,8 +56,8 @@ void dartPrint(String listy) {
 	}
 	else {
 		List newPuck = listy.split(",");
-		num x = int.parse(newPuck[0]);
-		num y = int.parse(newPuck[1]);
+		num x = double.parse(newPuck[0]);
+		num y = double.parse(newPuck[1]);
 		if (newPuck[2] == 'cyan'){
 			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/tom.wav") .. background = "#0FF" .. name = "Cyan");
 		}
