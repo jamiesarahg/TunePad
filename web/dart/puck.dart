@@ -78,9 +78,15 @@ class TunePuck implements Touchable, NT.ProgramTarget {
  * Called by programs during block.eval
  */
   dynamic doAction(String action, List params) {
+  	print(action);
+  	if (workspace.cameraOn == true) {
+  		(js.context['trackerOff'] as js.JsFunction).apply([]);
+  		workspace.cameraOn = false;
+  	}
     switch (action) {
       case "start":
-      		workspace.cameraOn = false;
+       		break;
+
       case "turn":
         num angle = params[0];
         heading = (heading + angle) % 360.0;
@@ -88,11 +94,14 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         break;
 
       case "pulse":
-        num velocity = params[0];
-        num dx = velocity * cos(PI * heading / 180.0);
-        num dy = velocity * sin(PI * heading / 180.0);
-        workspace.firePulse(this, centerX, centerY, dx, dy);
-        Sounds.playSound("pulse");
+      	if (workspace.cameraOn == false) {
+	        print('pulse');
+	        num velocity = params[0];
+	        num dx = velocity * cos(PI * heading / 180.0);
+	        num dy = velocity * sin(PI * heading / 180.0);
+	        workspace.firePulse(this, centerX, centerY, dx, dy);
+	        Sounds.playSound("pulse");
+	     }
         break;
 
       case "rest":

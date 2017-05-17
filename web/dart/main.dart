@@ -19,6 +19,7 @@ import 'dart:async';      // timers
 import 'dart:convert';    // JSON library
 import 'dart:web_audio';  // web audio
 import 'dart:js' as js;
+import 'package:js/js.dart';
 import 'package:NetTango/ntango.dart' as NT;   // import NetTango
 
 part "blocks.dart";
@@ -42,13 +43,11 @@ TunePad workspace;
 NT.CodeWorkspace blocks;
 
 void dartPrint(String listy) {
-	print(listy);
 	if (listy == 'delete'){
 		new Timer(const Duration(milliseconds : 5), () => workspace.draw());    
 
 		List<TunePuck> to_remove = new List<TunePuck>();
 		for (TunePuck puck in workspace.pucks){
-				print(puck);
 			    to_remove.add(puck);
 		}
 		for (TunePuck puck in to_remove){
@@ -83,6 +82,7 @@ void main() {
   Sounds.loadSound("click", "sounds/click.wav");
 
   js.context['dartPrint_main'] = dartPrint;
+
 }
 
 
@@ -125,7 +125,6 @@ class TunePad extends TouchLayer with NT.Runtime {
 
     // start program step timer
     new Timer.periodic(const Duration(milliseconds : 25), (timer) => vocalize());    
-    print('adding');
     // create some initial pucks
     addBlock(new TunePuck(300, 300, "sounds/crank.wav"));
     addBlock(new TunePuck(600, 300, "sounds/drumkit/clap.wav") .. background = "#f73" .. name = "Orange");
