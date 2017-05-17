@@ -75,6 +75,7 @@ void dartPrint(String listy) {
 }
 
 void clickFun(e){
+	workspace.cameraOn = true;
 	(js.context['trackerOn'] as js.JsFunction).apply([]);
 
 }
