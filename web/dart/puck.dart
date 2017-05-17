@@ -86,6 +86,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
     switch (action) {
       case "start":
        		break;
+
       case "turn":
         num angle = params[0];
         heading = (heading + angle) % 360.0;

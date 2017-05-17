@@ -74,13 +74,16 @@ void dartPrint(String listy) {
 
 }
 
+void clickFun(e){
+	(js.context['trackerOn'] as js.JsFunction).apply([]);
 
+}
 void main() {
   blocks = new NT.CodeWorkspace(BLOCKS);
   workspace = new TunePad("game-canvas");
   blocks.runtime = workspace;
   Sounds.loadSound("click", "sounds/click.wav");
-
+  querySelector("#onoff").onChange.listen(clickFun);
   js.context['dartPrint_main'] = dartPrint;
 
 }

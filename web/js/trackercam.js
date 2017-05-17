@@ -1,32 +1,28 @@
 var trackerTask;
+var tracker;
 
 function onloade(){
   var video = document.getElementById('video');
 
-  var tracker = new tracking.ColorTracker();
-  console.log('onload');
-  console.log(this.trackerTask);
-  this.trackerTask = tracking.track('#video', tracker, { camera: true });
-  console.log('afteronload')
-  console.log(this.trackerTask);
+  this.tracker = new tracking.ColorTracker();
 
-  trackerOn(tracker);
-  //trackerTask.stop();
+  this.trackerTask = tracking.track('#video', this.tracker, { camera: true });
+  trackerStart(this.tracker);
 
- initGUIControllers(tracker);
+ initGUIControllers(this.tracker);
 };
 
-function trackerOn(tracker){
+function trackerStart(){
     var canvas = document.getElementById('canvas1');
     var context = canvas.getContext('2d');
-    tracker.on('track', function(event) {
+    this.tracker.on('track', function(event) {
       context.clearRect(0, 0, canvas.width, canvas.height);
           dartPrint_main('delete');
 
 
       event.data.forEach(function(rect) {
         if (rect.color === 'custom') {
-          rect.color = tracker.customColor;
+          rect.color = this.tracker.customColor;
         }
 
         context.strokeStyle = rect.color;
@@ -41,11 +37,9 @@ function trackerOn(tracker){
 }
 
 function trackerOff(){
-  console.log('this.trackerOff')
-  console.log(this.trackerTask);
-  trackerTask.stop();
+  this.trackerTask.stop();
 }
 
-function hello(){
-  console.log('hello');
+function trackerOn(){
+  this.trackerTask.run();
 }
