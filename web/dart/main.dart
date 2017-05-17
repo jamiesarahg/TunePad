@@ -41,8 +41,38 @@ TunePad workspace;
 // global link to the block workspace
 NT.CodeWorkspace blocks;
 
-void dartPrint(string listy) {
+void dartPrint(String listy) {
 	print(listy);
+	if (listy == 'delete'){
+		new Timer(const Duration(milliseconds : 5), () => workspace.draw());    
+
+		List<TunePuck> to_remove = new List<TunePuck>();
+		for (TunePuck puck in workspace.pucks){
+				print(puck);
+			    to_remove.add(puck);
+		}
+		for (TunePuck puck in to_remove){
+			workspace.pucks.remove(puck);
+		}
+	}
+	else {
+		List newPuck = listy.split(",");
+		num x = newPuck[0];
+		num y = newPuck[1];
+		if (newPuck[2] == 'cyan'){
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/tom.wav") .. background = "#0FF" .. name = "Cyan");
+		}
+		if (newPuck[2] == 'magenta'){
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/clap.wav") .. background = "#F0F" .. name = "Magenta");
+		}
+		if (newPuck[2] == 'yellow'){
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/hat.wav") .. background = "#FF0" .. name = "Yellow");
+		}
+	}
+
+
+
+
 }
 
 
@@ -95,7 +125,7 @@ class TunePad extends TouchLayer with NT.Runtime {
 
     // start program step timer
     new Timer.periodic(const Duration(milliseconds : 25), (timer) => vocalize());    
-
+    print('adding');
     // create some initial pucks
     addBlock(new TunePuck(300, 300, "sounds/crank.wav"));
     addBlock(new TunePuck(600, 300, "sounds/drumkit/clap.wav") .. background = "#f73" .. name = "Orange");
