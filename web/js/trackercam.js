@@ -14,6 +14,7 @@
 // import as color_camera_gui from '../tracking.js/examples/assets/color_camera_gui.js';
 
 function onloade(){
+  dartPrint_main('hey');
   var video = document.getElementById('video');
   var canvas = document.getElementById('canvas1');
   var context = canvas.getContext('2d');
@@ -21,6 +22,7 @@ function onloade(){
   var tracker = new tracking.ColorTracker();
 
   tracking.track('#video', tracker, { camera: true });
+    dartPrint_main('delete');
 
   tracker.on('track', function(event) {
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -36,6 +38,8 @@ function onloade(){
       context.fillStyle = "#fff";
       context.fillText('x: ' + rect.x + 'px', rect.x + rect.width + 5, rect.y + 11);
       context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
+      dartPrint_main(String(rect.x)+','+String(rect.y)+','+String(rect.color));
+
     });
   });
 

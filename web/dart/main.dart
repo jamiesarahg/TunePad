@@ -18,6 +18,7 @@ import 'dart:math';
 import 'dart:async';      // timers 
 import 'dart:convert';    // JSON library
 import 'dart:web_audio';  // web audio
+import 'dart:js' as js;
 import 'package:NetTango/ntango.dart' as NT;   // import NetTango
 
 part "blocks.dart";
@@ -31,6 +32,7 @@ const millisPerBeat = 256; // 128;      // 128ms == 32nd note
 const beatsPerMeasure = 32;     // 32nd notes as our smallest division (4 / 4 time)
 const millisPerMeasure = 4096;  // measures are 4096 ms long
 
+
 Stopwatch clock = new Stopwatch(); // used as metronome
 
 // global link to the tunepad workspace
@@ -39,6 +41,9 @@ TunePad workspace;
 // global link to the block workspace
 NT.CodeWorkspace blocks;
 
+void dartPrint(string listy) {
+	print(listy);
+}
 
 
 void main() {
@@ -46,6 +51,8 @@ void main() {
   workspace = new TunePad("game-canvas");
   blocks.runtime = workspace;
   Sounds.loadSound("click", "sounds/click.wav");
+
+  js.context['dartPrint_main'] = dartPrint;
 }
 
 
@@ -68,6 +75,7 @@ class TunePad extends TouchLayer with NT.Runtime {
   // list of pulses fired
   List<TunePulse> pulses = new List<TunePulse>();
 
+  bool cameraOn = true;
 
 
   TunePad(String canvasId) {
