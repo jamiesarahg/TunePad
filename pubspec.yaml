@@ -5,6 +5,6 @@ dependencies:
   NetTango:
     git:
       url: https://github.com/NetTango/NetTango.git
-      ref: version_0.5
+      ref: version_0.6
 
   js: ^0.6.0

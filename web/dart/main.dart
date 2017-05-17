@@ -59,13 +59,13 @@ void dartPrint(String listy) {
 		num x = double.parse(newPuck[0]);
 		num y = double.parse(newPuck[1]);
 		if (newPuck[2] == 'cyan'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/tom.wav") .. background = "#0FF" .. name = "Cyan");
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/tom.wav", "Cyan") .. background = "#0FF" );
 		}
 		if (newPuck[2] == 'magenta'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/clap.wav") .. background = "#F0F" .. name = "Magenta");
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/clap.wav", "Magenta") .. background = "#F0F" );
 		}
 		if (newPuck[2] == 'yellow'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/hat.wav") .. background = "#FF0" .. name = "Yellow");
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/hat.wav", "Yellow") .. background = "#FF0" );
 		}
 	}
 
@@ -86,6 +86,8 @@ void main() {
   Sounds.loadSound("click", "sounds/click.wav");
   querySelector("#onoff").onChange.listen(clickFun);
   js.context['dartPrint_main'] = dartPrint;
+  print("generator");
+  print(blocks.getStartBlock("Generator"));
 
 }
 
@@ -130,9 +132,9 @@ class TunePad extends TouchLayer with NT.Runtime {
     // start program step timer
     new Timer.periodic(const Duration(milliseconds : 25), (timer) => vocalize());    
     // create some initial pucks
-    addBlock(new TunePuck(300, 300, "sounds/crank.wav"));
-    addBlock(new TunePuck(600, 300, "sounds/drumkit/clap.wav") .. background = "#f73" .. name = "Orange");
-    addBlock(new TunePuck(400, 100, "sounds/drumkit/tom.wav") .. background = "#7733ff" .. name = "Purple");
+    // addBlock(new TunePuck(300, 300, "sounds/crank.wav"));
+    // addBlock(new TunePuck(600, 300, "sounds/drumkit/clap.wav") .. background = "#f73" .. name = "Orange");
+    // addBlock(new TunePuck(400, 100, "sounds/drumkit/tom.wav") .. background = "#7733ff" .. name = "Purple");
 
     // start animation timer
     window.animationFrame.then(animate);

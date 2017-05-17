@@ -56,13 +56,28 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
 
 
-  TunePuck(this.centerX, this.centerY, this.sound) {
+  TunePuck(this.centerX, this.centerY, this.sound, this.name) {
     this.radius = 30;
     Sounds.loadSound(sound, sound);
     Sounds.loadSound("turn", "sounds/drumkit/block.wav");
     Sounds.loadSound("pulse", "sounds/drumkit/rim.wav");
-    program = new NT.Program(blocks.start, this);
-    program.batched = false;  // execute blocks one at a time
+
+	if (this.name == "Black") {
+	    program = new NT.Program(blocks.getStartBlock("Generator"), this);
+	    program.batched = false;  // execute blocks one at a time
+	}
+	if (this.name == "Cyan") {
+	    program = new NT.Program(blocks.getStartBlock("Cyan Start"), this);
+	    program.batched = false;  // execute blocks one at a time
+	}
+	if (this.name == "Yellow") {
+	    program = new NT.Program(blocks.getStartBlock("Yellow Start"), this);
+	    program.batched = false;  // execute blocks one at a time
+	}
+	if (this.name == "Magenta") {
+	    program = new NT.Program(blocks.getStartBlock("Magenta Start"), this);
+	    program.batched = false;  // execute blocks one at a time
+	}
   }
 
 
