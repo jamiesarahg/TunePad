@@ -79,6 +79,11 @@ class TunePuck implements Touchable, NT.ProgramTarget {
  */
   dynamic doAction(String action, List params) {
     switch (action) {
+      case "start":
+        // if camera is running
+        
+        print("stop the camera");
+        break;
       case "turn":
         num angle = params[0];
         heading = (heading + angle) % 360.0;

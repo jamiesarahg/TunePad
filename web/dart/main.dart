@@ -174,6 +174,8 @@ class TunePad extends TouchLayer with NT.Runtime {
     addTouchable(puck);
   }
 
+  
+
 
 /**
  * Move a block to the top of the visual stack
