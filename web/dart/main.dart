@@ -18,6 +18,8 @@ import 'dart:math';
 import 'dart:async';      // timers 
 import 'dart:convert';    // JSON library
 import 'dart:web_audio';  // web audio
+import 'dart:js' as js;
+import 'package:js/js.dart';
 import 'package:NetTango/ntango.dart' as NT;   // import NetTango
 
 part "blocks.dart";
@@ -31,6 +33,7 @@ const millisPerBeat = 256; // 128;      // 128ms == 32nd note
 const beatsPerMeasure = 32;     // 32nd notes as our smallest division (4 / 4 time)
 const millisPerMeasure = 4096;  // measures are 4096 ms long
 
+
 Stopwatch clock = new Stopwatch(); // used as metronome
 
 // global link to the tunepad workspace
@@ -39,6 +42,37 @@ TunePad workspace;
 // global link to the block workspace
 NT.CodeWorkspace blocks;
 
+void dartPrint(String listy) {
+	if (listy == 'delete'){
+		new Timer(const Duration(milliseconds : 5), () => workspace.draw());    
+
+		List<TunePuck> to_remove = new List<TunePuck>();
+		for (TunePuck puck in workspace.pucks){
+			    to_remove.add(puck);
+		}
+		for (TunePuck puck in to_remove){
+			workspace.pucks.remove(puck);
+		}
+	}
+	else {
+		List newPuck = listy.split(",");
+		num x = newPuck[0];
+		num y = newPuck[1];
+		if (newPuck[2] == 'cyan'){
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/tom.wav") .. background = "#0FF" .. name = "Cyan");
+		}
+		if (newPuck[2] == 'magenta'){
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/clap.wav") .. background = "#F0F" .. name = "Magenta");
+		}
+		if (newPuck[2] == 'yellow'){
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/hat.wav") .. background = "#FF0" .. name = "Yellow");
+		}
+	}
+
+
+
+
+}
 
 
 void main() {
@@ -46,6 +80,9 @@ void main() {
   workspace = new TunePad("game-canvas");
   blocks.runtime = workspace;
   Sounds.loadSound("click", "sounds/click.wav");
+
+  js.context['dartPrint_main'] = dartPrint;
+
 }
 
 
@@ -68,6 +105,7 @@ class TunePad extends TouchLayer with NT.Runtime {
   // list of pulses fired
   List<TunePulse> pulses = new List<TunePulse>();
 
+  bool cameraOn = true;
 
 
   TunePad(String canvasId) {
@@ -87,7 +125,6 @@ class TunePad extends TouchLayer with NT.Runtime {
 
     // start program step timer
     new Timer.periodic(const Duration(milliseconds : 25), (timer) => vocalize());    
-
     // create some initial pucks
     addBlock(new TunePuck(300, 300, "sounds/crank.wav"));
     addBlock(new TunePuck(600, 300, "sounds/drumkit/clap.wav") .. background = "#f73" .. name = "Orange");
