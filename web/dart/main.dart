@@ -48,6 +48,7 @@ void dartPrint(String listy) {
 
 		List<TunePuck> to_remove = new List<TunePuck>();
 		for (TunePuck puck in workspace.pucks){
+				if (puck.name != "Black")
 			    to_remove.add(puck);
 		}
 		for (TunePuck puck in to_remove){
@@ -132,7 +133,7 @@ class TunePad extends TouchLayer with NT.Runtime {
     // start program step timer
     new Timer.periodic(const Duration(milliseconds : 25), (timer) => vocalize());    
     // create some initial pucks
-    // addBlock(new TunePuck(300, 300, "sounds/crank.wav"));
+    addBlock(new TunePuck(320, 250, "sounds/crank.wav", "Black") .. background = "#000");
     // addBlock(new TunePuck(600, 300, "sounds/drumkit/clap.wav") .. background = "#f73" .. name = "Orange");
     // addBlock(new TunePuck(400, 100, "sounds/drumkit/tom.wav") .. background = "#7733ff" .. name = "Purple");
 

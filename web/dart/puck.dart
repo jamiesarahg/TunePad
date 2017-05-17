@@ -53,6 +53,9 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   // animates sounds playing
   num _pop = 0.0;
 
+  bool isHit = false;
+  bool first = false;
+
 
 
 
@@ -62,28 +65,31 @@ class TunePuck implements Touchable, NT.ProgramTarget {
     Sounds.loadSound("turn", "sounds/drumkit/block.wav");
     Sounds.loadSound("pulse", "sounds/drumkit/rim.wav");
 
-	if (this.name == "Black") {
-	    program = new NT.Program(blocks.getStartBlock("Generator"), this);
-	    program.batched = false;  // execute blocks one at a time
-	}
-	if (this.name == "Cyan") {
-	    program = new NT.Program(blocks.getStartBlock("Cyan Start"), this);
-	    program.batched = false;  // execute blocks one at a time
-	}
-	if (this.name == "Yellow") {
-	    program = new NT.Program(blocks.getStartBlock("Yellow Start"), this);
-	    program.batched = false;  // execute blocks one at a time
-	}
-	if (this.name == "Magenta") {
-	    program = new NT.Program(blocks.getStartBlock("Magenta Start"), this);
-	    program.batched = false;  // execute blocks one at a time
-	}
+  	if (this.name == "Black") {
+  	    program = new NT.Program(blocks.getStartBlock("Generator"), this);
+  	    program.batched = false;  // execute blocks one at a time
+  	}
+  	if (this.name == "Cyan") {
+  	    program = new NT.Program(blocks.getStartBlock("Cyan Start"), this);
+  	    program.batched = false;  // execute blocks one at a time
+  	}
+  	if (this.name == "Yellow") {
+  	    program = new NT.Program(blocks.getStartBlock("Yellow Start"), this);
+  	    program.batched = false;  // execute blocks one at a time
+  	}
+  	if (this.name == "Magenta") {
+  	    program = new NT.Program(blocks.getStartBlock("Magenta Start"), this);
+  	    program.batched = false;  // execute blocks one at a time
+  	}
   }
 
 
   void hit() {
     _pop = 1.0;
     Sounds.playSound(sound);
+    print("hit");
+    this.isHit = true;
+    this.first = true;
   }
 
 
@@ -93,13 +99,27 @@ class TunePuck implements Touchable, NT.ProgramTarget {
  * Called by programs during block.eval
  */
   dynamic doAction(String action, List params) {
-  	print(action);
+    if (this.name != "Black"){
+      if (this.isHit == false){
+        return null;
+      }
+      print('good');
+      print(action);
+    }
   	if (workspace.cameraOn == true) {
   		(js.context['trackerOff'] as js.JsFunction).apply([]);
   		workspace.cameraOn = false;
   	}
     switch (action) {
       case "start":
+          if (this.first == false){
+            this.isHit = false;
+          }
+          if (this.first == true){
+            this.first = false;
+          }
+          
+          
        		break;
 
       case "turn":
@@ -110,7 +130,6 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
       case "pulse":
       	if (workspace.cameraOn == false) {
-	        print('pulse');
 	        num velocity = params[0];
 	        num dx = velocity * cos(PI * heading / 180.0);
 	        num dy = velocity * sin(PI * heading / 180.0);
@@ -125,11 +144,8 @@ class TunePuck implements Touchable, NT.ProgramTarget {
       case "send to":
       	num v = 5;
       	String color = params[0];
-      	print('pucks');
-      	print(workspace.pucks);
       	for (TunePuck puck in workspace.pucks) {
       		if (puck.name == color){
-      			print('in if');
       			workspace.sendPulse(this, puck, centerX, centerY, v);
       		}
       	}
@@ -137,6 +153,8 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
       default:
     }
+    
+
     return null;
   }
 
