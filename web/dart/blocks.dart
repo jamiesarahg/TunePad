@@ -71,13 +71,10 @@ var BLOCKS = {
       "instances" : 3,
       "params" : [
         {
-          "type" : "range",
-          "min" : 0,
-          "max" : 2,
-          "step" : 1,
-          "default" : 0,
+          "type" : "dropdown",
+          "values": [ "Cyan", "Magenta", "Yellow" ],
           "random" : true,
-          "label" : "puck number"
+          "label" : "color"
         }
       ]
     }

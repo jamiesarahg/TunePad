@@ -37,6 +37,9 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   // background color of the block
   String background = "rgb(0, 160, 227)";
 
+  // background color name of block
+  String name = "Blue";
+
   // used to randomize some commands
   Random rnd = new Random();
 
@@ -75,7 +78,15 @@ class TunePuck implements Touchable, NT.ProgramTarget {
  * Called by programs during block.eval
  */
   dynamic doAction(String action, List params) {
+  	print(action);
+  	if (workspace.cameraOn == true) {
+  		(js.context['trackerOff'] as js.JsFunction).apply([]);
+  		workspace.cameraOn = false;
+  	}
     switch (action) {
+      case "start":
+       		break;
+
       case "turn":
         num angle = params[0];
         heading = (heading + angle) % 360.0;
@@ -83,15 +94,31 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         break;
 
       case "pulse":
-        num velocity = params[0];
-        num dx = velocity * cos(PI * heading / 180.0);
-        num dy = velocity * sin(PI * heading / 180.0);
-        workspace.firePulse(this, centerX, centerY, dx, dy);
-        Sounds.playSound("pulse");
+      	if (workspace.cameraOn == false) {
+	        print('pulse');
+	        num velocity = params[0];
+	        num dx = velocity * cos(PI * heading / 180.0);
+	        num dy = velocity * sin(PI * heading / 180.0);
+	        workspace.firePulse(this, centerX, centerY, dx, dy);
+	        Sounds.playSound("pulse");
+	     }
         break;
 
       case "rest":
         break;
+
+      case "send to":
+      	num v = 5;
+      	String color = params[0];
+      	print('pucks');
+      	print(workspace.pucks);
+      	for (TunePuck puck in workspace.pucks) {
+      		if (puck.name == color){
+      			print('in if');
+      			workspace.sendPulse(this, puck, centerX, centerY, v);
+      		}
+      	}
+      	break;
 
       default:
     }

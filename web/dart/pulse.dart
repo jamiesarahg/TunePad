@@ -16,7 +16,7 @@ part of TunePad;
 
 const PULSE_RADIUS = 7;
 
-const PULSE_GRAVITY = 0.5;
+const PULSE_GRAVITY = 0;
 
 
 class TunePulse {
