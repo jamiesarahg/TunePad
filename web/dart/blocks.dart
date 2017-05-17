@@ -72,7 +72,7 @@ var BLOCKS = {
       "params" : [
         {
           "type" : "dropdown",
-          "values": [ "Orange", "Purple", "Blue" ],
+          "values": [ "Cyan", "Magenta", "Yellow" ],
           "random" : true,
           "label" : "color"
         }

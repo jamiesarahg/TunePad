@@ -110,8 +110,11 @@ class TunePuck implements Touchable, NT.ProgramTarget {
       case "send to":
       	num v = 5;
       	String color = params[0];
+      	print('pucks');
+      	print(workspace.pucks);
       	for (TunePuck puck in workspace.pucks) {
       		if (puck.name == color){
+      			print('in if');
       			workspace.sendPulse(this, puck, centerX, centerY, v);
       		}
       	}

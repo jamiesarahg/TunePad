@@ -63,10 +63,6 @@ class TunePulse {
 
 
   bool animate(int millis) { 
-    num cx = 300;
-    num vx = 2;
-    num vy = 2;
-
     cx += vx;
     cy += vy;
     vy += PULSE_GRAVITY;
