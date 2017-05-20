@@ -59,14 +59,15 @@ void dartPrint(String listy) {
 		List newPuck = listy.split(",");
 		num x = double.parse(newPuck[0]);
 		num y = double.parse(newPuck[1]);
+		num rad = double.parse(newPuck[3]);
 		if (newPuck[2] == 'cyan'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/tom.wav", "Cyan") .. background = "#0FF" );
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/tom.wav", "Cyan") .. background = "#0FF" .. radius = rad);
 		}
 		if (newPuck[2] == 'magenta'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/clap.wav", "Magenta") .. background = "#F0F" );
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/clap.wav", "Magenta") .. background = "#F0F" .. radius = rad );
 		}
 		if (newPuck[2] == 'yellow'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/hat.wav", "Yellow") .. background = "#FF0" );
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/hat.wav", "Yellow") .. background = "#FF0" .. radius = rad );
 		}
 	}
 

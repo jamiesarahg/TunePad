@@ -17,7 +17,8 @@ part of TunePad;
 class TunePuck implements Touchable, NT.ProgramTarget {
 
   // size and position of the block
-  num centerX, centerY, radius;
+  num centerX, centerY;
+  num radius = 30;
 
   // heading of the pulse emitter 
   num heading = 45.0;
@@ -52,6 +53,8 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
   // animates sounds playing
   num _pop = 0.0;
+  num _popR = 0.0;
+
 
   bool isHit = false;
   bool first = false;
@@ -60,7 +63,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
 
   TunePuck(this.centerX, this.centerY, this.sound, this.name) {
-    this.radius = 30;
+    //this.radius = 30;
     Sounds.loadSound(sound, sound);
     Sounds.loadSound("turn", "sounds/drumkit/block.wav");
     Sounds.loadSound("pulse", "sounds/drumkit/rim.wav");
@@ -86,8 +89,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
   void hit() {
     _pop = 1.0;
-    Sounds.playSound(sound);
-    print("hit");
+    Sounds.playSound(sound, this.radius/50);
     this.isHit = true;
     this.first = true;
   }
@@ -103,7 +105,6 @@ class TunePuck implements Touchable, NT.ProgramTarget {
       if (this.isHit == false){
         return null;
       }
-      print('good');
       print(action);
     }
   	if (workspace.cameraOn == true) {
@@ -133,6 +134,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 	        num dy = velocity * sin(PI * heading / 180.0);
 	        workspace.firePulse(this, centerX, centerY, dx, dy);
 	        Sounds.playSound("pulse");
+          _popR= 1.0;
 	     }
         break;
 
@@ -140,6 +142,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         break;
 
       case "send to":
+        _popR= 1.0;
       	num v = 5;
       	String color = params[0];
         if (color == 'All'){
@@ -173,7 +176,8 @@ class TunePuck implements Touchable, NT.ProgramTarget {
       ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
       ctx.lineWidth = 5;
       ctx.beginPath();
-      ctx.arc(centerX, centerY, radius, 0, PI * 2, true);
+      int radiusSize = radius + (_popR * 30).toInt();
+      ctx.arc(centerX, centerY, radiusSize, 0, PI * 2, true);
       ctx.stroke();
       ctx.fill();
       _drawIcon(ctx);
@@ -211,6 +215,13 @@ class TunePuck implements Touchable, NT.ProgramTarget {
       refresh = true;
     } else {
       _pop = 0.0;
+    }
+
+    if (_popR > 0.05) {
+      _popR *= 0.9;
+      refresh = true;
+    } else {
+      _popR = 0.0;
     }
     return refresh;
   }

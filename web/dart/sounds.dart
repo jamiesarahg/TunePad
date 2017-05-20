@@ -60,7 +60,7 @@ class Sounds {
  *    volume: 0.0 - 1.0
  *    playback rate: 1.0 default
  */
-  static void playSound(String name, { volume : 1.0, playback : 1.0 }) {
+  static void playSound(String name, [num volume = 1.0, playback = 1.0 ]) {
     if (sounds[name] != null && !mute) {
       AudioBufferSourceNode source = audio.createBufferSource();
       source.buffer = sounds[name];
