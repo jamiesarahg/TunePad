@@ -87,7 +87,7 @@ var BLOCKS = {
       ]
     },
     {
-      "name" : "if distance is less than",
+      "name" : "if there is a puck less than",
       "instances" : 3,
       "type" : "if",
       "params" : [
@@ -98,10 +98,10 @@ var BLOCKS = {
         // },
         {
           "type" : "range",
-          "min" : 250,
+          "min" : 200,
           "max" : 300,
           "step" : 1,
-          "default" : 1,
+          "default" : 200,
           "label" : "pixels",
 
         }

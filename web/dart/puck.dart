@@ -121,7 +121,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
       if (this.isHit == false){
         return null;
       }
-      print(action);
+      //print(action);
     }
   	if (workspace.cameraOn == true) {
   		(js.context['trackerOff'] as js.JsFunction).apply([]);
@@ -177,6 +177,22 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
 
           break;
+      case "if there is a puck less than":
+        print("entered if");
+        num d = params[0];
+        num v = 5;
+        for (TunePuck puck in workspace.pucks){
+          num x_delta = pow((this.centerX - puck.centerX),2);
+          num y_delta = pow((this.centerY - puck.centerY),2);
+          num true_dist = pow((x_delta+y_delta),0.5);
+          print("true");
+          print(true_dist);
+          if (true_dist < d && true_dist > 0){
+            return true;
+          }
+          else {return false;}
+        }
+        break;
 
       default:
     }
@@ -221,13 +237,13 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
   bool animate(int millis, CanvasRenderingContext2D ctx) { 
     bool refresh = false;
-    if (_dragging) {
-      centerX += (_touchX - _lastX);
-      centerY += (_touchY - _lastY);
-      _lastX = _touchX;
-      _lastY = _touchY;
-      refresh = true;
-    } 
+    // if (_dragging) {
+    //   centerX += (_touchX - _lastX);
+    //   centerY += (_touchY - _lastY);
+    //   _lastX = _touchX;
+    //   _lastY = _touchY;
+    //   refresh = true;
+    // } 
     if (_pop > 0.05) {
       _pop *= 0.9;
       refresh = true;
@@ -255,7 +271,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
   Touchable touchDown(Contact c) {
     _dragging = true;
-    workspace.moveToTop(this);
+    //workspace.moveToTop(this);
     _touchX = c.touchX;
     _touchY = c.touchY;
     _lastX = c.touchX;
