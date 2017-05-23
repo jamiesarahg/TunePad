@@ -26,6 +26,29 @@ var BLOCKS = {
   "fastForwardButton" : false,
   "stepForwardButton" : false,
 
+  "startBlocks" : [
+    {
+       "name" : "Generator",
+       "color" : "black",
+       "position" : 20
+    },
+    {
+       "name" : "Magenta Start",
+       "color" : "Magenta",
+       "position" : 140
+    },
+    {
+       "name" : "Cyan Start",
+       "color" : "Cyan",
+       "position" : 260
+    },
+    {
+       "name" : "Yellow Start",
+       "color" : "Yellow",
+       "position" : 380
+    }
+  ],
+
   "blocks" : [
     {
       "name" : "pulse",

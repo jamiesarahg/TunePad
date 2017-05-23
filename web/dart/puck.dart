@@ -17,7 +17,8 @@ part of TunePad;
 class TunePuck implements Touchable, NT.ProgramTarget {
 
   // size and position of the block
-  num centerX, centerY, radius;
+  num centerX, centerY;
+  num radius = 30;
 
   // heading of the pulse emitter 
   num heading = 45.0;
@@ -27,11 +28,13 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
   // icon to draw on the puck
   String icon = "\uf0e7";
+  num icon_count = 0;
+
   String circle_icon = "\uf111";
   String square_icon = "\uf0c8";
   String star_icon = "\uf005";
   String heart_icon = "\uf004";
-  String icon_string = "\"$icon\"";
+  //String icon_string = "icon";
 
 
   // font face
@@ -58,23 +61,53 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
   // animates sounds playing
   num _pop = 0.0;
+  num _popR = 0.0;
+
+
+  bool isHit = false;
+  bool first = false;
 
 
 
 
-  TunePuck(this.centerX, this.centerY, this.sound) {
-    this.radius = 30;
+  TunePuck(this.centerX, this.centerY, this.sound, this.name) {
+    //this.radius = 30;
     Sounds.loadSound(sound, sound);
-    Sounds.loadSound("turn", "sounds/drumkit/block.wav");
     Sounds.loadSound("pulse", "sounds/drumkit/rim.wav");
-    program = new NT.Program(blocks.start, this);
-    program.batched = false;  // execute blocks one at a time
+    Sounds.loadSound("cyan_0", "sounds/drumkit/tom.wav");
+    Sounds.loadSound("cyan_1", "sounds/drumkit/tick.wav");
+    Sounds.loadSound("cyan_2", "sounds/drumkit/tap.wav");
+    Sounds.loadSound("magenta_0", "sounds/drumkit/clap.wav");
+    Sounds.loadSound("magenta_1", "sounds/drumkit/block.wav");
+    Sounds.loadSound("magenta_2", "sounds/drumkit/click.wav");
+    Sounds.loadSound("yellow_0", "sounds/drumkit/pat.wav");
+    Sounds.loadSound("yellow_1", "sounds/drumkit/hat.wav");
+    Sounds.loadSound("yellow_2", "sounds/drumkit/snare.wav");
+
+  	if (this.name == "Black") {
+  	    program = new NT.Program(blocks.getStartBlock("Generator"), this);
+  	    program.batched = false;  // execute blocks one at a time
+  	}
+  	if (this.name == "Cyan") {
+  	    program = new NT.Program(blocks.getStartBlock("Cyan Start"), this);
+  	    program.batched = false;  // execute blocks one at a time
+  	}
+  	if (this.name == "Yellow") {
+  	    program = new NT.Program(blocks.getStartBlock("Yellow Start"), this);
+  	    program.batched = false;  // execute blocks one at a time
+  	}
+  	if (this.name == "Magenta") {
+  	    program = new NT.Program(blocks.getStartBlock("Magenta Start"), this);
+  	    program.batched = false;  // execute blocks one at a time
+  	}
   }
 
 
   void hit() {
     _pop = 1.0;
-    Sounds.playSound(sound);
+    Sounds.playSound(sound, this.radius/50);
+    this.isHit = true;
+    this.first = true;
   }
 
 
@@ -84,13 +117,24 @@ class TunePuck implements Touchable, NT.ProgramTarget {
  * Called by programs during block.eval
  */
   dynamic doAction(String action, List params) {
-  	print(action);
+    if (this.name != "Black"){
+      if (this.isHit == false){
+        return null;
+      }
+      print(action);
+    }
   	if (workspace.cameraOn == true) {
   		(js.context['trackerOff'] as js.JsFunction).apply([]);
   		workspace.cameraOn = false;
   	}
     switch (action) {
       case "start":
+          if (this.first == false){
+            this.isHit = false;
+          }
+          if (this.first == true){
+            this.first = false;
+          }
        		break;
 
       case "turn":
@@ -101,12 +145,12 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
       case "pulse":
       	if (workspace.cameraOn == false) {
-	        print('pulse');
 	        num velocity = params[0];
 	        num dx = velocity * cos(PI * heading / 180.0);
 	        num dy = velocity * sin(PI * heading / 180.0);
 	        workspace.firePulse(this, centerX, centerY, dx, dy);
 	        Sounds.playSound("pulse");
+          _popR= 1.0;
 	     }
         break;
 
@@ -114,10 +158,9 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         break;
 
       case "send to":
+        _popR= 1.0;
       	num v = 5;
       	String color = params[0];
-      	//print('pucks');
-      	//print(color);
         if (color == 'All'){
           for (TunePuck puck in workspace.pucks) {
             workspace.sendPulse(this, puck, centerX, centerY, v);
@@ -131,27 +174,14 @@ class TunePuck implements Touchable, NT.ProgramTarget {
             }
           } 
         }
-      
-      // case "if distance is less than":
-      //   num d = params[0];
-      //   num v = 5;
-      //   for (TunePuck puck in workspace.pucks){
-      //     num x_delta = pow((this.centerX - puck.centerX),2);
-      //     num y_delta = pow((this.centerY - puck.centerY),2);
-      //     num true_dist = pow((x_delta+y_delta),0.5);
-      //     print("true");
-      //     print(true_dist);
-      //     if (true_dist < d && true_dist > 0){
-      //       return true;
-      //     }
-      //     else {return false;}
-      //   }
 
 
-      break;
+          break;
 
       default:
     }
+    
+
     return null;
   }
 
@@ -164,7 +194,8 @@ class TunePuck implements Touchable, NT.ProgramTarget {
       ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
       ctx.lineWidth = 5;
       ctx.beginPath();
-      ctx.arc(centerX, centerY, radius, 0, PI * 2, true);
+      int radiusSize = radius + (_popR * 30).toInt();
+      ctx.arc(centerX, centerY, radiusSize, 0, PI * 2, true);
       ctx.stroke();
       ctx.fill();
       _drawIcon(ctx);
@@ -188,7 +219,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   }
 
 
-  bool animate(int millis) { 
+  bool animate(int millis, CanvasRenderingContext2D ctx) { 
     bool refresh = false;
     if (_dragging) {
       centerX += (_touchX - _lastX);
@@ -202,6 +233,13 @@ class TunePuck implements Touchable, NT.ProgramTarget {
       refresh = true;
     } else {
       _pop = 0.0;
+    }
+
+    if (_popR > 0.05) {
+      _popR *= 0.9;
+      refresh = true;
+    } else {
+      _popR = 0.0;
     }
     return refresh;
   }
@@ -223,7 +261,53 @@ class TunePuck implements Touchable, NT.ProgramTarget {
     _lastX = c.touchX;
     _lastY = c.touchY;
 
-    workspace.firePulse(this, centerX, centerY, 7, -7);
+    if (name == "Cyan"){
+      icon_count = (icon_count+1)%3;
+      if(icon_count == 0){ //bolt
+        icon = "\uf0e7";
+        sound = "cyan_0";
+      }
+      else if (icon_count == 1){  //star
+        icon = "\uf005";
+        sound = "cyan_1";
+      }
+      else{  //hart
+        icon = "\uf004";
+        sound = "cyan_2";
+      }
+    }
+
+    if (name == "Magenta"){
+      icon_count = (icon_count+1)%3;
+      if(icon_count == 0){ //bolt
+        icon = "\uf0e7";
+        sound = "magenta_0";
+      }
+      else if (icon_count == 1){  //star
+        icon = "\uf005";
+        sound = "magenta_1";
+      }
+      else{  //hart
+        icon = "\uf004";
+        sound = "magenta_2";
+      }
+    }
+
+    if (name == "Yellow"){
+      icon_count = (icon_count+1)%3;
+      if(icon_count == 0){ //bolt
+        icon = "\uf0e7";
+        sound = "yellow_0";
+      }
+      else if (icon_count == 1){  //star
+        icon = "\uf005";
+        sound = "yellow_1";
+      }
+      else{  //hart
+        icon = "\uf004";
+        sound = "yellow_2";
+      }
+    }
 
     return this;
   }    

@@ -48,6 +48,7 @@ void dartPrint(String listy) {
 
 		List<TunePuck> to_remove = new List<TunePuck>();
 		for (TunePuck puck in workspace.pucks){
+				if (puck.name != "Black")
 			    to_remove.add(puck);
 		}
 		for (TunePuck puck in to_remove){
@@ -58,14 +59,15 @@ void dartPrint(String listy) {
 		List newPuck = listy.split(",");
 		num x = double.parse(newPuck[0]);
 		num y = double.parse(newPuck[1]);
+		num rad = double.parse(newPuck[3]);
 		if (newPuck[2] == 'cyan'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/tom.wav") .. background = "#0FF" .. name = "Cyan");
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/tom.wav", "Cyan") .. background = "#0FF" .. radius = rad);
 		}
 		if (newPuck[2] == 'magenta'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/clap.wav") .. background = "#F0F" .. name = "Magenta");
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/clap.wav", "Magenta") .. background = "#F0F" .. radius = rad );
 		}
 		if (newPuck[2] == 'yellow'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/hat.wav") .. background = "#FF0" .. name = "Yellow");
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/pat.wav", "Yellow") .. background = "#FF0" .. radius = rad );
 		}
 	}
 
@@ -86,6 +88,8 @@ void main() {
   Sounds.loadSound("click", "sounds/click.wav");
   querySelector("#onoff").onChange.listen(clickFun);
   js.context['dartPrint_main'] = dartPrint;
+  print("generator");
+  print(blocks.getStartBlock("Generator"));
 
 }
 
@@ -133,6 +137,9 @@ class TunePad extends TouchLayer with NT.Runtime {
    // addBlock(new TunePuck(300, 300, "sounds/crank.wav"));
    // addBlock(new TunePuck(600, 300, "sounds/drumkit/clap.wav") .. background = "#f73" .. name = "Orange");
    //  addBlock(new TunePuck(400, 100, "sounds/drumkit/tom.wav") .. background = "#7733ff" .. name = "Purple");
+    addBlock(new TunePuck(320, 250, "sounds/crank.wav", "Black") .. background = "#000");
+    // addBlock(new TunePuck(600, 300, "sounds/drumkit/clap.wav") .. background = "#f73" .. name = "Orange");
+    // addBlock(new TunePuck(400, 100, "sounds/drumkit/tom.wav") .. background = "#7733ff" .. name = "Purple")
 
     // start animation timer
     window.animationFrame.then(animate);
@@ -151,7 +158,7 @@ class TunePad extends TouchLayer with NT.Runtime {
 
     // animate the audio pucks
     for (TunePuck puck in pucks) {
-      if (puck.animate(t)) refresh = true;
+      if (puck.animate(t, ctx)) refresh = true;
     }
 
 
