@@ -64,12 +64,6 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   num _popR = 0.0;
 
 
-  bool isHit = false;
-  bool first = false;
-
-
-
-
   TunePuck(this.centerX, this.centerY, this.sound, this.name) {
     //this.radius = 30;
     Sounds.loadSound(sound, sound);
@@ -87,18 +81,25 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   	if (this.name == "Black") {
   	    program = new NT.Program(blocks.getStartBlock("Generator"), this);
   	    program.batched = false;  // execute blocks one at a time
+        program.autoLoop = true;
+
   	}
   	if (this.name == "Cyan") {
   	    program = new NT.Program(blocks.getStartBlock("Cyan Start"), this);
   	    program.batched = false;  // execute blocks one at a time
+        program.autoLoop = false;
+
   	}
   	if (this.name == "Yellow") {
   	    program = new NT.Program(blocks.getStartBlock("Yellow Start"), this);
   	    program.batched = false;  // execute blocks one at a time
+        program.autoLoop = false;
+
   	}
   	if (this.name == "Magenta") {
   	    program = new NT.Program(blocks.getStartBlock("Magenta Start"), this);
   	    program.batched = false;  // execute blocks one at a time
+        program.autoLoop = false;
   	}
   }
 
@@ -106,8 +107,6 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   void hit() {
     _pop = 1.0;
     Sounds.playSound(sound, this.radius/50);
-    this.isHit = true;
-    this.first = true;
   }
 
 
@@ -118,10 +117,6 @@ class TunePuck implements Touchable, NT.ProgramTarget {
  */
   dynamic doAction(String action, List params) {
     if (this.name != "Black"){
-      if (this.isHit == false){
-        return null;
-      }
-      print(action);
     }
   	if (workspace.cameraOn == true) {
   		(js.context['trackerOff'] as js.JsFunction).apply([]);
@@ -129,12 +124,6 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   	}
     switch (action) {
       case "start":
-          if (this.first == false){
-            this.isHit = false;
-          }
-          if (this.first == true){
-            this.first = false;
-          }
        		break;
 
       case "turn":
