@@ -76,17 +76,17 @@ void dartPrint(String listy) {
 
 }
 
-void clickFun(e){
-	workspace.cameraOn = true;
-	(js.context['trackerOn'] as js.JsFunction).apply([]);
+// void clickFun(e){
+// 	workspace.cameraOn = true;
+// 	(js.context['trackerOn'] as js.JsFunction).apply([]);
 
-}
+// }
 void main() {
   blocks = new NT.CodeWorkspace(BLOCKS);
   workspace = new TunePad("game-canvas");
   blocks.runtime = workspace;
   Sounds.loadSound("click", "sounds/click.wav");
-  querySelector("#onoff").onChange.listen(clickFun);
+  //querySelector("#onoff").onChange.listen(clickFun);
   js.context['dartPrint_main'] = dartPrint;
   print("generator");
   print(blocks.getStartBlock("Generator"));
@@ -113,7 +113,6 @@ class TunePad extends TouchLayer with NT.Runtime {
   // list of pulses fired
   List<TunePulse> pulses = new List<TunePulse>();
 
-  bool cameraOn = true;
 
 
   TunePad(String canvasId) {
@@ -134,13 +133,8 @@ class TunePad extends TouchLayer with NT.Runtime {
     // start program step timer
     new Timer.periodic(const Duration(milliseconds : 25), (timer) => vocalize());    
     // create some initial pucks
-   // addBlock(new TunePuck(300, 300, "sounds/crank.wav"));
-   // addBlock(new TunePuck(600, 300, "sounds/drumkit/clap.wav") .. background = "#f73" .. name = "Orange");
-   //  addBlock(new TunePuck(400, 100, "sounds/drumkit/tom.wav") .. background = "#7733ff" .. name = "Purple");
     addBlock(new TunePuck(320, 250, "sounds/crank.wav", "Black") .. background = "#000");
-    // addBlock(new TunePuck(600, 300, "sounds/drumkit/clap.wav") .. background = "#f73" .. name = "Orange");
-    // addBlock(new TunePuck(400, 100, "sounds/drumkit/tom.wav") .. background = "#7733ff" .. name = "Purple")
-
+  
     // start animation timer
     window.animationFrame.then(animate);
 
@@ -209,9 +203,7 @@ class TunePad extends TouchLayer with NT.Runtime {
     {
 
       pulses.forEach((pulse) => pulse.draw(ctx));
-
       pucks.forEach((puck) => puck.draw(ctx));
-
     }
     ctx.restore();
   }
@@ -221,9 +213,6 @@ class TunePad extends TouchLayer with NT.Runtime {
     moveToTop(puck);  // also adds to the list
     addTouchable(puck);
   }
-
-  
-
 
 /**
  * Move a block to the top of the visual stack
@@ -239,11 +228,10 @@ class TunePad extends TouchLayer with NT.Runtime {
  */
   void firePulse(TunePuck parent, num cx, num cy, num vx, num vy) {
     num x = 1;
-    // for (TunePuck puck in pucks) {
-      pulses.add(new TunePulse(parent, cx, cy , vx, vy));
-      x = x*10;
-    // }
-  }
+    pulses.add(new TunePulse(parent, cx, cy , vx, vy));
+    x = x*10;
+ }
+ 
   void sendPulse(TunePuck parent, TunePuck child, num cx, num cy, num v) {
 	num xdiff = (child.centerX-parent.centerX);
 	num ydiff = (child.centerY-parent.centerY);
@@ -284,6 +272,16 @@ class TunePad extends TouchLayer with NT.Runtime {
 
   void stepForward() {
     // Step forward 1 tick (step forward button pressed)
+  }
+
+  void play(){
+  	super.play();
+  	(js.context['trackerOff'] as js.JsFunction).apply([]);
+  }
+
+  void pause() {
+  	super.pause();
+  	(js.context['trackerOn'] as js.JsFunction).apply([]);
   }
 }
 
