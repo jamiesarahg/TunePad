@@ -27,6 +27,12 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
   // icon to draw on the puck
   String icon = "\uf0e7";
+  String circle_icon = "\uf111";
+  String square_icon = "\uf0c8";
+  String star_icon = "\uf005";
+  String heart_icon = "\uf004";
+  String icon_string = "\"$icon\"";
+
 
   // font face
   String font = "FontAwesome";
@@ -125,8 +131,24 @@ class TunePuck implements Touchable, NT.ProgramTarget {
             }
           } 
         }
-      	
-      	break;
+      
+      // case "if distance is less than":
+      //   num d = params[0];
+      //   num v = 5;
+      //   for (TunePuck puck in workspace.pucks){
+      //     num x_delta = pow((this.centerX - puck.centerX),2);
+      //     num y_delta = pow((this.centerY - puck.centerY),2);
+      //     num true_dist = pow((x_delta+y_delta),0.5);
+      //     print("true");
+      //     print(true_dist);
+      //     if (true_dist < d && true_dist > 0){
+      //       return true;
+      //     }
+      //     else {return false;}
+      //   }
+
+
+      break;
 
       default:
     }

@@ -62,6 +62,27 @@ var BLOCKS = {
           "label" : "color"
         }
       ]
+    },
+    {
+      "name" : "if distance is less than",
+      "instances" : 3,
+      "type" : "if",
+      "params" : [
+        // {
+        //   "type" : "dropdown",
+        //   "values" : ["less than", "equal to", "greater than"]
+        //   //"random" : false
+        // },
+        {
+          "type" : "range",
+          "min" : 250,
+          "max" : 300,
+          "step" : 1,
+          "default" : 1,
+          "label" : "pixels",
+
+        }
+      ]
     }
   ]
 };
