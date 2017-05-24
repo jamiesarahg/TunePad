@@ -36,7 +36,6 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   String heart_icon = "\uf004";
   //String icon_string = "icon";
 
-
   // font face
   String font = "FontAwesome";
 
@@ -63,6 +62,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   num _pop = 0.0;
   num _popR = 0.0;
 
+  // keeps track of if the pulse was recently hit
   bool isHit = false;
 
 
@@ -104,15 +104,14 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         program.autoLoop = false;
   	}
   }
-
-
+  /**
+  Function is called when a pulse hits a puck
+  **/
   void hit() {
     _pop = 1.0;
     Sounds.playSound(sound, this.radius/50);
     this.isHit = true;
   }
-
-
 
 /**
  * This is the ProgramTarget interface (subclasses should redefine).
@@ -165,9 +164,8 @@ class TunePuck implements Touchable, NT.ProgramTarget {
             }
           } 
         }
-
-
           break;
+
       case "if there is a puck less than":
         num d = params[0];
         num v = 5;
@@ -184,12 +182,8 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
       default:
     }
-    
-
-    return null;
+        return null;
   }
-
-
 
   void draw(CanvasRenderingContext2D ctx) {
     ctx.save();
