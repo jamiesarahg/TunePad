@@ -87,15 +87,15 @@ var BLOCKS = {
       ]
     },
     {
-      "name" : "if there is a puck less than",
+      "name" : "if there exists a puck",
       "instances" : 3,
       "type" : "if",
       "params" : [
-        // {
-        //   "type" : "dropdown",
-        //   "values" : ["less than", "equal to", "greater than"]
-        //   //"random" : false
-        // },
+        {
+          "type" : "dropdown",
+          "values" : ["less than", "equal to", "greater than"]
+          //"random" : false
+        },
         {
           "type" : "range",
           "min" : 200,
