@@ -36,7 +36,6 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   String heart_icon = "\uf004";
   //String icon_string = "icon";
 
-
   // font face
   String font = "FontAwesome";
 
@@ -63,11 +62,8 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   num _pop = 0.0;
   num _popR = 0.0;
 
-
+  // keeps track of if the pulse was recently hit
   bool isHit = false;
-  bool first = false;
-
-
 
 
   TunePuck(this.centerX, this.centerY, this.sound, this.name) {
@@ -87,30 +83,35 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   	if (this.name == "Black") {
   	    program = new NT.Program(blocks.getStartBlock("Generator"), this);
   	    program.batched = false;  // execute blocks one at a time
+        program.autoLoop = true;
+
   	}
   	if (this.name == "Cyan") {
   	    program = new NT.Program(blocks.getStartBlock("Cyan Start"), this);
-  	    program.batched = false;  // execute blocks one at a time
+  	    program.batched = true;  // execute blocks one at a time
+        program.autoLoop = false;
+
   	}
   	if (this.name == "Yellow") {
   	    program = new NT.Program(blocks.getStartBlock("Yellow Start"), this);
-  	    program.batched = false;  // execute blocks one at a time
+  	    program.batched = true;  // execute blocks one at a time
+        program.autoLoop = false;
+
   	}
   	if (this.name == "Magenta") {
   	    program = new NT.Program(blocks.getStartBlock("Magenta Start"), this);
-  	    program.batched = false;  // execute blocks one at a time
+  	    program.batched = true;  // execute blocks one at a time
+        program.autoLoop = false;
   	}
   }
-
-
+  /**
+  Function is called when a pulse hits a puck
+  **/
   void hit() {
     _pop = 1.0;
     Sounds.playSound(sound, this.radius/50);
     this.isHit = true;
-    this.first = true;
   }
-
-
 
 /**
  * This is the ProgramTarget interface (subclasses should redefine).
@@ -121,20 +122,11 @@ class TunePuck implements Touchable, NT.ProgramTarget {
       if (this.isHit == false){
         return null;
       }
-      //print(action);
     }
-  	if (workspace.cameraOn == true) {
-  		(js.context['trackerOff'] as js.JsFunction).apply([]);
-  		workspace.cameraOn = false;
-  	}
+    
     switch (action) {
       case "start":
-          if (this.first == false){
-            this.isHit = false;
-          }
-          if (this.first == true){
-            this.first = false;
-          }
+          this.isHit = false;
        		break;
 
       case "turn":
@@ -144,14 +136,12 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         break;
 
       case "pulse":
-      	if (workspace.cameraOn == false) {
-	        num velocity = params[0];
-	        num dx = velocity * cos(PI * heading / 180.0);
-	        num dy = velocity * sin(PI * heading / 180.0);
-	        workspace.firePulse(this, centerX, centerY, dx, dy);
-	        Sounds.playSound("pulse");
-          _popR= 1.0;
-	     }
+        num velocity = params[0];
+        num dx = velocity * cos(PI * heading / 180.0);
+        num dy = velocity * sin(PI * heading / 180.0);
+        workspace.firePulse(this, centerX, centerY, dx, dy);
+        Sounds.playSound("pulse");
+        _popR= 1.0;
         break;
 
       case "rest":
@@ -174,9 +164,8 @@ class TunePuck implements Touchable, NT.ProgramTarget {
             }
           } 
         }
-
-
           break;
+
       case "if there exists a puck":
         print("entered if");
         String c = params[0];
@@ -215,7 +204,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
             num true_dist = pow((x_delta+y_delta),0.5);
             print("true");
             print(true_dist);
-            if (true_dist = d && true_dist > 0){
+            if (true_dist == d && true_dist > 0){
               return true;
             }
             else {return false;}
@@ -225,12 +214,8 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
       default:
     }
-    
-
-    return null;
+        return null;
   }
-
-
 
   void draw(CanvasRenderingContext2D ctx) {
     ctx.save();
