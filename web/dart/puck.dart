@@ -66,6 +66,10 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   bool isHit = false;
 
 
+  //list of all pucks that need to be sent to
+  //List<TunePuck> pucks = new List<TunePuck>();
+
+
   TunePuck(this.centerX, this.centerY, this.sound, this.name) {
     //this.radius = 30;
     Sounds.loadSound(sound, sound);
@@ -81,25 +85,25 @@ class TunePuck implements Touchable, NT.ProgramTarget {
     Sounds.loadSound("yellow_2", "sounds/drumkit/snare.wav");
 
   	if (this.name == "Black") {
-  	    program = new NT.Program(blocks.getStartBlock("Generator"), this);
+  	    program = new NT.Program(blocks.getStartBlock("while 'play'"), this);
   	    program.batched = false;  // execute blocks one at a time
         program.autoLoop = true;
 
   	}
   	if (this.name == "Cyan") {
-  	    program = new NT.Program(blocks.getStartBlock("Cyan Start"), this);
+  	    program = new NT.Program(blocks.getStartBlock("when cyan hit"), this);
   	    program.batched = true;  // execute blocks one at a time
         program.autoLoop = false;
 
   	}
   	if (this.name == "Yellow") {
-  	    program = new NT.Program(blocks.getStartBlock("Yellow Start"), this);
+  	    program = new NT.Program(blocks.getStartBlock("when yellow hit"), this);
   	    program.batched = true;  // execute blocks one at a time
         program.autoLoop = false;
 
   	}
   	if (this.name == "Magenta") {
-  	    program = new NT.Program(blocks.getStartBlock("Magenta Start"), this);
+  	    program = new NT.Program(blocks.getStartBlock("when magenta hit"), this);
   	    program.batched = true;  // execute blocks one at a time
         program.autoLoop = false;
   	}
@@ -123,7 +127,11 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         return null;
       }
     }
-    
+    if(this.name == "Yellow"){
+      print(action);
+    }
+    //print(action);
+
     switch (action) {
       case "start":
           this.isHit = false;
@@ -135,36 +143,39 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         Sounds.playSound("turn");
         break;
 
-      case "pulse":
-        num velocity = params[0];
-        num dx = velocity * cos(PI * heading / 180.0);
-        num dy = velocity * sin(PI * heading / 180.0);
-        workspace.firePulse(this, centerX, centerY, dx, dy);
-        Sounds.playSound("pulse");
-        _popR= 1.0;
-        break;
+      // case "pulse":
+      //   num velocity = params[0];
+      //   num dx = velocity * cos(PI * heading / 180.0);
+      //   num dy = velocity * sin(PI * heading / 180.0);
+      //   workspace.firePulse(this, centerX, centerY, dx, dy);
+      //   Sounds.playSound("pulse");
+      //   _popR= 1.0;
+      //   break;
 
       case "rest":
         break;
 
-      case "send to":
+      case "send to pucks":
         _popR= 1.0;
       	num v = 5;
-      	String color = params[0];
-        if (color == 'All'){
-          for (TunePuck puck in workspace.pucks) {
+      	//String color = params[0];
+        // if (color == 'All'){
+        //   for (TunePuck puck in workspace.pucks) {
+        //     workspace.sendPulse(this, puck, centerX, centerY, v);
+        //   }
+        // }
+        // else {
+        //   for (TunePuck puck in workspace.pucks) {
+        //     if (puck.name == color){
+        //       //print('in if');
+        //       workspace.sendPulse(this, puck, centerX, centerY, v);
+        //     }
+        //   } 
+        // }
+        for (TunePuck puck in workspace.pucks) {
             workspace.sendPulse(this, puck, centerX, centerY, v);
           }
-        }
-        else {
-          for (TunePuck puck in workspace.pucks) {
-            if (puck.name == color){
-              //print('in if');
-              workspace.sendPulse(this, puck, centerX, centerY, v);
-            }
-          } 
-        }
-          break;
+        break;
 
       case "if there exists a puck":
         print("entered if");

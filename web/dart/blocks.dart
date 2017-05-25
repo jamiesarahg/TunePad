@@ -14,6 +14,7 @@
 part of TunePad;
 
 
+
 // block workspace definitions (can also go in an external JSON file)
 var BLOCKS = {
 
@@ -22,49 +23,49 @@ var BLOCKS = {
   "touchElement" : "blocks-canvas",
   //"anchor" : "left", (top | bottom | right)
   "color" : "rgba(0, 0, 0, 0.6)",
-  "defaultProgram" : "pulse();rest();",
+  "defaultProgram" : "send to pucks();",
   "fastForwardButton" : false,
   "stepForwardButton" : false,
 
   "startBlocks" : [
     {
-       "name" : "Generator",
+       "name" : "while 'play'",
        "color" : "black",
        "position" : 20
     },
     {
-       "name" : "Magenta Start",
-       "color" : "Magenta",
-       "position" : 140
+       "name" : "when mangenta hit",
+       "color" : "rgb(229, 66, 244)",
+       "position" : 170
     },
     {
-       "name" : "Cyan Start",
-       "color" : "Cyan",
-       "position" : 260
+       "name" : "when cyan hit",
+       "color" : "rgb(66, 212, 244)",
+       "position" : 320
     },
     {
-       "name" : "Yellow Start",
-       "color" : "Yellow",
-       "position" : 380
+       "name" : "when yellow hit",
+       "color" : "rgb(244, 235, 66)",
+       "position" : 470
     }
   ],
 
   "blocks" : [
-    {
-      "name" : "pulse",
-      "instances" : 3,
-      "params" : [
-        {
-          "type" : "range",
-          "min" : 0,
-          "max" : 10,
-          "step" : 1,
-          "default" : 4,
-          "random" : true,
-          "label" : "velocity"
-        }
-      ]
-    },
+    // {
+    //   "name" : "pulse",
+    //   "instances" : 3,
+    //   "params" : [
+    //     {
+    //       "type" : "range",
+    //       "min" : 0,
+    //       "max" : 10,
+    //       "step" : 1,
+    //       "default" : 4,
+    //       "random" : true,
+    //       "label" : "velocity"
+    //     }
+    //   ]
+    // },
     {
       "name" : "rest",
       "instances" : 3
@@ -75,16 +76,16 @@ var BLOCKS = {
       "type" : "chance"
     },
     {
-      "name" : "send to",
-      "instances" : 3,
-      "params" : [
-        {
-          "type" : "dropdown",
-          "values": [ "Cyan", "Magenta", "Yellow", "All" ],
-          "random" : true,
-          "label" : "color"
-        }
-      ]
+      "name" : "send to pucks",
+      "instances" : 3
+      // "params" : [
+      //   {
+      //     "type" : "dropdown",
+      //     "values": [ "Cyan", "Magenta", "Yellow", "All" ],
+      //     "random" : true,
+      //     "label" : "color"
+      //   }
+      // ]
     },
     {
       "name" : "if there exists a puck",

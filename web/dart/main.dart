@@ -61,13 +61,13 @@ void dartPrint(String listy) {
 		num y = double.parse(newPuck[1]);
 		num rad = double.parse(newPuck[3]);
 		if (newPuck[2] == 'cyan'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/tom.wav", "Cyan") .. background = "#0FF" .. radius = rad);
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/tom.wav", "rgb(229, 66, 244)") .. background = "#0FF" .. radius = rad);
 		}
 		if (newPuck[2] == 'magenta'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/clap.wav", "Magenta") .. background = "#F0F" .. radius = rad );
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/clap.wav", "rgb(66, 212, 244)") .. background = "#F0F" .. radius = rad );
 		}
 		if (newPuck[2] == 'yellow'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/pat.wav", "Yellow") .. background = "#FF0" .. radius = rad );
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/pat.wav", "rgb(244, 235, 66)") .. background = "#FF0" .. radius = rad );
 		}
 	}
 
@@ -109,6 +109,7 @@ class TunePad extends TouchLayer with NT.Runtime {
 
   // list of all sound generator pucks on the canvas
   List<TunePuck> pucks = new List<TunePuck>();
+
 
   // list of pulses fired
   List<TunePulse> pulses = new List<TunePulse>();
@@ -280,6 +281,7 @@ class TunePad extends TouchLayer with NT.Runtime {
   }
 
   void pause() {
+    pulses = new List<TunePulse>();
   	super.pause();
   	(js.context['trackerOn'] as js.JsFunction).apply([]);
   }

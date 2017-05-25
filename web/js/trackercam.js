@@ -33,9 +33,9 @@ function trackerStart(){
         // context.fillText('y: ' + rect.y + 'px', rect.x + rect.width + 5, rect.y + 22);
         var x = rect.x+(rect.width/2);
         var y = rect.y+(rect.height/2);
-        var rad = (rect.height * rect.width)/20;
-        if (rad > 50){
-          rad = 50;
+        var rad = (rect.height * rect.width)/40;
+        if (rad > 30){
+          rad = 30;
         }
         dartPrint_main(String(x)+','+String(y)+','+String(rect.color) + ','+  String(rad));
     });
