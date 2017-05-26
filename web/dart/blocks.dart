@@ -99,8 +99,8 @@ var BLOCKS = {
         },
         {
           "type" : "range",
-          "min" : 200,
-          "max" : 300,
+          "min" : 0,
+          "max" : 600,
           "step" : 1,
           "default" : 200,
           "label" : "pixels",

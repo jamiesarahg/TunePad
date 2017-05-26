@@ -122,6 +122,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
  * Called by programs during block.eval
  */
   dynamic doAction(String action, List params) {
+    print(this.name);
     if (this.name != "Black"){
       if (this.isHit == false){
         return null;
@@ -158,63 +159,37 @@ class TunePuck implements Touchable, NT.ProgramTarget {
       case "send to pucks":
         _popR= 1.0;
       	num v = 5;
-      	//String color = params[0];
-        // if (color == 'All'){
-        //   for (TunePuck puck in workspace.pucks) {
-        //     workspace.sendPulse(this, puck, centerX, centerY, v);
-        //   }
-        // }
-        // else {
-        //   for (TunePuck puck in workspace.pucks) {
-        //     if (puck.name == color){
-        //       //print('in if');
-        //       workspace.sendPulse(this, puck, centerX, centerY, v);
-        //     }
-        //   } 
-        // }
+
         for (TunePuck puck in workspace.pucks) {
             workspace.sendPulse(this, puck, centerX, centerY, v);
           }
         break;
 
       case "if there exists a puck":
-        print("entered if");
+        //print("entered if");
         String c = params[0];
         num d = params[1];
         num v = 5;
-        if (c == "less than"){
-          for (TunePuck puck in workspace.pucks){
-            num x_delta = pow((this.centerX - puck.centerX),2);
-            num y_delta = pow((this.centerY - puck.centerY),2);
-            num true_dist = pow((x_delta+y_delta),0.5);
-            print("true");
-            print(true_dist);
-            if (true_dist < d && true_dist > 0){
+        for (TunePuck puck in workspace.pucks){
+          num x_delta = pow((this.centerX - puck.centerX),2);
+          num y_delta = pow((this.centerY - puck.centerY),2);
+          num true_dist = pow((x_delta+y_delta),0.5);
+          //print("true");
+          //print(true_dist);
+          if (c== "less than"){
+            if (true_dist < d && true_dist > 0){ 
+              print('true');
               return true;
             }
             else {return false;}
           }
-        }
-        else if (c == "greater than"){
-          for (TunePuck puck in workspace.pucks){
-            num x_delta = pow((this.centerX - puck.centerX),2);
-            num y_delta = pow((this.centerY - puck.centerY),2);
-            num true_dist = pow((x_delta+y_delta),0.5);
-            print("true");
-            print(true_dist);
+          else if (c == "greater than") {
             if (true_dist > d && true_dist > 0){
               return true;
             }
             else {return false;}
           }
-        }
-        else{
-          for (TunePuck puck in workspace.pucks){
-            num x_delta = pow((this.centerX - puck.centerX),2);
-            num y_delta = pow((this.centerY - puck.centerY),2);
-            num true_dist = pow((x_delta+y_delta),0.5);
-            print("true");
-            print(true_dist);
+          else{
             if (true_dist == d && true_dist > 0){
               return true;
             }
@@ -222,10 +197,8 @@ class TunePuck implements Touchable, NT.ProgramTarget {
           }
         }
         break;
-
-      default:
     }
-        return null;
+    return null;
   }
 
   void draw(CanvasRenderingContext2D ctx) {
