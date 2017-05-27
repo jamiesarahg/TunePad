@@ -61,10 +61,10 @@ void dartPrint(String listy) {
 		num y = double.parse(newPuck[1]);
 		num rad = double.parse(newPuck[3]);
 		if (newPuck[2] == 'cyan'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/tom.wav", "Cyan") .. background = "rgb(229, 66, 244)" .. radius = rad);
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/tom.wav", "Cyan") .. background = "rgb(66, 212, 244)" .. radius = rad);
 		}
 		if (newPuck[2] == 'magenta'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/clap.wav", "Magenta") .. background = "rgb(66, 212, 244)" .. radius = rad );
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/clap.wav", "Magenta") .. background = "rgb(229, 66, 244)" .. radius = rad );
 		}
 		if (newPuck[2] == 'yellow'){
 			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/pat.wav", "Yellow") .. background = "rgb(244, 235, 66)" .. radius = rad );
