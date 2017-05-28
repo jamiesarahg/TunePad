@@ -65,6 +65,8 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   // keeps track of if the pulse was recently hit
   bool isHit = false;
 
+  List<TunePuck> to_remove = new List<TunePuck>();
+
 
   //list of all pucks that need to be sent to
   //List<TunePuck> pucks = new List<TunePuck>();
@@ -122,16 +124,11 @@ class TunePuck implements Touchable, NT.ProgramTarget {
  * Called by programs during block.eval
  */
   dynamic doAction(String action, List params) {
-    print(this.name);
     if (this.name != "Black"){
       if (this.isHit == false){
         return null;
       }
     }
-    if(this.name == "Yellow"){
-      print(action);
-    }
-    //print(action);
 
     switch (action) {
       case "start":
@@ -144,29 +141,30 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         Sounds.playSound("turn");
         break;
 
-      // case "pulse":
-      //   num velocity = params[0];
-      //   num dx = velocity * cos(PI * heading / 180.0);
-      //   num dy = velocity * sin(PI * heading / 180.0);
-      //   workspace.firePulse(this, centerX, centerY, dx, dy);
-      //   Sounds.playSound("pulse");
-      //   _popR= 1.0;
-      //   break;
-
       case "rest":
         break;
 
       case "send to pucks":
         _popR= 1.0;
       	num v = 5;
+        bool inRemove = false;
 
         for (TunePuck puck in workspace.pucks) {
+          for (TunePuck puck2 in to_remove) {
+            if (puck == puck2){
+              inRemove = true;
+              break;
+            }
+          }
+          if (!inRemove){
             workspace.sendPulse(this, puck, centerX, centerY, v);
           }
+          inRemove = false;
+         }
+        to_remove = new List<TunePuck>();
         break;
 
       case "if there exists a puck":
-        //print("entered if");
         String c = params[0];
         num d = params[1];
         num v = 5;
@@ -174,32 +172,67 @@ class TunePuck implements Touchable, NT.ProgramTarget {
           num x_delta = pow((this.centerX - puck.centerX),2);
           num y_delta = pow((this.centerY - puck.centerY),2);
           num true_dist = pow((x_delta+y_delta),0.5);
-          //print("true");
-          //print(true_dist);
+
           if (c== "less than"){
             if (true_dist < d && true_dist > 0){ 
-              print('true');
-              return true;
             }
-            else {return false;}
+            else {
+              to_remove.add(puck);
+            }
           }
           else if (c == "greater than") {
             if (true_dist > d && true_dist > 0){
-              return true;
             }
-            else {return false;}
+            else {
+              to_remove.add(puck);
+            }
           }
           else{
             if (true_dist == d && true_dist > 0){
-              return true;
             }
-            else {return false;}
+            else {
+              to_remove.add(puck);
+            }
           }
         }
+        return true;
+        break;
+
+      case "if the puck color is:":
+        String color = params[0];
+        for (TunePuck puck in workspace.pucks){
+          if (color != puck.name){
+            to_remove.add(puck);
+          }
+        }
+        return true;
+        break;
+
+      case "if the puck shape is:":
+        String shape = params[0];
+        String icon;
+
+        for (TunePuck puck in workspace.pucks){
+          if (puck.icon_count == 0){
+            icon = "Bolt";
+          }
+          if (puck.icon_count == 1){
+            icon = "Star";
+          }
+          if (puck.icon_count == 2){
+            icon = "Heart";
+          }
+
+          if (shape != icon){
+            to_remove.add(puck);
+          }
+        }
+        return true;
         break;
     }
-    return null;
   }
+
+
 
   void draw(CanvasRenderingContext2D ctx) {
     ctx.save();
@@ -235,13 +268,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
   bool animate(int millis, CanvasRenderingContext2D ctx) { 
     bool refresh = false;
-    // if (_dragging) {
-    //   centerX += (_touchX - _lastX);
-    //   centerY += (_touchY - _lastY);
-    //   _lastX = _touchX;
-    //   _lastY = _touchY;
-    //   refresh = true;
-    // } 
+
     if (_pop > 0.05) {
       _pop *= 0.9;
       refresh = true;

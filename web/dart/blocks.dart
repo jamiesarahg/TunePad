@@ -95,7 +95,6 @@ var BLOCKS = {
         {
           "type" : "dropdown",
           "values" : ["less than", "equal to", "greater than"]
-          //"random" : false
         },
         {
           "type" : "range",
@@ -106,6 +105,28 @@ var BLOCKS = {
           "label" : "pixels",
 
         }
+      ]
+    },
+    {
+      "name" : "if the puck color is:",
+      "instances" : 3,
+      "type" : "if",
+      "params" : [
+        {
+          "type" : "dropdown",
+          "values" : ["Magenta", "Cyan", "Yellow"]
+        },
+      ]
+    },
+    {
+      "name" : "if the puck shape is:",
+      "instances" : 3,
+      "type" : "if",
+      "params" : [
+        {
+          "type" : "dropdown",
+          "values" : ["Bolt", "Heart", "Star"]
+        },
       ]
     }
   ]
