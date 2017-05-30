@@ -164,7 +164,8 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         to_remove = new List<TunePuck>();
         break;
 
-      case "if there exists a puck":
+
+      case "if the puck distance is:":
         String c = params[0];
         num d = params[1];
         num v = 5;

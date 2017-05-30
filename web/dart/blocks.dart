@@ -14,7 +14,6 @@
 part of TunePad;
 
 
-
 // block workspace definitions (can also go in an external JSON file)
 var BLOCKS = {
 
@@ -41,12 +40,12 @@ var BLOCKS = {
     {
        "name" : "when cyan hit",
        "color" : "rgb(66, 212, 244)",
-       "position" : 320
+       "position" : 380
     },
     {
        "name" : "when yellow hit",
        "color" : "rgb(244, 235, 66)",
-       "position" : 470
+       "position" : 550
     }
   ],
 
@@ -88,7 +87,7 @@ var BLOCKS = {
       // ]
     },
     {
-      "name" : "if there exists a puck",
+      "name" : "if the puck distance is:",
       "instances" : 3,
       "type" : "if",
       "params" : [
