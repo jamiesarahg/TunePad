@@ -50,45 +50,22 @@ var BLOCKS = {
   ],
 
   "blocks" : [
-    // {
-    //   "name" : "pulse",
-    //   "instances" : 3,
-    //   "params" : [
-    //     {
-    //       "type" : "range",
-    //       "min" : 0,
-    //       "max" : 10,
-    //       "step" : 1,
-    //       "default" : 4,
-    //       "random" : true,
-    //       "label" : "velocity"
-    //     }
-    //   ]
-    // },
     {
       "name" : "rest",
-      "instances" : 3
+      "instances" : 5
     },
     {
-      "instances" : 2,
+      "instances" : 5,
       "name" : "chance",
       "type" : "chance"
     },
     {
       "name" : "send to pucks",
-      "instances" : 3
-      // "params" : [
-      //   {
-      //     "type" : "dropdown",
-      //     "values": [ "Cyan", "Magenta", "Yellow", "All" ],
-      //     "random" : true,
-      //     "label" : "color"
-      //   }
-      // ]
+      "instances" : 10
     },
     {
       "name" : "if the puck distance is:",
-      "instances" : 3,
+      "instances" : 5,
       "type" : "if",
       "params" : [
         {
@@ -108,7 +85,7 @@ var BLOCKS = {
     },
     {
       "name" : "if the puck color is:",
-      "instances" : 3,
+      "instances" : 5,
       "type" : "if",
       "params" : [
         {
@@ -119,7 +96,7 @@ var BLOCKS = {
     },
     {
       "name" : "if the puck shape is:",
-      "instances" : 3,
+      "instances" : 5,
       "type" : "if",
       "params" : [
         {
