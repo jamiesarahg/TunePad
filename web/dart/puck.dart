@@ -197,7 +197,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
           }
         }
         return true;
-        break;
+        
 
       case "if the puck color is:":
         String color = params[0];
@@ -207,7 +207,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
           }
         }
         return true;
-        break;
+      
 
       case "if the puck shape is:":
         String shape = params[0];
@@ -229,8 +229,9 @@ class TunePuck implements Touchable, NT.ProgramTarget {
           }
         }
         return true;
-        break;
+       break;
     }
+
   }
 
 

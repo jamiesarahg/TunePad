@@ -33,7 +33,7 @@ var BLOCKS = {
        "position" : 20
     },
     {
-       "name" : "when mangenta hit",
+       "name" : "when magenta hit",
        "color" : "rgb(229, 66, 244)",
        "position" : 170
     },
