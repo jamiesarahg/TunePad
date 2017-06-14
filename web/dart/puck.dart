@@ -115,7 +115,9 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   **/
   void hit() {
     _pop = 1.0;
-    Sounds.playSound(sound, this.radius/50);
+    num volume = this.radius/50;
+    // add sound to sound list to be played this beat
+    workspace.soundsList.add([sound, volume.toString()]);
     this.isHit = true;
   }
 
@@ -229,9 +231,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
           }
         }
         return true;
-       break;
     }
-
   }
 
 

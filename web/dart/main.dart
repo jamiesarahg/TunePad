@@ -114,6 +114,8 @@ class TunePad extends TouchLayer with NT.Runtime {
   // list of pulses fired
   List<TunePulse> pulses = new List<TunePulse>();
 
+  List<List<String>> soundsList = new List<List<String>>();
+
 
 
   TunePad(String canvasId) {
@@ -187,6 +189,12 @@ class TunePad extends TouchLayer with NT.Runtime {
         for (TunePuck puck in pucks) {
           puck.program.step();
         }
+        //play all sounds for this 32nd beat
+        for (List s in soundsList) {
+        	Sounds.playSound(s[0], double.parse(s[1]));
+        }
+        //reset sound list
+        soundsList = new List<List<String>>();
       }
     }
   }  
