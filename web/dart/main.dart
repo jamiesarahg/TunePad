@@ -28,9 +28,9 @@ part "pulse.dart";
 part "sounds.dart";
 part "touch.dart";
 
-
 // boolean to determine if tangible & camera should play
-bool tangible = false;
+var tangible = (querySelector('#tangible') as InputElement).value;
+
 
 const millisPerBeat = 256; // 128;      // 128ms == 32nd note
 const beatsPerMeasure = 32;     // 32nd notes as our smallest division (4 / 4 time)
@@ -80,11 +80,15 @@ void parseTrackingPucks(String pucksString) {
 }
 
 void main() {
+		print("tangible");
+	print(tangible);
   blocks = new NT.CodeWorkspace(BLOCKS);
   workspace = new TunePad("game-canvas");
   blocks.runtime = workspace;
   Sounds.loadSound("click", "sounds/click.wav");
-  js.context['parseTrackingPucks_JS'] = parseTrackingPucks;
+  if (tangible){
+  	  js.context['parseTrackingPucks_JS'] = parseTrackingPucks;
+  }
 }
 
 
@@ -110,6 +114,10 @@ class TunePad extends TouchLayer with NT.Runtime {
 
 
 
+
+
+
+
   TunePad(String canvasId) {
     CanvasElement canvas = querySelector("#$canvasId");
     ctx = canvas.getContext('2d');
@@ -126,9 +134,14 @@ class TunePad extends TouchLayer with NT.Runtime {
     clock.start();
 
     // start program step timer
-    new Timer.periodic(const Duration(milliseconds : 25), (timer) => vocalize());    
-    // create some initial pucks
+    new Timer.periodic(const Duration(milliseconds : 25), (timer) => vocalize());
+
+    // create some initial generator
     addBlock(new TunePuck(320, 250, "sounds/crank.wav", "Black") .. background = "#000");
+
+    if (tangible == "false"){
+    	addBlock(new TunePuck(100, 100, "sounds/drumkit/pat.wav", "Yellow") .. background = "rgb(244, 235, 66)");
+    }
   
     // start animation timer
     window.animationFrame.then(animate);

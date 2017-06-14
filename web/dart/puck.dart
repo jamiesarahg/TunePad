@@ -73,6 +73,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
 
   TunePuck(this.centerX, this.centerY, this.sound, this.name) {
+
     //this.radius = 30;
     Sounds.loadSound(sound, sound);
     Sounds.loadSound("pulse", "sounds/drumkit/rim.wav");
@@ -298,7 +299,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
   Touchable touchDown(Contact c) {
     _dragging = true;
-    //workspace.moveToTop(this);
+    workspace.moveToTop(this);
     _touchX = c.touchX;
     _touchY = c.touchY;
     _lastX = c.touchX;
@@ -314,7 +315,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         icon = "\uf005";
         sound = "cyan_1";
       }
-      else{  //hart
+      else{  //heart
         icon = "\uf004";
         sound = "cyan_2";
       }
@@ -330,7 +331,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         icon = "\uf005";
         sound = "magenta_1";
       }
-      else{  //hart
+      else{  //heart
         icon = "\uf004";
         sound = "magenta_2";
       }
@@ -346,7 +347,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         icon = "\uf005";
         sound = "yellow_1";
       }
-      else{  //hart
+      else{  //heart
         icon = "\uf004";
         sound = "yellow_2";
       }
