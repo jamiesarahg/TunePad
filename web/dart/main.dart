@@ -21,6 +21,7 @@ import 'dart:web_audio';  // web audio
 import 'dart:js' as js;
 import 'package:js/js.dart';
 import 'package:NetTango/ntango.dart' as NT;   // import NetTango
+import 'dart:collection'; 
 
 part "blocks.dart";
 part "puck.dart";
@@ -73,17 +74,12 @@ void parseTrackingPucks(String pucksString) {
 			workspace.addBlock(new TunePuck(x, y,  "Yellow")  .. radius = rad );
 		}
 	}
-
-
-
-
 }
 
 void main() {
   blocks = new NT.CodeWorkspace(BLOCKS);
   workspace = new TunePad("game-canvas");
   blocks.runtime = workspace;
-  Sounds.loadSound("click", "sounds/click.wav");
   js.context['parseTrackingPucks_JS'] = parseTrackingPucks;
 }
 
@@ -102,10 +98,10 @@ class TunePad extends TouchLayer with NT.Runtime {
   // list of all sound generator pucks on the canvas
   List<TunePuck> pucks = new List<TunePuck>();
 
-
   // list of pulses fired
   List<TunePulse> pulses = new List<TunePulse>();
 
+  // list of sounds to be played and volume
   List<List<String>> soundsList = new List<List<String>>();
 
 
@@ -202,7 +198,6 @@ class TunePad extends TouchLayer with NT.Runtime {
 
     ctx.save();
     {
-
       pulses.forEach((pulse) => pulse.draw(ctx));
       pucks.forEach((puck) => puck.draw(ctx));
     }
@@ -242,7 +237,6 @@ class TunePad extends TouchLayer with NT.Runtime {
 	pulses.add(new TunePulse(parent, cx, cy, xdiff, ydiff ));
   }
 	
-
 
 /**
  * check to see if the given pulse has collided with any pucks

@@ -65,12 +65,12 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   // keeps track of if the pulse was recently hit
   bool isHit = false;
 
+  // list of pucks that don't get sent to
   List<TunePuck> to_remove = new List<TunePuck>();
 
+  List<TunePuck> remove_group = new List<TunePuck>();
 
-  //list of all pucks that need to be sent to
-  //List<TunePuck> pucks = new List<TunePuck>();
-
+  Queue removeList = new Queue();
 
   TunePuck(this.centerX, this.centerY, this.name) {    
     Sounds.loadSound("pulse", "sounds/drumkit/rim.wav");
@@ -133,6 +133,13 @@ class TunePuck implements Touchable, NT.ProgramTarget {
     this.isHit = true;
   }
 
+  void popLastRemove() {
+    List<TunePuck> popped = removeList.removeFirst();
+    for (TunePuck pop in popped){
+      to_remove.remove(pop);
+    }
+  }
+
 /**
  * This is the ProgramTarget interface (subclasses should redefine).
  * Called by programs during block.eval
@@ -143,7 +150,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         return null;
       }
     }
-
+    
     switch (action) {
       case "start":
           this.isHit = false;
@@ -161,21 +168,12 @@ class TunePuck implements Touchable, NT.ProgramTarget {
       case "send to pucks":
         _popR= 1.0;
       	num v = 5;
-        bool inRemove = false;
 
         for (TunePuck puck in workspace.pucks) {
-          for (TunePuck puck2 in to_remove) {
-            if (puck == puck2){
-              inRemove = true;
-              break;
-            }
-          }
-          if (!inRemove){
+          if (!to_remove.contains(puck)){
             workspace.sendPulse(this, puck, centerX, centerY, v);
           }
-          inRemove = false;
          }
-        to_remove = new List<TunePuck>();
         break;
 
 
@@ -192,24 +190,31 @@ class TunePuck implements Touchable, NT.ProgramTarget {
             if (true_dist < d && true_dist > 0){ 
             }
             else {
-              to_remove.add(puck);
+              remove_group.add(puck);
             }
           }
           else if (c == "greater than") {
             if (true_dist > d && true_dist > 0){
             }
             else {
-              to_remove.add(puck);
+              remove_group.add(puck);
             }
           }
           else{
             if (true_dist == d && true_dist > 0){
             }
             else {
-              to_remove.add(puck);
+              remove_group.add(puck);
             }
           }
         }
+        // add all elements to the to_remove list
+        to_remove.addAll(remove_group);
+        //add list to queue
+        removeList.add(remove_group);
+        //reset list
+        remove_group = new List<TunePuck>();
+
         return true;
         
 
@@ -217,9 +222,15 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         String color = params[0];
         for (TunePuck puck in workspace.pucks){
           if (color != puck.name){
-            to_remove.add(puck);
+            remove_group.add(puck);
           }
         }
+        // add all elements to the to_remove list
+        to_remove.addAll(remove_group);
+        //add list to queue
+        removeList.add(remove_group);
+        //reset list
+        remove_group = new List<TunePuck>();
         return true;
       
 
@@ -239,10 +250,26 @@ class TunePuck implements Touchable, NT.ProgramTarget {
           }
 
           if (shape != icon){
-            to_remove.add(puck);
+            remove_group.add(puck);
           }
         }
+                // add all elements to the to_remove list
+        to_remove.addAll(remove_group);
+        //add list to queue
+        removeList.add(remove_group);
+        //reset list
+        remove_group = new List<TunePuck>();
         return true;
+
+      case "[end if the puck distance is:]":
+        popLastRemove();
+        break;
+      case "[end if the puck shape is:]":
+        popLastRemove();
+        break;
+      case "[end if the puck color is:]":
+        popLastRemove();
+        break;
     }
   }
 
