@@ -48,6 +48,7 @@ void dartPrint(String listy) {
 
 		List<TunePuck> to_remove = new List<TunePuck>();
 		for (TunePuck puck in workspace.pucks){
+				if (puck.name != "Black")
 			    to_remove.add(puck);
 		}
 		for (TunePuck puck in to_remove){
@@ -58,14 +59,15 @@ void dartPrint(String listy) {
 		List newPuck = listy.split(",");
 		num x = double.parse(newPuck[0]);
 		num y = double.parse(newPuck[1]);
+		num rad = double.parse(newPuck[3]);
 		if (newPuck[2] == 'cyan'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/tom.wav") .. background = "#0FF" .. name = "Cyan");
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/tom.wav", "Cyan") .. background = "rgb(66, 212, 244)" .. radius = rad);
 		}
 		if (newPuck[2] == 'magenta'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/clap.wav") .. background = "#F0F" .. name = "Magenta");
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/clap.wav", "Magenta") .. background = "rgb(229, 66, 244)" .. radius = rad );
 		}
 		if (newPuck[2] == 'yellow'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/hat.wav") .. background = "#FF0" .. name = "Yellow");
+			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/pat.wav", "Yellow") .. background = "rgb(244, 235, 66)" .. radius = rad );
 		}
 	}
 
@@ -74,18 +76,20 @@ void dartPrint(String listy) {
 
 }
 
-void clickFun(e){
-	workspace.cameraOn = true;
-	(js.context['trackerOn'] as js.JsFunction).apply([]);
+// void clickFun(e){
+// 	workspace.cameraOn = true;
+// 	(js.context['trackerOn'] as js.JsFunction).apply([]);
 
-}
+// }
 void main() {
   blocks = new NT.CodeWorkspace(BLOCKS);
   workspace = new TunePad("game-canvas");
   blocks.runtime = workspace;
   Sounds.loadSound("click", "sounds/click.wav");
-  querySelector("#onoff").onChange.listen(clickFun);
+  //querySelector("#onoff").onChange.listen(clickFun);
   js.context['dartPrint_main'] = dartPrint;
+  print("generator");
+  print(blocks.getStartBlock("Generator"));
 
 }
 
@@ -106,10 +110,10 @@ class TunePad extends TouchLayer with NT.Runtime {
   // list of all sound generator pucks on the canvas
   List<TunePuck> pucks = new List<TunePuck>();
 
+
   // list of pulses fired
   List<TunePulse> pulses = new List<TunePulse>();
 
-  bool cameraOn = true;
 
 
   TunePad(String canvasId) {
@@ -130,10 +134,8 @@ class TunePad extends TouchLayer with NT.Runtime {
     // start program step timer
     new Timer.periodic(const Duration(milliseconds : 25), (timer) => vocalize());    
     // create some initial pucks
-    addBlock(new TunePuck(300, 300, "sounds/crank.wav"));
-    addBlock(new TunePuck(600, 300, "sounds/drumkit/clap.wav") .. background = "#f73" .. name = "Orange");
-    addBlock(new TunePuck(400, 100, "sounds/drumkit/tom.wav") .. background = "#7733ff" .. name = "Purple");
-
+    addBlock(new TunePuck(320, 250, "sounds/crank.wav", "Black") .. background = "#000");
+  
     // start animation timer
     window.animationFrame.then(animate);
 
@@ -151,7 +153,7 @@ class TunePad extends TouchLayer with NT.Runtime {
 
     // animate the audio pucks
     for (TunePuck puck in pucks) {
-      if (puck.animate(t)) refresh = true;
+      if (puck.animate(t, ctx)) refresh = true;
     }
 
 
@@ -202,9 +204,7 @@ class TunePad extends TouchLayer with NT.Runtime {
     {
 
       pulses.forEach((pulse) => pulse.draw(ctx));
-
       pucks.forEach((puck) => puck.draw(ctx));
-
     }
     ctx.restore();
   }
@@ -214,9 +214,6 @@ class TunePad extends TouchLayer with NT.Runtime {
     moveToTop(puck);  // also adds to the list
     addTouchable(puck);
   }
-
-  
-
 
 /**
  * Move a block to the top of the visual stack
@@ -232,11 +229,10 @@ class TunePad extends TouchLayer with NT.Runtime {
  */
   void firePulse(TunePuck parent, num cx, num cy, num vx, num vy) {
     num x = 1;
-    // for (TunePuck puck in pucks) {
-      pulses.add(new TunePulse(parent, cx, cy , vx, vy));
-      x = x*10;
-    // }
-  }
+    pulses.add(new TunePulse(parent, cx, cy , vx, vy));
+    x = x*10;
+ }
+ 
   void sendPulse(TunePuck parent, TunePuck child, num cx, num cy, num v) {
 	num xdiff = (child.centerX-parent.centerX);
 	num ydiff = (child.centerY-parent.centerY);
@@ -277,6 +273,17 @@ class TunePad extends TouchLayer with NT.Runtime {
 
   void stepForward() {
     // Step forward 1 tick (step forward button pressed)
+  }
+
+  void play(){
+  	super.play();
+  	(js.context['trackerOff'] as js.JsFunction).apply([]);
+  }
+
+  void pause() {
+    pulses = new List<TunePulse>();
+  	super.pause();
+  	(js.context['trackerOn'] as js.JsFunction).apply([]);
   }
 }
 
