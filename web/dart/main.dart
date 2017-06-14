@@ -29,6 +29,9 @@ part "sounds.dart";
 part "touch.dart";
 
 
+// boolean to determine if tangible & camera should play
+bool tangible = false;
+
 const millisPerBeat = 256; // 128;      // 128ms == 32nd note
 const beatsPerMeasure = 32;     // 32nd notes as our smallest division (4 / 4 time)
 const millisPerMeasure = 4096;  // measures are 4096 ms long
@@ -42,8 +45,8 @@ TunePad workspace;
 // global link to the block workspace
 NT.CodeWorkspace blocks;
 
-void dartPrint(String listy) {
-	if (listy == 'delete'){
+void parseTrackingPucks(String pucksString) {
+	if (pucksString == 'delete'){
 		new Timer(const Duration(milliseconds : 5), () => workspace.draw());    
 
 		List<TunePuck> to_remove = new List<TunePuck>();
@@ -56,7 +59,7 @@ void dartPrint(String listy) {
 		}
 	}
 	else {
-		List newPuck = listy.split(",");
+		List newPuck = pucksString.split(",");
 		num x = double.parse(newPuck[0]);
 		num y = double.parse(newPuck[1]);
 		num rad = double.parse(newPuck[3]);
@@ -76,24 +79,13 @@ void dartPrint(String listy) {
 
 }
 
-// void clickFun(e){
-// 	workspace.cameraOn = true;
-// 	(js.context['trackerOn'] as js.JsFunction).apply([]);
-
-// }
 void main() {
   blocks = new NT.CodeWorkspace(BLOCKS);
   workspace = new TunePad("game-canvas");
   blocks.runtime = workspace;
   Sounds.loadSound("click", "sounds/click.wav");
-  //querySelector("#onoff").onChange.listen(clickFun);
-  js.context['dartPrint_main'] = dartPrint;
-  print("generator");
-  print(blocks.getStartBlock("Generator"));
-
+  js.context['parseTrackingPucks_JS'] = parseTrackingPucks;
 }
-
-
 
 
 class TunePad extends TouchLayer with NT.Runtime {

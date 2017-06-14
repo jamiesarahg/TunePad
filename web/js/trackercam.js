@@ -37,7 +37,7 @@ function trackerStart(){
         if (rad > 30){
           rad = 30;
         }
-        dartPrint_main(String(x)+','+String(y)+','+String(rect.color) + ','+  String(rad));
+        parseTrackingPucks_JS(String(x)+','+String(y)+','+String(rect.color) + ','+  String(rad));
     });
   });
 }
