@@ -17,7 +17,7 @@ function trackerStart(){
     var context = canvas.getContext('2d');
     this.tracker.on('track', function(event) {
       context.clearRect(0, 0, canvas.width, canvas.height);
-      dartPrint_main('delete');
+      parseTrackingPucks_JS('delete');
 
 
       event.data.forEach(function(rect) {
