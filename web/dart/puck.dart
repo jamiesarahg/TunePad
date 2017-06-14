@@ -72,42 +72,54 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   //List<TunePuck> pucks = new List<TunePuck>();
 
 
-  TunePuck(this.centerX, this.centerY, this.sound, this.name) {
-    //this.radius = 30;
-    Sounds.loadSound(sound, sound);
+  TunePuck(this.centerX, this.centerY, this.name) {    
     Sounds.loadSound("pulse", "sounds/drumkit/rim.wav");
-    Sounds.loadSound("cyan_0", "sounds/drumkit/tom.wav");
-    Sounds.loadSound("cyan_1", "sounds/drumkit/tick.wav");
-    Sounds.loadSound("cyan_2", "sounds/drumkit/tap.wav");
-    Sounds.loadSound("magenta_0", "sounds/drumkit/clap.wav");
-    Sounds.loadSound("magenta_1", "sounds/drumkit/block.wav");
-    Sounds.loadSound("magenta_2", "sounds/drumkit/click.wav");
-    Sounds.loadSound("yellow_0", "sounds/drumkit/pat.wav");
-    Sounds.loadSound("yellow_1", "sounds/drumkit/hat.wav");
-    Sounds.loadSound("yellow_2", "sounds/drumkit/snare.wav");
 
   	if (this.name == "Black") {
+        Sounds.loadSound("black", "sounds/crank.wav");
+
   	    program = new NT.Program(blocks.getStartBlock("while 'play'"), this);
   	    program.batched = false;  // execute blocks one at a time
         program.autoLoop = true;
+        sound = "black";
 
+        background = "#000";
   	}
   	if (this.name == "Cyan") {
+        background = "rgb(66, 212, 244)";
+
+        Sounds.loadSound("cyan_0", "sounds/drumkit/tom.wav");
+        Sounds.loadSound("cyan_1", "sounds/drumkit/tick.wav");
+        Sounds.loadSound("cyan_2", "sounds/drumkit/tap.wav");
+
   	    program = new NT.Program(blocks.getStartBlock("when cyan hit"), this);
   	    program.batched = true;  // execute blocks one at a time
         program.autoLoop = false;
-
+        sound = "cyan_0";
   	}
   	if (this.name == "Yellow") {
+        Sounds.loadSound("yellow_0", "sounds/drumkit/pat.wav");
+        Sounds.loadSound("yellow_1", "sounds/drumkit/hat.wav");
+        Sounds.loadSound("yellow_2", "sounds/drumkit/snare.wav");
+
+        background = "rgb(244, 235, 66)";
+
   	    program = new NT.Program(blocks.getStartBlock("when yellow hit"), this);
   	    program.batched = true;  // execute blocks one at a time
         program.autoLoop = false;
-
+        sound = "yellow_0";
   	}
   	if (this.name == "Magenta") {
+        Sounds.loadSound("magenta_0", "sounds/drumkit/clap.wav");
+        Sounds.loadSound("magenta_1", "sounds/drumkit/block.wav");
+        Sounds.loadSound("magenta_2", "sounds/drumkit/click.wav");
+
+        background = "rgb(229, 66, 244)";
+
   	    program = new NT.Program(blocks.getStartBlock("when magenta hit"), this);
   	    program.batched = true;  // execute blocks one at a time
         program.autoLoop = false;
+        sound = "magenta_0";
   	}
   }
   /**

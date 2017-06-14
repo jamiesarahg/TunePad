@@ -64,13 +64,13 @@ void parseTrackingPucks(String pucksString) {
 		num y = double.parse(newPuck[1]);
 		num rad = double.parse(newPuck[3]);
 		if (newPuck[2] == 'cyan'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/tom.wav", "Cyan") .. background = "rgb(66, 212, 244)" .. radius = rad);
+			workspace.addBlock(new TunePuck(x, y,  "Cyan") .. radius = rad);
 		}
 		if (newPuck[2] == 'magenta'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/clap.wav", "Magenta") .. background = "rgb(229, 66, 244)" .. radius = rad );
+			workspace.addBlock(new TunePuck(x, y,  "Magenta") .. radius = rad );
 		}
 		if (newPuck[2] == 'yellow'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/pat.wav", "Yellow") .. background = "rgb(244, 235, 66)" .. radius = rad );
+			workspace.addBlock(new TunePuck(x, y,  "Yellow")  .. radius = rad );
 		}
 	}
 
@@ -128,7 +128,7 @@ class TunePad extends TouchLayer with NT.Runtime {
     // start program step timer
     new Timer.periodic(const Duration(milliseconds : 25), (timer) => vocalize());    
     // create some initial pucks
-    addBlock(new TunePuck(320, 250, "sounds/crank.wav", "Black") .. background = "#000");
+    addBlock(new TunePuck(320, 250, "Black"));
   
     // start animation timer
     window.animationFrame.then(animate);
