@@ -76,15 +76,38 @@ void parseTrackingPucks(String pucksString) {
 	}
 }
 
+void addCyan(){
+	print("cyan");
+}
+
 void main() {
 		print("tangible");
 	print(tangible);
   blocks = new NT.CodeWorkspace(BLOCKS);
   workspace = new TunePad("game-canvas");
   blocks.runtime = workspace;
-  if (tangible){
+  if (tangible == "true"){
   	  js.context['parseTrackingPucks_JS'] = parseTrackingPucks;
   }
+  if (tangible == "false"){
+  	querySelector('#addCyan').hidden = false;
+  	querySelector('#addMagenta').hidden = false;
+  	querySelector('#addYellow').hidden = false;
+
+  	 (querySelector('#addCyan') as ButtonElement).onClick.listen((e) {
+        workspace.addBlock(new TunePuck(400, 400,  "Cyan"));
+        workspace.draw();
+	});
+	(querySelector('#addMagenta') as ButtonElement).onClick.listen((e) {
+	    workspace.addBlock(new TunePuck(200, 400,  "Magenta"));
+	    workspace.draw();
+	});
+	  (querySelector('#addYellow') as ButtonElement).onClick.listen((e) {
+	    workspace.addBlock(new TunePuck(400, 200,  "Yellow"));
+	    workspace.draw();
+	});
+  }
+
 }
 
 
@@ -133,10 +156,10 @@ class TunePad extends TouchLayer with NT.Runtime {
     new Timer.periodic(const Duration(milliseconds : 25), (timer) => vocalize());
 
     // create some initial generator
-    addBlock(new TunePuck(320, 250, "sounds/crank.wav", "Black"));
+    addBlock(new TunePuck(320, 250, "Black"));
 
     if (tangible == "false"){
-    	addBlock(new TunePuck(100, 100, "sounds/drumkit/pat.wav", "Yellow"));
+    	addBlock(new TunePuck(100, 100, "Yellow"));
     }
 
   
@@ -220,6 +243,7 @@ class TunePad extends TouchLayer with NT.Runtime {
 
 
   void addBlock(TunePuck puck) {
+  	print("add");
     moveToTop(puck);  // also adds to the list
     addTouchable(puck);
   }
@@ -285,13 +309,17 @@ class TunePad extends TouchLayer with NT.Runtime {
 
   void play(){
   	super.play();
-  	(js.context['trackerOff'] as js.JsFunction).apply([]);
+  	if (tangible == "true"){
+  		(js.context['trackerOff'] as js.JsFunction).apply([]);
+  	}
   }
 
   void pause() {
     pulses = new List<TunePulse>();
   	super.pause();
-  	(js.context['trackerOn'] as js.JsFunction).apply([]);
+  	if (tangible == "true"){
+  		(js.context['trackerOn'] as js.JsFunction).apply([]);
+  	}
   }
 }
 
