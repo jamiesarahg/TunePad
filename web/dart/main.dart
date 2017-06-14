@@ -21,6 +21,7 @@ import 'dart:web_audio';  // web audio
 import 'dart:js' as js;
 import 'package:js/js.dart';
 import 'package:NetTango/ntango.dart' as NT;   // import NetTango
+import 'dart:collection'; 
 
 part "blocks.dart";
 part "puck.dart";
@@ -64,19 +65,15 @@ void parseTrackingPucks(String pucksString) {
 		num y = double.parse(newPuck[1]);
 		num rad = double.parse(newPuck[3]);
 		if (newPuck[2] == 'cyan'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/tom.wav", "Cyan") .. background = "rgb(66, 212, 244)" .. radius = rad);
+			workspace.addBlock(new TunePuck(x, y,  "Cyan") .. radius = rad);
 		}
 		if (newPuck[2] == 'magenta'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/clap.wav", "Magenta") .. background = "rgb(229, 66, 244)" .. radius = rad );
+			workspace.addBlock(new TunePuck(x, y,  "Magenta") .. radius = rad );
 		}
 		if (newPuck[2] == 'yellow'){
-			workspace.addBlock(new TunePuck(x, y, "sounds/drumkit/pat.wav", "Yellow") .. background = "rgb(244, 235, 66)" .. radius = rad );
+			workspace.addBlock(new TunePuck(x, y,  "Yellow")  .. radius = rad );
 		}
 	}
-
-
-
-
 }
 
 void main() {
@@ -85,7 +82,6 @@ void main() {
   blocks = new NT.CodeWorkspace(BLOCKS);
   workspace = new TunePad("game-canvas");
   blocks.runtime = workspace;
-  Sounds.loadSound("click", "sounds/click.wav");
   if (tangible){
   	  js.context['parseTrackingPucks_JS'] = parseTrackingPucks;
   }
@@ -106,10 +102,10 @@ class TunePad extends TouchLayer with NT.Runtime {
   // list of all sound generator pucks on the canvas
   List<TunePuck> pucks = new List<TunePuck>();
 
-
   // list of pulses fired
   List<TunePulse> pulses = new List<TunePulse>();
 
+  // list of sounds to be played and volume
   List<List<String>> soundsList = new List<List<String>>();
 
 
@@ -137,11 +133,12 @@ class TunePad extends TouchLayer with NT.Runtime {
     new Timer.periodic(const Duration(milliseconds : 25), (timer) => vocalize());
 
     // create some initial generator
-    addBlock(new TunePuck(320, 250, "sounds/crank.wav", "Black") .. background = "#000");
+    addBlock(new TunePuck(320, 250, "sounds/crank.wav", "Black"));
 
     if (tangible == "false"){
-    	addBlock(new TunePuck(100, 100, "sounds/drumkit/pat.wav", "Yellow") .. background = "rgb(244, 235, 66)");
+    	addBlock(new TunePuck(100, 100, "sounds/drumkit/pat.wav", "Yellow"));
     }
+
   
     // start animation timer
     window.animationFrame.then(animate);
@@ -215,7 +212,6 @@ class TunePad extends TouchLayer with NT.Runtime {
 
     ctx.save();
     {
-
       pulses.forEach((pulse) => pulse.draw(ctx));
       pucks.forEach((puck) => puck.draw(ctx));
     }
@@ -255,7 +251,6 @@ class TunePad extends TouchLayer with NT.Runtime {
 	pulses.add(new TunePulse(parent, cx, cy, xdiff, ydiff ));
   }
 	
-
 
 /**
  * check to see if the given pulse has collided with any pucks

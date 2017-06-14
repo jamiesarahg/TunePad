@@ -65,50 +65,62 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   // keeps track of if the pulse was recently hit
   bool isHit = false;
 
+  // list of pucks that don't get sent to
   List<TunePuck> to_remove = new List<TunePuck>();
 
+  List<TunePuck> remove_group = new List<TunePuck>();
 
-  //list of all pucks that need to be sent to
-  //List<TunePuck> pucks = new List<TunePuck>();
+  Queue removeList = new Queue();
 
 
-  TunePuck(this.centerX, this.centerY, this.sound, this.name) {
-
-    //this.radius = 30;
-    Sounds.loadSound(sound, sound);
+  TunePuck(this.centerX, this.centerY, this.name) {    
     Sounds.loadSound("pulse", "sounds/drumkit/rim.wav");
-    Sounds.loadSound("cyan_0", "sounds/drumkit/tom.wav");
-    Sounds.loadSound("cyan_1", "sounds/drumkit/tick.wav");
-    Sounds.loadSound("cyan_2", "sounds/drumkit/tap.wav");
-    Sounds.loadSound("magenta_0", "sounds/drumkit/clap.wav");
-    Sounds.loadSound("magenta_1", "sounds/drumkit/block.wav");
-    Sounds.loadSound("magenta_2", "sounds/drumkit/click.wav");
-    Sounds.loadSound("yellow_0", "sounds/drumkit/pat.wav");
-    Sounds.loadSound("yellow_1", "sounds/drumkit/hat.wav");
-    Sounds.loadSound("yellow_2", "sounds/drumkit/snare.wav");
 
   	if (this.name == "Black") {
+        Sounds.loadSound("black", "sounds/crank.wav");
+
   	    program = new NT.Program(blocks.getStartBlock("while 'play'"), this);
   	    program.batched = false;  // execute blocks one at a time
         program.autoLoop = true;
+        sound = "black";
 
+        background = "#000";
   	}
   	if (this.name == "Cyan") {
+        background = "rgb(66, 212, 244)";
+
+        Sounds.loadSound("cyan_0", "sounds/drumkit/tom.wav");
+        Sounds.loadSound("cyan_1", "sounds/drumkit/tick.wav");
+        Sounds.loadSound("cyan_2", "sounds/drumkit/tap.wav");
+
   	    program = new NT.Program(blocks.getStartBlock("when cyan hit"), this);
   	    program.batched = true;  // execute blocks one at a time
         program.autoLoop = false;
-
+        sound = "cyan_0";
   	}
   	if (this.name == "Yellow") {
+        Sounds.loadSound("yellow_0", "sounds/drumkit/pat.wav");
+        Sounds.loadSound("yellow_1", "sounds/drumkit/hat.wav");
+        Sounds.loadSound("yellow_2", "sounds/drumkit/snare.wav");
+
+        background = "rgb(244, 235, 66)";
+
   	    program = new NT.Program(blocks.getStartBlock("when yellow hit"), this);
   	    program.batched = true;  // execute blocks one at a time
         program.autoLoop = false;
-
+        sound = "yellow_0";
   	}
   	if (this.name == "Magenta") {
+        Sounds.loadSound("magenta_0", "sounds/drumkit/clap.wav");
+        Sounds.loadSound("magenta_1", "sounds/drumkit/block.wav");
+        Sounds.loadSound("magenta_2", "sounds/drumkit/click.wav");
+
+        background = "rgb(229, 66, 244)";
+
   	    program = new NT.Program(blocks.getStartBlock("when magenta hit"), this);
   	    program.batched = true;  // execute blocks one at a time
         program.autoLoop = false;
+        sound = "magenta_0";
   	}
   }
   /**
@@ -122,6 +134,13 @@ class TunePuck implements Touchable, NT.ProgramTarget {
     this.isHit = true;
   }
 
+  void popLastRemove() {
+    List<TunePuck> popped = removeList.removeFirst();
+    for (TunePuck pop in popped){
+      to_remove.remove(pop);
+    }
+  }
+
 /**
  * This is the ProgramTarget interface (subclasses should redefine).
  * Called by programs during block.eval
@@ -132,7 +151,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         return null;
       }
     }
-
+    
     switch (action) {
       case "start":
           this.isHit = false;
@@ -150,21 +169,12 @@ class TunePuck implements Touchable, NT.ProgramTarget {
       case "send to pucks":
         _popR= 1.0;
       	num v = 5;
-        bool inRemove = false;
 
         for (TunePuck puck in workspace.pucks) {
-          for (TunePuck puck2 in to_remove) {
-            if (puck == puck2){
-              inRemove = true;
-              break;
-            }
-          }
-          if (!inRemove){
+          if (!to_remove.contains(puck)){
             workspace.sendPulse(this, puck, centerX, centerY, v);
           }
-          inRemove = false;
          }
-        to_remove = new List<TunePuck>();
         break;
 
 
@@ -181,24 +191,31 @@ class TunePuck implements Touchable, NT.ProgramTarget {
             if (true_dist < d && true_dist > 0){ 
             }
             else {
-              to_remove.add(puck);
+              remove_group.add(puck);
             }
           }
           else if (c == "greater than") {
             if (true_dist > d && true_dist > 0){
             }
             else {
-              to_remove.add(puck);
+              remove_group.add(puck);
             }
           }
           else{
             if (true_dist == d && true_dist > 0){
             }
             else {
-              to_remove.add(puck);
+              remove_group.add(puck);
             }
           }
         }
+        // add all elements to the to_remove list
+        to_remove.addAll(remove_group);
+        //add list to queue
+        removeList.add(remove_group);
+        //reset list
+        remove_group = new List<TunePuck>();
+
         return true;
         
 
@@ -206,9 +223,15 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         String color = params[0];
         for (TunePuck puck in workspace.pucks){
           if (color != puck.name){
-            to_remove.add(puck);
+            remove_group.add(puck);
           }
         }
+        // add all elements to the to_remove list
+        to_remove.addAll(remove_group);
+        //add list to queue
+        removeList.add(remove_group);
+        //reset list
+        remove_group = new List<TunePuck>();
         return true;
       
 
@@ -228,10 +251,26 @@ class TunePuck implements Touchable, NT.ProgramTarget {
           }
 
           if (shape != icon){
-            to_remove.add(puck);
+            remove_group.add(puck);
           }
         }
+                // add all elements to the to_remove list
+        to_remove.addAll(remove_group);
+        //add list to queue
+        removeList.add(remove_group);
+        //reset list
+        remove_group = new List<TunePuck>();
         return true;
+
+      case "[end if the puck distance is:]":
+        popLastRemove();
+        break;
+      case "[end if the puck shape is:]":
+        popLastRemove();
+        break;
+      case "[end if the puck color is:]":
+        popLastRemove();
+        break;
     }
   }
 
