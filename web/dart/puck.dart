@@ -347,7 +347,6 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   }
 
   incrementIconAndSound() {
-    print(name);
     if (name == "Cyan"){
       icon_count = (icon_count+1)%3;
       if(icon_count == 0){ //bolt
@@ -414,7 +413,6 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
   void touchUp(Contact c) {
     _dragging = false;
-    print("touchUp");
     if (!dragged){
       incrementIconAndSound();
     }
