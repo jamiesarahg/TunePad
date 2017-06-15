@@ -76,13 +76,8 @@ void parseTrackingPucks(String pucksString) {
 	}
 }
 
-void addCyan(){
-	print("cyan");
-}
-
 void main() {
-		print("tangible");
-	print(tangible);
+
   blocks = new NT.CodeWorkspace(BLOCKS);
   workspace = new TunePad("game-canvas");
   blocks.runtime = workspace;
@@ -243,7 +238,6 @@ class TunePad extends TouchLayer with NT.Runtime {
 
 
   void addBlock(TunePuck puck) {
-  	print("add");
     moveToTop(puck);  // also adds to the list
     addTouchable(puck);
   }
