@@ -319,21 +319,22 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         _lastY = _touchY;
         refresh = true;
       } 
-
-      if (_pop > 0.05) {
-        _pop *= 0.9;
-        refresh = true;
-      } else {
-        _pop = 0.0;
-      }
-
-      if (_popR > 0.05) {
-        _popR *= 0.9;
-        refresh = true;
-      } else {
-        _popR = 0.0;
-      }
     }
+
+    if (_pop > 0.05) {
+      _pop *= 0.9;
+      refresh = true;
+    } else {
+      _pop = 0.0;
+    }
+
+    if (_popR > 0.05) {
+      _popR *= 0.9;
+      refresh = true;
+    } else {
+      _popR = 0.0;
+    }
+  
 
     return refresh;
   }
