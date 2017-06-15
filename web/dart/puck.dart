@@ -72,6 +72,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
 
   Queue removeList = new Queue();
 
+
   TunePuck(this.centerX, this.centerY, this.name) {    
     Sounds.loadSound("pulse", "sounds/drumkit/rim.wav");
 
@@ -310,6 +311,16 @@ class TunePuck implements Touchable, NT.ProgramTarget {
   bool animate(int millis, CanvasRenderingContext2D ctx) { 
     bool refresh = false;
 
+    if (tangible == "false") {
+      if (_dragging) {
+        centerX += (_touchX - _lastX);
+        centerY += (_touchY - _lastY);
+        _lastX = _touchX;
+        _lastY = _touchY;
+        refresh = true;
+      } 
+    }
+
     if (_pop > 0.05) {
       _pop *= 0.9;
       refresh = true;
@@ -323,6 +334,8 @@ class TunePuck implements Touchable, NT.ProgramTarget {
     } else {
       _popR = 0.0;
     }
+  
+
     return refresh;
   }
 
@@ -334,15 +347,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
     return dist(c.touchX, c.touchY, centerX, centerY) <= radius;
   }
 
-
-  Touchable touchDown(Contact c) {
-    _dragging = true;
-    //workspace.moveToTop(this);
-    _touchX = c.touchX;
-    _touchY = c.touchY;
-    _lastX = c.touchX;
-    _lastY = c.touchY;
-
+  incrementIconAndSound() {
     if (name == "Cyan"){
       icon_count = (icon_count+1)%3;
       if(icon_count == 0){ //bolt
@@ -353,7 +358,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         icon = "\uf005";
         sound = "cyan_1";
       }
-      else{  //hart
+      else{  //heart
         icon = "\uf004";
         sound = "cyan_2";
       }
@@ -369,7 +374,7 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         icon = "\uf005";
         sound = "magenta_1";
       }
-      else{  //hart
+      else{  //heart
         icon = "\uf004";
         sound = "magenta_2";
       }
@@ -385,38 +390,46 @@ class TunePuck implements Touchable, NT.ProgramTarget {
         icon = "\uf005";
         sound = "yellow_1";
       }
-      else{  //hart
+      else{  //heart
         icon = "\uf004";
         sound = "yellow_2";
       }
     }
+  }
 
+  bool dragged = false;
+
+  Touchable touchDown(Contact c) {
+    _dragging = true;
+    workspace.moveToTop(this);
+    _touchX = c.touchX;
+    _touchY = c.touchY;
+    _lastX = c.touchX;
+    _lastY = c.touchY;
+
+    
     return this;
   }    
 
 
   void touchUp(Contact c) {
     _dragging = false;
+    if (!dragged){
+      incrementIconAndSound();
+    }
     workspace.draw();
+
+    
+    dragged = false;
   }
 
 
   void touchDrag(Contact c) {
     _touchX = c.touchX;
-    _touchY = c.touchY;    
+    _touchY = c.touchY;  
+    dragged = true;  
   }
    
   void touchSlide(Contact c) {  
   }
 }
-
-/*
-  void eval(PlayHead player) {
-    Sounds.playSound(sound, 
-      volume : player.gain, 
-      playback : player.playback,
-      convolve : player.convolve);
-    _pop = 1.0;
-  }
-*/
-
